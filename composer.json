@@ -1,0 +1,25 @@
+{
+  "name": "cpsit/admiralcloud-connector",
+  "type": "typo3-cms-extension",
+  "description": "Admiral cloud connector",
+  "keywords": [
+    "TYPO3"
+  ],
+  "homepage": "https://www.cps-it.de/",
+  "license": "GPL-3.0+",
+  "require": {
+    "typo3/cms-core": "^9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "CPSIT\\AdmiralcloudConnector\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "replace": {
+    "cpsit/admiralcloud-conector": "self.version"
+  }
+}
