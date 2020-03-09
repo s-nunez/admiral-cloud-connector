@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+    <title>Example for CMS-Plugins to Embed AdmiralCloud</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+</head>
+<body>
+<h1>Example for CMS-Plugins to Embed AdmiralCloud</h1>
+
+<div class="typo3user">
+    <label for="inputEmail">Email:</label>
+    <input type="text" id="inputEmail" value="typo3.test@mmpro.de"/>
+    <br/>
+    <label for="inputFirstname">Firstname:</label>
+    <input type="text" id="inputFirstname" value="Jane"/>
+    <br/>
+    <label for="inputLastname">Lastname:</label>
+    <input type="text" id="inputLastname" value="Doe"/>
+    <br/>
+</div>
+
+<label><input type="checkbox" name="" id="checkAllowInsert" checked/> Allow Media Inserts</label>
+<br/>
+<br/>
+
+<button onClick="load(iframeURL_overview)">Load File from AdmiralCloud</button>
+<button onClick="load(iframeURL_upload)">Upload File into AdmiralCloud</button>
+
+<div id="images"></div>
+
+<script>
+    var iframeURL_overview = `https://t3intpoc.admiralcloud.com/overview?cmsOrigin=${btoa(location.protocol + '//' + location.host)}`;
+    var iframeURL_overview_noInsert = `https://t3intpoc.admiralcloud.com/overview?cmsOrigin=${btoa(location.protocol + '//' + location.host)}&noInsert=1`;
+    var iframeURL_upload = `https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=${btoa(location.protocol + '//' + location.host)}`;
+    var elAdmiralCloud;
+    var currentIframeURL;
+
+    async function loadIframeWithAuthCode(device) {
+        const email = document.getElementById('inputEmail').value;
+        const firstname = document.getElementById('inputFirstname').value;
+        const lastname = document.getElementById('inputLastname').value;
+
+        //Path to Auth-Helper Node Script
+        const resp = await fetch('https://websitedemo.admiralcloud.com/auth', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                callbackUrl: currentIframeURL,
+                email,
+                firstname,
+                lastname,
+                device:'WzI0LDI0LDE5MjAsMTA4MCwiV2luMzIiXQ==',
+            }),
+        });
+        const data = await resp.json();
+
+        applyAuthCode(data.code);
+    }
+
+    window.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        console.info(data);
+        if(!data){
+            data.command = 'AUTH';
+        }
+
+        if (data.command === 'AUTH') {
+            //const { device } = data;
+            loadIframeWithAuthCode('');
+            return;
+        }
+
+        // Receive Media
+        if (data.command === 'MEDIA') {
+            console.log('MEDIA', data);
+            const isInsertAllowed = document.getElementById('checkAllowInsert').checked;
+            console.log('INSERT?', isInsertAllowed);
+
+            if (!isInsertAllowed) {
+                alert('INSERT NOT ALLOWED -> Sie müssen sich in einem Medienelement befinden, um Medien einfügen zu können.');
+                return;
+            }
+
+            if (!data.cropperData) {
+                images.innerHTML += `
+                        <div class="image">
+                            ${data.mediaContainer.id}<br>
+                            <img src="no-preview-image.jpg" />
+                        </div>`;
+                hideAC();
+                return;
+            }
+
+            // var imageThumbURL = data.cropperData.smartCropperUrlAOI;
+            // imageThumbURL = imageThumbURL.replace('{width}', '200');
+            // imageThumbURL = imageThumbURL.replace('{height}', '400');
+            // imageThumbURL = imageThumbURL.replace('{scale}', '0.4');
+
+            var imageFullURL = data.cropperData.smartCropperUrl;
+            imageFullURL = imageFullURL.replace('{width}', '800');
+
+            var embedLink = data.mediaContainer.links.filter((l) => l.playerConfigurationId === 3 && l.flag === 0)[0];
+            var c = data.cropperData.cropData;
+            var focusPoint = data.cropperData.focusPoint;
+            var imageThumbURL = `https://smartcropdev.admiralcloud.com/v3/deliverEmbed/${embedLink.link}/image/cropperjsfocus/400/400/${Math.floor(c.x)},${Math.floor(c.y)},${Math.floor(
+                c.width,
+            )},${Math.floor(c.height)},${Math.floor(c.rotate)},${Math.floor(c.scaleX)},${Math.floor(c.scaleY)}/${Math.floor(focusPoint.x)},${Math.floor(focusPoint.y)}?poc=true&env=dev`;
+
+            images.innerHTML += `
+                        <div class="image">
+                            ${data.mediaContainer.id}<br>
+                            <img src="${imageThumbURL}" />
+                            <div class="hoverImage"><img src="${imageFullURL}" /></div>
+                        </div>`;
+            hideAC();
+            return;
+        }
+    };
+
+    function load(iframeURL) {
+        // If iframe is already open
+        if (elAdmiralCloud) {
+            const iframe = elAdmiralCloud.querySelector('iframe');
+
+            // If the requested URL is already open, simply show it
+            if (currentIframeURL.includes(iframeURL)) {
+                elAdmiralCloud.querySelector('.acBackdrop').classList.remove('hidden');
+                return;
+            }
+
+            // Otherwise navigate to the requested URL
+            iframe.src = iframeURL;
+            currentIframeURL = iframeURL;
+            elAdmiralCloud.querySelector('.acBackdrop').classList.remove('hidden');
+            return;
+        }
+
+        // Create a new iframe and authenticate
+        var el = document.createElement('div');
+        el.innerHTML = `<div class="acBackdrop"><iframe src="${iframeURL}&auth=1"></iframe><div class="close"><i class="fa fa-times"></i></div></div>`;
+        currentIframeURL = iframeURL;
+        document.body.appendChild(el);
+
+        el.addEventListener('click', () => hideAC());
+        elAdmiralCloud = el;
+    }
+
+    function applyAuthCode(code) {
+        load(currentIframeURL);
+        const iframe = elAdmiralCloud.querySelector('iframe');
+        iframe.src = `${currentIframeURL}&code=${code}`;
+    }
+
+    function hideAC() {
+        elAdmiralCloud.querySelector('.acBackdrop').classList.add('hidden');
+    }
+</script>
+
+<style>
+    .image {
+        position: relative;
+        float: left;
+        margin: 20px 20px 0;
+        height: 240px;
+    }
+
+    .image > img {
+        z-index: 1;
+        height: 200px;
+    }
+
+    .image .hoverImage {
+        z-index: 2;
+        display: none;
+        position: absolute;
+        top: 100px;
+        left: 40px;
+    }
+
+    .image:hover .hoverImage {
+        display: block;
+    }
+
+    .acBackdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+    }
+
+    .acBackdrop iframe {
+        position: absolute;
+        top: 10px;
+        left: 40px;
+        width: calc(100% - 80px);
+        height: calc(100% - 20px);
+        border: 0;
+        background: white;
+    }
+
+    .acBackdrop .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        color: white;
+        font-size: 20px;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    .acBackdrop.hidden {
+        position: absolute;
+        left: -5000%;
+        top: -5000%;
+        right: auto;
+        left: auto;
+        width: 100%;
+        height: 100%;
+    }
+
+    .typo3user {
+        border: solid 2px darkred;
+        padding: 10px;
+        margin: 0 0 20px 0;
+    }
+</style>
+</body>
+</html>
