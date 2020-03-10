@@ -7,10 +7,11 @@
  */
 
 // src/Bynder/Api/BynderApiFactory.php
-namespace Bynder\Api;
+namespace CPSIT\AdmiralcloudConnector\Api;
 
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
 use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Static Factory class used to create instances of BynderApi.
@@ -24,9 +25,9 @@ class AdmiralcloudApiFactory
      * @return AdmiralcloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
-    public static function create()
+    public static function create($settings)
     {
-        return AdmiralcloudApi::create();
+        return AdmiralcloudApi::create($settings);
     }
 
 }

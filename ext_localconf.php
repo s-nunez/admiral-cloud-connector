@@ -1,5 +1,14 @@
 <?php
+
+use CPSIT\AdmiralcloudConnector\Backend\InlineControlContainer;
+
 defined('TYPO3_MODE') || die('Access denied.');
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1433198160] = [
+    'nodeName' => 'inline',
+    'priority' => 50,
+    'class' => InlineControlContainer::class,
+];
 
 // Register the FAL driver for AdmiralCloud
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver::KEY] = [

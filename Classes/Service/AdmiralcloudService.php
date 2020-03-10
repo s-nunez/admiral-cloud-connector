@@ -1,9 +1,10 @@
 <?php
 
-namespace CPSIT\Service;
-use Bynder\Api\AdmiralcloudApiFactory;
+namespace CPSIT\AdmiralcloudConnector\Service;
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
+use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApiFactory;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /***************************************************************
@@ -37,10 +38,10 @@ class AdmiralcloudService implements SingletonInterface
      */
     protected $admiralcloudApi;
 
-    public function getAdmiralcloudApi(): AdmiralcloudApi
+    public function getAdmiralcloudApi($settings): AdmiralcloudApi
     {
         try {
-            return AdmiralcloudApiFactory::create();
+            return AdmiralcloudApiFactory::create($settings);
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException('BynderApi cannot be created', 1559128418168, $e);
         }

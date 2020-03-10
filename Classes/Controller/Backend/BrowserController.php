@@ -1,7 +1,16 @@
 <?php
 
 namespace CPSIT\AdmiralcloudConnector\Controller\Backend;
-use CPSIT\Service\AdmiralcloudService;
+use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
+use Exception;
+use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
 
 /***************************************************************
@@ -30,150 +39,177 @@ use TYPO3\CMS\Form\Controller\AbstractBackendController;
  ***************************************************************/
 class BrowserController extends AbstractBackendController
 {
+
+
+    /**
+     * Fluid Standalone View
+     *
+     * @var StandaloneView
+     */
+    protected $view;
+
+    /**
+     * TemplateRootPath
+     *
+     * @var string[]
+     */
+    protected $templateRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Templates/Backend/Browser'];
+
+    /**
+     * PartialRootPath
+     *
+     * @var string[]
+     */
+    protected $partialRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Partials/Backend/Browser'];
+
+    /**
+     * LayoutRootPath
+     *
+     * @var string[]
+     */
+    protected $layoutRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Layouts/Backend/Browser'];
+
+    /**
+     * BackendTemplateView Container
+     *
+     * @var BackendTemplateView
+     */
+    protected $defaultViewObjectName = BackendTemplateView::class;
+
+    /**
+     * CompactViewController constructor.
+     */
+    public function __construct()
+    {
+        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        $this->view->setPartialRootPaths($this->partialRootPaths);
+        $this->view->setTemplateRootPaths($this->templateRootPaths);
+        $this->view->setLayoutRootPaths($this->layoutRootPaths);
+    }
+
+
+    /**
+     * Set up the doc header properly here
+     *
+     * @param ViewInterface $view
+     */
+    protected function initializeView(ViewInterface $view)
+    {
+        if ($view instanceof BackendTemplateView) {
+            parent::initializeView($view);
+        }
+    }
+
     /**
      * locationRepository
      *
-     * @var AdmiralcloudService
+     * @var \CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
     protected $admiralcloudService = null;
 
     /**
-     * action show
-     *
+     * @param ServerRequestInterface|null $request
+     * @param ResponseInterface|null $response
+     * @return ResponseInterface
      */
-    public function showAction()
+    public function showAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-
-        $admiralcloudApi = $this->admiralcloudService->getAdmiralcloudApi();
-        $curl = curl_init();
-
-        $credentials = [
-            "accessSecret" => getenv('ADMIRALCLOUD_ACCESS_SECRET'),
-            "accessKey" => getenv('ADMIRALCLOUD_ACCESS_KEY'),
-            "client_id" => getenv('ADMIRALCLOUD_CLIENT_ID')
+        $this->view->setTemplate('Show');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $parameters = $request->getQueryParams();
+        $settings = [
+            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=' . base64_encode('http://' . $_SERVER['HTTP_HOST']),
+            'controller' => 'login',
+            'action' => 'app'
         ];
-        $state = '0.' . base_convert($this->random() . '00', 10, 36);
-        #$state = '123';
-        $params = [
-            "accessSecret" => $credentials['accessSecret'],
-            "controller" => "login",
-            "action" => "app",
-            "payload" => [
-                "email" => "typo3.test@mmpro.de",
-                "firstname" => "Jane",
-                "lastname" => "Doe",
-                "state" => $state,
-                "client_id" => $credentials['client_id'],
-                "callbackUrl" => "aHR0cHM6Ly90M2ludHBvYy5hZG1pcmFsY2xvdWQuY29tL292ZXJ2aWV3P2Ntc09yaWdpbj1hSFIwY0hNNkx5OTNaV0p6YVhSbFpHVnRieTVoWkcxcGNtRnNZMnh2ZFdRdVkyOXQ="
+        $admiralcloudApi = $this->admiralcloudService->getAdmiralcloudApi($settings);
+
+        $this->view->assignMultiple([
+            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudApi->getCode(),
+            'parameters' => [
+                'element' => $parameters['element'],
+                'irreObject' => $parameters['irreObject'],
+                'assetTypes' => $parameters['assetTypes']
             ]
-        ];
-        #var_dump($params);
-        $signedValues = $this->acSignatureSign($params);
-        $signedValues['hash'] = '6514cba9eadd8492cb9dbda4a66a7082880fb206513f33db35754b08891f2568';
-        #var_dump($signedValues);
-        $payload = json_encode($params['payload']);
+        ]);
+        $response->getBody()->write($this->view->render());
 
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://authdev.admiralcloud.com/v4/login/app?poc=true",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 30,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_POST => 1,
-          CURLOPT_POSTFIELDS => json_encode($params['payload']),
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json',
-            "x-admiralcloud-accesskey: " . $credentials['accessKey'],
-            "x-admiralcloud-rts: " . $signedValues['timestamp'],
-            "x-admiralcloud-hash: " . $signedValues['hash'],
-            "x-admiralcloud-debugsignature: 1",
-            "x-admiralcloud-clientid: " . $credentials['client_id'],
-            "x-admiralcloud-device: WzI0LDI0LDE5MjAsMTA4MCwiV2luMzIiXQ=="
-
-
-          ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-          echo "cURL Error #:" . $err;
-        } else {
-          echo $response;
-        }
-
-        $codeParams = [
-            'state' => $params['payload']['state'],
-            'device' => 'WzI0LDI0LDE5MjAsMTA4MCwiV2luMzIiXQ==',
-            'client_id' => $credentials['client_id']
-
-        ];
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://authdev.admiralcloud.com/v4/requestCode?" . http_build_query($codeParams),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json'
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        $err = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($err) {
-            echo "cURL Error #:" . $err;
-        } else {
-            echo $response;
-        }
-
+        return $response;
     }
 
-    public function acSignatureSign($params){
-        $accessSecret = $params['accessSecret'];
-        if(!$accessSecret) return 'accessSecretMissing';
-        $controller = $params['controller'];
-        if(!$controller) return 'controllerMissing';
-        $action = $params['action'];
-        if(!$action) return 'actionMissing';
-        $data = $params['payload'];
-        if(!$data) return 'payloadMustBeObject';
-
-        ksort($data);
-        $payload = [];
-        foreach ($data as $key=>$value){
-            $payload[$key] = $data[$key];
-        }
-        #var_dump(json_encode($payload));
-        $ts = time();
-        $valueToHash = strtolower($params['controller']) . PHP_EOL .
-            strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . json_encode($payload));
-        #var_dump($valueToHash);
-        $hash = hash_hmac('sha256', $valueToHash, $accessSecret);
-        return [
-            $hash,
-            'timestamp' => $ts
-        ];
-    }
-
-    public function isJson($string)
+    /**
+     * Makes the AJAX call to expand or collapse the foldertree.
+     * Called by an AJAX Route, see AjaxRequestHandler
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function authAction(): ResponseInterface
     {
-        json_decode($string);
-        return (json_last_error() == JSON_ERROR_NONE);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $settings = [
+            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=' . base64_encode('http//' . $_SERVER['HTTP_HOST'])
+        ];
+        $admiralcloudApi = $this->admiralcloudService->getAdmiralcloudApi($settings);
+
+        header('Content-type: application/json');
+        $data = [
+            'code' => $admiralcloudApi->getCode()
+        ];
+        echo json_encode($data);
+        die();
     }
 
-    public function random()
+    /**
+     * Action: Retrieve file from storage
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function getFilesAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return (float)rand() / (float)getrandmax();
+        $media = $request->getParsedBody()['media'];
+        $target = $request->getParsedBody()['target'];
+        header('Content-type: application/json');
+        $data = [
+            'media' => $media,
+            'target' => $target
+        ];
+        echo json_encode($data);
+        die();
+        /*
+        try {
+            $files = [];
+            $storage = $this->getBynderStorage();
+            $indexer = $this->getIndexer($storage);
+
+            foreach ($request->getParsedBody()['files'] ?? [] as $fileIdentifier) {
+                $file = $storage->getFile($fileIdentifier);
+                if ($file instanceof File) {
+                    // (Re)Fetch metadata
+                    $indexer->extractMetaData($file);
+                    $files[] = $file->getUid();
+                }
+            }
+
+            if ($files === []) {
+                return $this->createJsonResponse($response, ['error' => 'No files given/found'], 406);
+            }
+
+            return $this->createJsonResponse($response, ['files' => $files], 201);
+        } catch (Exception $e) {
+            return $this->createJsonResponse($response, [
+                'error' => 'The interaction with Bynder contained conflicts. Please contact the webmasters.',
+                'exception' => [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage()
+                ],
+            ], 404);
+        }
+        */
     }
 }

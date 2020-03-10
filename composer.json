@@ -23,6 +23,6 @@
     }
   },
   "replace": {
-    "cpsit/admiralcloud-conector": "self.version"
+    "cpsit/admiralcloud-connector": "self.version"
   }
 }
