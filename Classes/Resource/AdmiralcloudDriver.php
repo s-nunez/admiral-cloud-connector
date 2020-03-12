@@ -150,7 +150,7 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function getPublicUrl($identifier): string
     {
-        return $this->getAsset($identifier)->getThumbnail();
+        throw new NotImplementedException(sprintf('Method %s::%s() is not implemented', __CLASS__, __METHOD__), 1519045334);
     }
 
     /**
@@ -182,7 +182,8 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function fileExists($fileIdentifier)
     {
-        // TODO: Implement fileExists() method.
+        // We just assume that the processed file exists as this is just a CDN link
+        return !empty($fileIdentifier);
     }
 
     /**

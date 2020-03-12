@@ -2,16 +2,23 @@
 
 namespace CPSIT\AdmiralcloudConnector\Controller\Backend;
 use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
+use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\Index\Indexer;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
+use TYPO3\CMS\Core\Resource\File;
 
 /***************************************************************
  *
@@ -39,7 +46,7 @@ use TYPO3\CMS\Form\Controller\AbstractBackendController;
  ***************************************************************/
 class BrowserController extends AbstractBackendController
 {
-
+    use AdmiralcloudStorage;
 
     /**
      * Fluid Standalone View
@@ -174,26 +181,19 @@ class BrowserController extends AbstractBackendController
     {
         $media = $request->getParsedBody()['media'];
         $target = $request->getParsedBody()['target'];
-        header('Content-type: application/json');
-        $data = [
-            'media' => $media,
-            'target' => $target
-        ];
-        echo json_encode($data);
-        die();
-        /*
+
         try {
             $files = [];
-            $storage = $this->getBynderStorage();
+            $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
 
-            foreach ($request->getParsedBody()['files'] ?? [] as $fileIdentifier) {
-                $file = $storage->getFile($fileIdentifier);
-                if ($file instanceof File) {
-                    // (Re)Fetch metadata
-                    $indexer->extractMetaData($file);
-                    $files[] = $file->getUid();
-                }
+            $file = $storage->getFile($media['mediaContainer']['id']);
+            if ($file instanceof File) {
+                $this->updateWithCorrectFileType($file);
+
+                // (Re)Fetch metadata
+                $indexer->extractMetaData($file);
+                $files[] = $file->getUid();
             }
 
             if ($files === []) {
@@ -203,13 +203,84 @@ class BrowserController extends AbstractBackendController
             return $this->createJsonResponse($response, ['files' => $files], 201);
         } catch (Exception $e) {
             return $this->createJsonResponse($response, [
-                'error' => 'The interaction with Bynder contained conflicts. Please contact the webmasters.',
+                'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [
                     'code' => $e->getCode(),
                     'message' => $e->getMessage()
                 ],
             ], 404);
         }
-        */
+    }
+
+    /**
+     * Gets the Indexer.
+     *
+     * @param ResourceStorage $storage
+     * @return Indexer
+     */
+    protected function getIndexer(ResourceStorage $storage): Indexer
+    {
+        return GeneralUtility::makeInstance(Indexer::class, $storage);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param array|null $data
+     * @param int $statusCode
+     * @return ResponseInterface
+     */
+    protected function createJsonResponse(ResponseInterface $response, $data, int $statusCode): ResponseInterface
+    {
+        $response = $response
+            ->withStatus($statusCode)
+            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+
+        if (!empty($data)) {
+            $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES;
+            $response->getBody()->write(json_encode($data ?: null, $options));
+            $response->getBody()->rewind();
+        }
+
+        return $response;
+    }
+
+    /**
+     * Maps the mimetype to a sys_file table type
+     *
+     * @return string
+     */
+    protected function updateWithCorrectFileType(FileInterface $file)
+    {
+        if ($file->getType() !== File::FILETYPE_UNKNOWN) {
+            return;
+        }
+
+        $mimeType = substr($file->getMimeType(), strlen('admiralcloud/'));
+
+        list($fileType) = explode('/', $mimeType);
+        switch (strtolower($fileType)) {
+            case 'text':
+                $type = File::FILETYPE_TEXT;
+                break;
+            case 'image':
+                $type = File::FILETYPE_IMAGE;
+                break;
+            case 'audio':
+                $type = File::FILETYPE_AUDIO;
+                break;
+            case 'video':
+                $type = File::FILETYPE_VIDEO;
+                break;
+            case 'application':
+            case 'software':
+                $type = File::FILETYPE_APPLICATION;
+                break;
+            default:
+                $type = File::FILETYPE_UNKNOWN;
+        }
+
+        /** @var Connection $con */
+        $con = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_file');
+        $con->update('sys_file', ['type' => $type], ['uid' => $file->getUid()]);
     }
 }

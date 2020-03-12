@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralcloudConnector\Resource;
 
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidAssetException;
+use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 
@@ -14,6 +15,8 @@ use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
  */
 class Asset
 {
+    use AdmiralcloudStorage;
+
     /**
      * Available Types used by Admiralcloud
      */
@@ -34,17 +37,12 @@ class Asset
     protected $information;
 
     /**
-     * @var ResourceStorageInterface
-     */
-    protected $admiralCloudStorage;
-
-    /**
      * Asset constructor.
-     * @param int $identifier
+     * @param string $identifier
      * @param array $properties
      * @throws InvalidAssetException
      */
-    public function __construct(int $identifier, array $information = [])
+    public function __construct(string $identifier, array $information = [])
     {
         if (!static::validateIdentifier($identifier)) {
             throw new InvalidAssetException(
@@ -135,7 +133,8 @@ class Asset
             try {
                 // Do API call
                 // TODO api call
-                $this->information = $this->getBynderService()->getMediaInfo($this->getIdentifier());
+                //$this->information = $this->getBynderService()->getMediaInfo($this->getIdentifier());
+                $this->information = ['type' => self::TYPE_IMAGE];
             } catch (\Exception $e) {
                 $this->information = [];
             }
@@ -185,6 +184,47 @@ class Asset
     {
         // TODO implement me
 
+        switch ($property) {
+            case 'name':
+                return $this->identifier . '.jpg';
+            case 'mimetype':
+                return 'admiralcloud/image/jpg';
+            case 'storage':
+                return $this->getAdmiralCloudStorage()->getUid();
+            case 'extension':
+                return 'jpg';
+            case 'size':
+                return 100;
+            case 'atime':
+            case 'mtime':
+            case 'ctime':
+                return time();
+            case 'identifier':
+                return $this->identifier;
+            case 'identifier_hash':
+                return sha1($this->identifier);
+            case 'folder_hash':
+                return sha1('admiralcloud' . $this->getAdmiralCloudStorage()->getUid());
+
+            // Metadata
+            case 'title':
+                return 'title';
+            case 'description':
+                return 'description';
+            case 'width':
+                return 300;
+            case 'height':
+                return 150;
+            case 'copyright':
+                return 'copyright';
+            case 'keywords':
+                return 'hello,world';
+        }
+
+        return '';
+
+        // TODO implement me
+
         $information = $this->getInformation();
         switch ($property) {
             case 'size':
@@ -226,22 +266,5 @@ class Asset
             default:
                 throw new InvalidPropertyException(sprintf('The information "%s" is not available.', $property), 1519130380);
         }
-    }
-
-    /**
-     * @return ResourceStorageInterface
-     */
-    protected function getAdmiralCloudStorage(): ResourceStorage
-    {
-        if ($this->admiralCloudStorage === null) {
-            $backendUserAuthentication = $GLOBALS['BE_USER'];
-            foreach ($backendUserAuthentication->getFileStorages() as $fileStorage) {
-                if ($fileStorage->getDriverType() === AdmiralcloudDriver::KEY) {
-                    return $this->admiralCloudStorage = $fileStorage;
-                }
-            }
-            throw new InvalidArgumentException('Missing Admiral Cloud file storage', 1559128872210);
-        }
-        return $this->admiralCloudStorage;
     }
 }
