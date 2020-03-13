@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Resource\ResourceStorage;
 /**
  * Class InlineControlContainer
  *
- * Override core InlineControlContainer to inject Bynder button
+ * Override core InlineControlContainer to inject Admiralcloud button
  */
 class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineControlContainer
 {
@@ -32,7 +32,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
     {
         $selector = parent::renderPossibleRecordsSelectorTypeGroupDB($inlineConfiguration);
 
-        if ($this->displayBynderButton()) {
+        if ($this->displayAdmiralcloudButton()) {
             $button = $this->renderAdmiralcloudButton($inlineConfiguration);
 
             // Inject button before help-block
@@ -60,8 +60,8 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         if (!$this->admiralcloudStorageAvailable()) {
             $errorTextHtml = [];
             $errorTextHtml[] = '<div class="alert alert-danger" style="display: inline-block">';
-            $errorTextHtml[] = $this->iconFactory->getIcon('actions-bynder-compact-view', Icon::SIZE_SMALL)->render();
-            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:compact_view.error-no-storage-access'));
+            $errorTextHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
+            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.error-no-storage-access'));
             $errorTextHtml[] = '</div>';
 
             return LF . implode(LF, $errorTextHtml);
@@ -81,23 +81,23 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         ]);
 
         $this->requireJsModules[] = 'TYPO3/CMS/AdmiralcloudConnector/Browser';
-        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:compact_view.button'));
-        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:compact_view.header'));
+        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.button'));
+        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
 
         $buttonHtml = [];
-        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-bynder-compact-view-btn ' . $element . '"'
-            . ' data-bynder-compact-view-url="' . htmlspecialchars($compactViewUrl) . '" '
+        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiralcloud-browser-btn ' . $element . '"'
+            . ' data-admiralcloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
             . ' data-title="' . htmlspecialchars($titleText) . '">';
-        $buttonHtml[] = $this->iconFactory->getIcon('actions-bynder-compact-view', Icon::SIZE_SMALL)->render();
+        $buttonHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
         $buttonHtml[] = $buttonText;
         $buttonHtml[] = '</a>';
         return LF . implode(LF, $buttonHtml);
     }
 
     /**
-     * Check if the BE user has access to the Bynder storage
+     * Check if the BE user has access to the Admiralcloud storage
      *
-     * Admin has access when there is a resource storage with driver type bynder
+     * Admin has access when there is a resource storage with driver type admiralcloud
      * Editors need to have access to a mount of that storage
      *
      * @return bool
@@ -114,18 +114,18 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
     }
 
     /**
-     * Check if the BE user has access to the Bynder compact view
+     * Check if the BE user has access to the Admiralcloud browser
      *
-     * Admin has access when there is a resource storage with driver type bynder
+     * Admin has access when there is a resource storage with driver type admiralcloud
      * Editors need to have access to a mount of that storage
      *
      * @return bool
      */
-    protected function displayBynderButton(): bool
+    protected function displayAdmiralcloudButton(): bool
     {
         $backendUser = $this->getBackendUserAuthentication();
         $filePermissions = $backendUser->getFilePermissions();
 
-        return $backendUser->isAdmin() || (bool)$filePermissions['addFileViaBynder'];
+        return $backendUser->isAdmin() || (bool)$filePermissions['addFileViaAdmiralcloud'];
     }
 }

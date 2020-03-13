@@ -1,8 +1,3 @@
-<f:be.pageRenderer
-        includeRequireJsModules="{
-        0:'TYPO3/CMS/AdmiralcloudConnector/Browser'
-    }"
-/>
 <!DOCTYPE html>
 <html lang="en" style="height:100%;width:100%">
 <head>
@@ -10,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <title>AdmiralCloud Embed</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
 </head>
 <body style="height:100%;width:100%">
 <div id="images"></div>
@@ -28,43 +22,6 @@
             const isInsertAllowed = true;
             console.log('INSERT?', isInsertAllowed);
 
-            if (!isInsertAllowed) {
-                alert('INSERT NOT ALLOWED -> Sie müssen sich in einem Medienelement befinden, um Medien einfügen zu können.');
-                return;
-            }
-
-            if (!data.cropperData) {
-                images.innerHTML += `
-                        <div class="image">
-                            ${data.mediaContainer.id}<br>
-                            <img src="no-preview-image.jpg" />
-                        </div>`;
-                hideAC();
-                return;
-            }
-
-            // var imageThumbURL = data.cropperData.smartCropperUrlAOI;
-            // imageThumbURL = imageThumbURL.replace('{width}', '200');
-            // imageThumbURL = imageThumbURL.replace('{height}', '400');
-            // imageThumbURL = imageThumbURL.replace('{scale}', '0.4');
-
-            var imageFullURL = data.cropperData.smartCropperUrl;
-            imageFullURL = imageFullURL.replace('{width}', '800');
-
-            var embedLink = data.mediaContainer.links.filter((l) => l.playerConfigurationId === 3 && l.flag === 0)[0];
-            var c = data.cropperData.cropData;
-            var focusPoint = data.cropperData.focusPoint;
-            var imageThumbURL = `https://smartcropdev.admiralcloud.com/v3/deliverEmbed/${embedLink.link}/image/cropperjsfocus/400/400/${Math.floor(c.x)},${Math.floor(c.y)},${Math.floor(
-                c.width,
-            )},${Math.floor(c.height)},${Math.floor(c.rotate)},${Math.floor(c.scaleX)},${Math.floor(c.scaleY)}/${Math.floor(focusPoint.x)},${Math.floor(focusPoint.y)}?poc=true&env=dev`;
-
-            images.innerHTML += `
-                        <div class="image">
-                            ${data.mediaContainer.id}<br>
-                            <img src="${imageThumbURL}" />
-                            <div class="hoverImage"><img src="${imageFullURL}" /></div>
-                        </div>`;
-            //hideAC();
             var parentDocument = parent.document,
                 contentIframe = parent.document.getElementById('typo3-contentIframe');
 
@@ -90,80 +47,8 @@
             }
 
             parentDocument.dispatchEvent(event);
-            return;
         }
     };
 </script>
-
-<style>
-    .image {
-        position: relative;
-        float: left;
-        margin: 20px 20px 0;
-        height: 240px;
-    }
-
-    .image > img {
-        z-index: 1;
-        height: 200px;
-    }
-
-    .image .hoverImage {
-        z-index: 2;
-        display: none;
-        position: absolute;
-        top: 100px;
-        left: 40px;
-    }
-
-    .image:hover .hoverImage {
-        display: block;
-    }
-
-    .acBackdrop {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-    }
-
-    .acBackdrop iframe {
-        position: absolute;
-        top: 10px;
-        left: 40px;
-        width: calc(100% - 80px);
-        height: calc(100% - 20px);
-        border: 0;
-        background: white;
-    }
-
-    .acBackdrop .close {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        color: white;
-        font-size: 20px;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    .acBackdrop.hidden {
-        position: absolute;
-        left: -5000%;
-        top: -5000%;
-        right: auto;
-        left: auto;
-        width: 100%;
-        height: 100%;
-    }
-
-    .typo3user {
-        border: solid 2px darkred;
-        padding: 10px;
-        margin: 0 0 20px 0;
-    }
-</style>
 </body>
 </html>

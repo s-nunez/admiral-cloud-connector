@@ -3,19 +3,19 @@
     <file source-language="en" datatype="plaintext" original="messages" date="2018-02-20T11:13:11Z" product-name="bynder">
         <header/>
         <body>
-            <trans-unit id="compact_view.button">
+            <trans-unit id="browser.button">
                 <source>Admiralcloud</source>
             </trans-unit>
-            <trans-unit id="compact_view.header">
+            <trans-unit id="browser.header">
                 <source>Admiralcloud</source>
             </trans-unit>
-            <trans-unit id="compact_view.error-no-storage-access">
+            <trans-unit id="browser.error-no-storage-access">
                 <source>Please make sure you have access to the Admiralcloud file mount. This is needed to use the Admiralcloud file picker</source>
             </trans-unit>
-            <trans-unit id="be_groups.file_permissions.folder_add_via_bynder">
+            <trans-unit id="be_groups.file_permissions.folder_add_via_admiralcloud">
                 <source>Files: Add via Admiralcloud</source>
             </trans-unit>
-            <trans-unit id="be_users.file_permissions.folder_add_via_bynder">
+            <trans-unit id="be_users.file_permissions.folder_add_via_admiralcloud">
                 <source>Files: Add via Admiralcloud</source>
             </trans-unit>
 

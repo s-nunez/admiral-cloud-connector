@@ -43,3 +43,16 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::cla
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Index\FileIndexRepository::class] = [
     'className' => \CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository::class
 ];
+
+$iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+$iconRegistry->registerIcon(
+    'actions-admiralcloud-browser',
+    \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+    ['source' => 'EXT:admiralcloud_connector/Resources/Public/Icons/actions-admiralcloud-browser.svg']
+);
+$iconRegistry->registerIcon(
+    'permissions-admiralcloud-browser',
+    \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+    ['source' => 'EXT:admiralcloud_connector/Resources/Public/Icons/permissions-admiralcloud-browser.svg']
+);
+unset($iconRegistry);
