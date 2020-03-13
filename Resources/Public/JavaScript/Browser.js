@@ -79,7 +79,7 @@ define(['jquery',
                 NProgress.start();
             },
             success: function (data) {
-                /*if (typeof data.files === 'object' && data.files.length) {
+                if (typeof data.files === 'object' && data.files.length) {
                     inline.importElementMultiple(
                         target,
                         'sys_file',
@@ -90,7 +90,7 @@ define(['jquery',
 
                 if (data.message) {
                     Notification.success('', data.message, Notification.duration);
-                }*/
+                }
             },
             error: function (xhr, type) {
                 var data = xhr.responseJSON || {};
