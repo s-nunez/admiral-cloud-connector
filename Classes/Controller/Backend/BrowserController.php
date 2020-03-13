@@ -10,6 +10,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
 
@@ -124,10 +125,10 @@ class BrowserController extends AbstractBackendController
             'controller' => 'login',
             'action' => 'app'
         ];
-        $admiralcloudApi = $this->admiralcloudService->getAdmiralcloudApi($settings);
+        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
 
         $this->view->assignMultiple([
-            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudApi->getCode(),
+            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudAuthCode,
             'parameters' => [
                 'element' => $parameters['element'],
                 'irreObject' => $parameters['irreObject'],
@@ -137,6 +138,22 @@ class BrowserController extends AbstractBackendController
         $response->getBody()->write($this->view->render());
 
         return $response;
+    }
+
+    public function apiAction()
+    {
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+
+        #$data = $this->admiralcloudService->getMediaInfo([33512,150403]);
+        #header('Content-type: application/json');
+        #DebuggerUtility::var_dump($data);
+
+        $data = $this->admiralcloudService->getSearch('Balu');
+        #header('Content-type: application/json');
+        DebuggerUtility::var_dump($data);
+        #var_dump($data);
+        die();
     }
 
     /**

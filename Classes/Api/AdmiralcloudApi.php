@@ -2,7 +2,7 @@
 
 namespace CPSIT\AdmiralcloudConnector\Api;
 use CPSIT\AdmiralcloudConnector\Api\Oauth\Credentials;
-use CPSIT\AdmiralcloudConnector\Api\Oauth\OauthRequestHandler;
+use CPSIT\AdmiralcloudConnector\Api\Oauth\AdmiralcloudRequestHandler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
@@ -42,7 +42,7 @@ class AdmiralcloudApi
     protected $baseUrl;
 
     /**
-     * @var OauthRequestHandler Instance of the Oauth request handler.
+     * @var AdmiralcloudRequestHandler Instance of the Oauth request handler.
      */
     protected $requestHandler;
 
@@ -57,17 +57,21 @@ class AdmiralcloudApi
     protected $device;
 
     /**
+     * @var string data
+     */
+    protected $data;
+
+    /**
      * Initialises a new instance of the class.
      *
-     * @param OauthRequestHandler $requestHandler Instance of the request handler used to communicate with the API.
+     * @param string $requestHandler Instance of the request handler used to communicate with the API.
      *
      */
-    public function __construct(OauthRequestHandler $requestHandler,$code)
+    public function __construct($data)
     {
         $this->baseUrl = getenv('ADMIRALCLOUD_BASE_URL');
-        $this->requestHandler = $requestHandler;
-        $this->code = $code;
         $this->device = md5($GLOBALS['BE_USER']->user['id']);
+        $this->data = $data;
 
     }
 
@@ -88,6 +92,56 @@ class AdmiralcloudApi
                 "accessSecret" => $credentials->getAccessSecret(),
                 "controller" => $settings['controller'],
                 "action" => $settings['action'],
+                "payload" => $settings['payload']
+            ];
+
+            $signedValues = self::acSignatureSign($params,'v5');
+
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://apidev.admiralcloud.com/v5/" . $settings['route'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_POST => 1,
+                CURLOPT_POSTFIELDS => json_encode($params['payload']),
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                    "x-admiralcloud-accesskey: " . $credentials->getAccessKey(),
+                    "x-admiralcloud-rts: " . $signedValues['timestamp'],
+                    "x-admiralcloud-hash: " . $signedValues['hash']
+                ),
+            ));
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            return new AdmiralcloudApi($response);
+        } else {
+            throw new InvalidArgumentException("Settings passed for AdmiralcloudApi service creation are not valid.");
+        }
+    }
+
+    /**
+     * Creates an instance of AdmiralcloudApi
+     *
+     * @return AdmiralcloudApi instance.
+     * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
+     */
+    public static function auth($settings)
+    {
+        $credentials = new Credentials();
+        if (self::validateSettings($credentials)) {
+            $curl = curl_init();
+
+            $state = '0.' . base_convert(self::random() . '00', 10, 36);
+            $params = [
+                "accessSecret" => $credentials->getAccessSecret(),
+                "controller" => $settings['controller'],
+                "action" => $settings['action'],
                 "payload" => [
                     "email" => $GLOBALS['BE_USER']->user['email'],
                     "firstname" => $GLOBALS['BE_USER']->user['realName'],
@@ -97,11 +151,8 @@ class AdmiralcloudApi
                     "callbackUrl" => base64_encode($settings['callbackUrl'])
                 ]
             ];
-            #var_dump($params);
             $signedValues = self::acSignatureSign($params);
-            #$signedValues['hash'] = '6514cba9eadd8492cb9dbda4a66a7082880fb206513f33db35754b08891f2568';
-            #var_dump($signedValues);
-            $payload = json_encode($params['payload']);
+
             curl_setopt_array($curl, array(
                 CURLOPT_URL => "https://authdev.admiralcloud.com/v4/login/app?poc=true",
                 CURLOPT_RETURNTRANSFER => true,
@@ -126,7 +177,6 @@ class AdmiralcloudApi
 
             $response = curl_exec($curl);
             $err = curl_error($curl);
-
             curl_close($curl);
 
             $codeParams = [
@@ -150,21 +200,15 @@ class AdmiralcloudApi
 
             $response = curl_exec($curl);
             $err = curl_error($curl);
-
             curl_close($curl);
-
-
             $code = json_decode($response);
-
-            $requestClient = new Client([]);
-            $requestHandler = \CPSIT\AdmiralcloudConnector\Api\Oauth\OauthRequestHandler::create($credentials, '', $requestClient);
-            return new AdmiralcloudApi($requestHandler, $code->code);
+            return $code->code;
         } else {
             throw new InvalidArgumentException("Settings passed for AdmiralcloudApi service creation are not valid.");
         }
     }
 
-    public static function acSignatureSign($params)
+    public static function acSignatureSign($params,$version='v4')
     {
         $accessSecret = $params['accessSecret'];
         if (!$accessSecret) return 'accessSecretMissing';
@@ -184,8 +228,14 @@ class AdmiralcloudApi
         $ts = time();
         #$ts = '1583770833';
         #echo 'ts: ' . $ts . PHP_EOL;
-        $valueToHash = strtolower($params['controller']) . PHP_EOL .
-            strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . '{}');
+        if($version == 'v4'){
+            $valueToHash = strtolower($params['controller']) . PHP_EOL .
+                strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . '{}');
+        }
+        if($version == 'v5'){
+            $valueToHash = strtolower($params['controller']) . PHP_EOL .
+                strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . json_encode($payload));
+        }
         #echo 'valueToHash: ' . $valueToHash . PHP_EOL;
         $hash = hash_hmac('sha256', $valueToHash, $accessSecret);
         #echo 'hash: ' . $hash . PHP_EOL;
@@ -223,17 +273,17 @@ class AdmiralcloudApi
     }
 
     /**
-     * @return OauthRequestHandler
+     * @return AdmiralcloudRequestHandler
      */
-    public function getRequestHandler(): OauthRequestHandler
+    public function getRequestHandler(): AdmiralcloudRequestHandler
     {
         return $this->requestHandler;
     }
 
     /**
-     * @param OauthRequestHandler $requestHandler
+     * @param AdmiralcloudRequestHandler $requestHandler
      */
-    public function setRequestHandler(OauthRequestHandler $requestHandler)
+    public function setRequestHandler(AdmiralcloudRequestHandler $requestHandler)
     {
         $this->requestHandler = $requestHandler;
     }
@@ -268,6 +318,22 @@ class AdmiralcloudApi
     public function setDevice(string $device)
     {
         $this->device = $device;
+    }
+
+    /**
+     * @return string
+     */
+    public function getData(): string
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param string $data
+     */
+    public function setData(string $data)
+    {
+        $this->data = $data;
     }
 
 

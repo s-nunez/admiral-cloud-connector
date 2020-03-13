@@ -6,6 +6,7 @@ use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApiFactory;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
  *
@@ -38,6 +39,15 @@ class AdmiralcloudService implements SingletonInterface
      */
     protected $admiralcloudApi;
 
+    public function getAdmiralcloudAuthCode($settings): string
+    {
+        try {
+            return AdmiralcloudApiFactory::auth($settings);
+        } catch (InvalidArgumentException $e) {
+            throw new InvalidArgumentException('BynderApi cannot be created', 1559128418168, $e);
+        }
+    }
+
     public function getAdmiralcloudApi($settings): AdmiralcloudApi
     {
         try {
@@ -45,5 +55,58 @@ class AdmiralcloudService implements SingletonInterface
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException('BynderApi cannot be created', 1559128418168, $e);
         }
+    }
+
+    /**
+     * @param array $identifiers
+     * @return string
+     */
+    public function getMediaInfo(array $identifiers): array
+    {
+        $settings = [
+            'route' => 'metadata/findBatch',
+            'controller' => 'metadata',
+            'action' => 'findbatch',
+            'payload' => [
+                'ids' => $identifiers,
+                'title' => [
+                    'container_name',
+                    'container_description',
+                    'metadata_copyright'
+                ],
+                'language' => 'de'
+            ]
+        ];
+        $fileInfo = $this->getAdmiralcloudApi($settings)->getData();
+        $metadata = [];
+        foreach (json_decode($fileInfo) as $file){
+            foreach ($settings['payload']['title'] as $title){
+                $metadata[$file->mediaContainerId][$title] = '';
+                if($file->title == $title){
+                    $metadata[$file->mediaContainerId][$title] = $file->content;
+                }
+            }
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * @param string $search
+     * @return string
+     */
+    public function getSearch(string $search): array
+    {
+        $settings = [
+            'route' => 'search',
+            'controller' => 'search',
+            'action' => 'search',
+            'payload' => [
+                'searchTerm' => $search
+            ]
+        ];
+        $metaData = json_decode($this->getAdmiralcloudApi($settings)->getData());
+        DebuggerUtility::var_dump($metaData);die();
+        return $metaData;
     }
 }

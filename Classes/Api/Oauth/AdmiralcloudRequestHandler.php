@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Implementation of IOauthRequestHandler. Using Guzzle as HTTP library.
  */
-class OauthRequestHandler
+class AdmiralcloudRequestHandler
 {
 
     /**
@@ -59,12 +59,12 @@ class OauthRequestHandler
      * @param string $baseUrl Api base url used for all requests.
      * @param Client $client Optional client passed for handler creation.
      *
-     * @return OauthRequestHandler An instance of the request handler properly configured.
+     * @return AdmiralcloudRequestHandler An instance of the request handler properly configured.
      */
     public static function create(Credentials $credentials, $baseUrl, Client $client = null)
     {
 
-        $newOauthHandler = new OauthRequestHandler($credentials, $baseUrl);
+        $newOauthHandler = new AdmiralcloudRequestHandler($credentials, $baseUrl);
         $newOauthHandler->initOauthRequestClient($client);
 
         return $newOauthHandler;

@@ -30,4 +30,15 @@ class AdmiralcloudApiFactory
         return AdmiralcloudApi::create($settings);
     }
 
+    /**
+     * Creates an instance of BynderApi using the given settings.
+     *
+     * @return AdmiralcloudApi instance.
+     * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
+     */
+    public static function auth($settings)
+    {
+        return AdmiralcloudApi::auth($settings);
+    }
+
 }

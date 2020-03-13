@@ -12,4 +12,8 @@ return [
         'path' => '/admiralcloud/show',
         'target' => BrowserController::class . '::showAction'
     ],
+    'admiralcloud_browser_api' => [
+        'path' => '/admiralcloud/browser/api',
+        'target' => BrowserController::class . '::apiAction'
+    ],
 ];

@@ -30,7 +30,7 @@ if (TYPO3_MODE === 'BE') {
         'm1',
         '',
         [
-            'Backend\Browser' => 'show',
+            'Backend\Browser' => 'api',
         ],
         [
             'access' => 'user,group',
