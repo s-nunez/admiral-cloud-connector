@@ -18,6 +18,13 @@
             <trans-unit id="be_users.file_permissions.folder_add_via_bynder">
                 <source>Files: Add via Admiralcloud</source>
             </trans-unit>
+
+            <trans-unit id="sys_file.tx_admiralcloudconnector_linkhash">
+                <source>Link hash for AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="sys_file_reference.tx_admiralcloudconnector_crop">
+                <source>Image crop for AdmiralCloud</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

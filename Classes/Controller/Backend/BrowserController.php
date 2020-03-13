@@ -1,6 +1,7 @@
 <?php
 
 namespace CPSIT\AdmiralcloudConnector\Controller\Backend;
+use CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
 use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use Exception;
@@ -186,10 +187,14 @@ class BrowserController extends AbstractBackendController
             $files = [];
             $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
+            $mediaContainer = $media['mediaContainer'];
 
-            $file = $storage->getFile($media['mediaContainer']['id']);
+            $file = $storage->getFile($mediaContainer['id']);
             if ($file instanceof File) {
-                $this->updateWithCorrectFileType($file);
+                $file->setTxAdmiralcloudconnectorLinkhashFromMediaContainer($mediaContainer);
+                $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
+
+                $this->getFileIndexRepository()->add($file);
 
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
@@ -224,6 +229,14 @@ class BrowserController extends AbstractBackendController
     }
 
     /**
+     * @return FileIndexRepository
+     */
+    protected function getFileIndexRepository()
+    {
+        return FileIndexRepository::getInstance();
+    }
+
+    /**
      * @param ResponseInterface $response
      * @param array|null $data
      * @param int $statusCode
@@ -242,45 +255,5 @@ class BrowserController extends AbstractBackendController
         }
 
         return $response;
-    }
-
-    /**
-     * Maps the mimetype to a sys_file table type
-     *
-     * @return string
-     */
-    protected function updateWithCorrectFileType(FileInterface $file)
-    {
-        if ($file->getType() !== File::FILETYPE_UNKNOWN) {
-            return;
-        }
-
-        $mimeType = substr($file->getMimeType(), strlen('admiralcloud/'));
-
-        list($fileType) = explode('/', $mimeType);
-        switch (strtolower($fileType)) {
-            case 'text':
-                $type = File::FILETYPE_TEXT;
-                break;
-            case 'image':
-                $type = File::FILETYPE_IMAGE;
-                break;
-            case 'audio':
-                $type = File::FILETYPE_AUDIO;
-                break;
-            case 'video':
-                $type = File::FILETYPE_VIDEO;
-                break;
-            case 'application':
-            case 'software':
-                $type = File::FILETYPE_APPLICATION;
-                break;
-            default:
-                $type = File::FILETYPE_UNKNOWN;
-        }
-
-        /** @var Connection $con */
-        $con = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_file');
-        $con->update('sys_file', ['type' => $type], ['uid' => $file->getUid()]);
     }
 }

@@ -30,6 +30,16 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\Admiralclo
 \TYPO3\CMS\Core\Resource\Rendering\RendererRegistry::getInstance()
     ->registerRendererClass(\CPSIT\AdmiralcloudConnector\Resource\Rendering\AssetRenderer::class);
 
-// Register the extractor to fetch metadata from Bynder
+// Register the extractor to fetch metadata from AdmiralCloud
 \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::getInstance()
     ->registerExtractionService(\CPSIT\AdmiralcloudConnector\Resource\Index\Extractor::class);
+
+// Override TYPO3 File class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\Resource\File::class
+];
+
+// Override TYPO3 FileIndexRepository class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Index\FileIndexRepository::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository::class
+];
