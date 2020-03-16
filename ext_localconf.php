@@ -43,3 +43,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::cla
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Index\FileIndexRepository::class] = [
     'className' => \CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository::class
 ];
+
+// Override Fluid ImageViewHelper class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
+];

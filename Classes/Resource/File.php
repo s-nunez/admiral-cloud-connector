@@ -51,7 +51,8 @@ class File extends \TYPO3\CMS\Core\Resource\File
 
         foreach ($links as $link) {
             // TODO make this numbers from configuration
-            if ($link['playerConfigurationId'] == 3 && $link['flag'] == 0) {
+            if (isset($link['playerConfigurationId']) && isset($link['flag'])
+                && $link['playerConfigurationId'] == 3 && $link['flag'] == 0) {
                 $linkhash = $link['link'];
                 break;
             }

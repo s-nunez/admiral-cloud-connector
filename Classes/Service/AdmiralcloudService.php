@@ -1,10 +1,12 @@
 <?php
 
 namespace CPSIT\AdmiralcloudConnector\Service;
+
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApiFactory;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
@@ -53,7 +55,7 @@ class AdmiralcloudService implements SingletonInterface
         try {
             return AdmiralcloudApiFactory::create($settings);
         } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException('BynderApi cannot be created', 1559128418168, $e);
+            throw new InvalidArgumentException('AdmiralCloud cannot be created', 1559128418168, $e);
         }
     }
 
@@ -106,7 +108,36 @@ class AdmiralcloudService implements SingletonInterface
             ]
         ];
         $metaData = json_decode($this->getAdmiralcloudApi($settings)->getData());
-        DebuggerUtility::var_dump($metaData);die();
+        DebuggerUtility::var_dump($metaData);
+        die();
         return $metaData;
+    }
+
+    /**
+     * Get public url for admiral cloud image
+     *
+     * @param FileInterface $file
+     * @param int $width
+     * @param int $height
+     * @return string
+     */
+    public function getImagePublicUrl(FileInterface $file, int $width = 0, int $height = 0): string
+    {
+        // TODO implement me
+        // TODO width, height
+        // TODO crop
+
+        $width = $width ?: 800;
+        $height = $height ?: 600;
+
+        $link = 'https://images.admiralcloud.com/v3/deliverEmbed/'
+            . $file->getTxAdmiralcloudconnectorLinkhash()
+            . '/image/autocrop/'
+            . $width
+            . '/'
+            . $height
+            . '/0.8?poc=true';
+
+        return $link;
     }
 }
