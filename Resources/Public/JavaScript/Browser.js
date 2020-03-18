@@ -14,7 +14,7 @@ define(['jquery',
      * @exports TYPO3/CMS/Bynder/CompactView
      */
     var Browser = {
-        inlineButton: '.t3js-bynder-compact-view-btn',
+        inlineButton: '.t3js-admiralcloud-browser-btn',
         compactViewUrl: '',
         title: 'Admiralcloud'
     };
@@ -26,7 +26,7 @@ define(['jquery',
      */
     Browser.initialize = function () {
         var $button = $(Browser.inlineButton);
-        Browser.compactViewUrl = $button.data('bynderCompactViewUrl');
+        Browser.compactViewUrl = $button.data('admiralcloudBrowserUrl');
 
         // Add all listeners based on inline button
         $button.on('click', function (event) {
