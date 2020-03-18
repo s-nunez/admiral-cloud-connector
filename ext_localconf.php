@@ -56,3 +56,8 @@ $iconRegistry->registerIcon(
     ['source' => 'EXT:admiralcloud_connector/Resources/Public/Icons/permissions-admiralcloud-browser.svg']
 );
 unset($iconRegistry);
+
+// Override Fluid ImageViewHelper class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
+];
