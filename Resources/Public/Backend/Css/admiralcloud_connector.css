@@ -1,0 +1,13 @@
+.element-browser .element-browser-main-content form[name=editform] {
+    display: none
+}
+.t3js-drag-uploader-trigger {
+    display: none;
+}
+a[title='Upload Files'] {
+    display: none;
+}
+
+.dropzone {
+    display: none
+}

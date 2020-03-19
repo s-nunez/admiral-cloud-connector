@@ -14,8 +14,9 @@ define(['jquery',
      * @exports TYPO3/CMS/Bynder/CompactView
      */
     var Browser = {
-        inlineButton: '.t3js-admiralcloud-browser-btn',
-        compactViewUrl: '',
+        overviewButton: '.t3js-admiralcloud-browser-btn.overview',
+        uploadButton: '.t3js-admiralcloud-browser-btn.upload',
+        browserUrl: '',
         title: 'Admiralcloud'
     };
 
@@ -25,11 +26,15 @@ define(['jquery',
      * @private
      */
     Browser.initialize = function () {
-        var $button = $(Browser.inlineButton);
-        Browser.compactViewUrl = $button.data('admiralcloudBrowserUrl');
-
+        var $button = $(Browser.overviewButton);
+        Browser.browserUrl = $button.data('admiralcloudBrowserUrl');
+        var $uploadButton = $(Browser.uploadButton);
+        Browser.browserUrl = $uploadButton.data('admiralcloudBrowserUrl');
         // Add all listeners based on inline button
         $button.on('click', function (event) {
+            Browser.open();
+        });
+        $uploadButton.on('click', function (event) {
             Browser.open();
         });
 
@@ -52,7 +57,7 @@ define(['jquery',
         Modal.advanced({
             type: Modal.types.ajax,
             title: Browser.title,
-            content: Browser.compactViewUrl,
+            content: Browser.browserUrl,
             size: Modal.sizes.full
         });
     };

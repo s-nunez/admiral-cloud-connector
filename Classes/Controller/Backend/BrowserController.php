@@ -148,6 +148,37 @@ class BrowserController extends AbstractBackendController
         return $response;
     }
 
+    /**
+     * @param ServerRequestInterface|null $request
+     * @param ResponseInterface|null $response
+     * @return ResponseInterface
+     */
+    public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    {
+        $this->view->setTemplate('Show');
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $parameters = $request->getQueryParams();
+        $settings = [
+            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=' . base64_encode('http://' . $_SERVER['HTTP_HOST']),
+            'controller' => 'login',
+            'action' => 'app'
+        ];
+        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
+
+        $this->view->assignMultiple([
+            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudAuthCode,
+            'parameters' => [
+                'element' => $parameters['element'],
+                'irreObject' => $parameters['irreObject'],
+                'assetTypes' => $parameters['assetTypes']
+            ]
+        ]);
+        $response->getBody()->write($this->view->render());
+
+        return $response;
+    }
+
     public function apiAction()
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);

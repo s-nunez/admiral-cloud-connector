@@ -6,6 +6,9 @@
             <trans-unit id="browser.button">
                 <source>Admiralcloud</source>
             </trans-unit>
+            <trans-unit id="browser.uploadbutton">
+                <source>Admiralcloud Upload</source>
+            </trans-unit>
             <trans-unit id="browser.header">
                 <source>Admiralcloud</source>
             </trans-unit>
