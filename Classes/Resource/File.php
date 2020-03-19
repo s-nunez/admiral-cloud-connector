@@ -3,6 +3,9 @@
 
 namespace CPSIT\AdmiralcloudConnector\Resource;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class File
  * @package CPSIT\AdmiralcloudConnector\Resource
@@ -23,6 +26,24 @@ class File extends \TYPO3\CMS\Core\Resource\File
     {
         if (!$this->txAdmiralcloudconnectorLinkhash && !empty($this->properties['tx_admiralcloudconnector_linkhash'])) {
             $this->txAdmiralcloudconnectorLinkhash = $this->properties['tx_admiralcloudconnector_linkhash'];
+        } else {
+            // Load field "tx_admiralcloudconnector_linkhash" from DB
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getQueryBuilderForTable('sys_file');
+
+            $row = $queryBuilder
+                ->select('tx_admiralcloudconnector_linkhash')
+                ->from('sys_file')
+                ->where(
+                    $queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->getUid(), \PDO::PARAM_INT))
+                )
+                ->execute()
+                ->fetch();
+
+            if (!empty($row['tx_admiralcloudconnector_linkhash'])) {
+                $this->properties['tx_admiralcloudconnector_linkhash'] = $row['tx_admiralcloudconnector_linkhash'];
+                $this->txAdmiralcloudconnectorLinkhash = $row['tx_admiralcloudconnector_linkhash'];
+            }
         }
 
         return $this->txAdmiralcloudconnectorLinkhash;
@@ -95,5 +116,13 @@ class File extends \TYPO3\CMS\Core\Resource\File
 
         $this->updatedProperties[] = 'type';
         return (int)$this->properties['type'];
+    }
+
+    /**
+     * @return Index\FileIndexRepository
+     */
+    protected function getFileIndexRepository()
+    {
+        return GeneralUtility::makeInstance(Index\FileIndexRepository::class);
     }
 }
