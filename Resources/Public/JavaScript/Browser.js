@@ -27,14 +27,16 @@ define(['jquery',
      */
     Browser.initialize = function () {
         var $button = $(Browser.overviewButton);
-        Browser.browserUrl = $button.data('admiralcloudBrowserUrl');
+
         var $uploadButton = $(Browser.uploadButton);
-        Browser.browserUrl = $uploadButton.data('admiralcloudBrowserUrl');
+
         // Add all listeners based on inline button
         $button.on('click', function (event) {
+            Browser.browserUrl = $button.data('admiralcloudBrowserUrl');
             Browser.open();
         });
         $uploadButton.on('click', function (event) {
+            Browser.browserUrl = $uploadButton.data('admiralcloudBrowserUrl');
             Browser.open();
         });
 
