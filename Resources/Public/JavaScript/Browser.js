@@ -115,9 +115,4 @@ define(['jquery',
 
     Browser.initialize();
     return Browser;
-
-    //let device = jQuery('#admiralcloud-browser').attr('data-device');
-    var authUrl = TYPO3.settings.ajaxUrls['admiralcloud_browser_auth'];
-    //var iframeURL_overview = `https://t3intpoc.admiralcloud.com/overview?cmsOrigin=${btoa(location.protocol + '//' + location.host)}`;
-    jQuery('#admiralcloud-browser').attr('data-ajaxUrl',authUrl)
 });

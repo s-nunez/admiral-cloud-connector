@@ -9,12 +9,58 @@
 <body style="height:100%;width:100%">
 <div id="images"></div>
 <div id="admiralcloud-browser"
-    data-irreObject="{parameters.irreObject}">
+    data-irreObject="{parameters.irreObject}"
+    data-typo3-ajax-url="{ajaxUrl}"
+    data-iframeurl="{iframeUrl}">
 </div>
-<iframe src="{iframeUrl}" style="width:100%;height:100%"></iframe>
+<iframe id="elAdmiralCloud" src="" style="width:100%;height:100%"></iframe>
 <script>
+    async function loadIframeWithAuthCode(device) {
+        const iframe = document.getElementById('elAdmiralCloud');
+        //Path to Auth-Helper Node Script
+        console.info(iframe.src);
+        const resp = await fetch(document.getElementById('admiralcloud-browser').getAttribute('data-typo3-ajax-url'), {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                callbackUrl: document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl'),
+                device,
+            }),
+        });
+        const data = await resp.json();
+        console.info(data);
+        applyAuthCode(data.code);
+    }
+
+    function applyAuthCode(code) {
+        const iframe = document.getElementById('elAdmiralCloud');
+        iframe.src = document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl') + '&code=' + code;
+    }
+    function load(){
+        const iframe = document.getElementById('elAdmiralCloud');
+        iframe.src = document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl') + '&auth=1' ;
+    }
+
+    setTimeout(function () {
+
     window.onmessage = function (e) {
         var data = JSON.parse(e.data);
+
+        // Receive Auth Device-Identifier
+        if (data.command === 'AUTH') {
+            const {device} = data;
+            loadIframeWithAuthCode(device);
+            return;
+        }
+
+        // Receive severe Auth Failure -> Reload
+        if (data.command === 'AUTH_FAILURE') {
+            console.info('auth_failure');
+            return;
+        }
 
         // Receive Media
         if (data.command === 'MEDIA') {
@@ -49,6 +95,8 @@
             parentDocument.dispatchEvent(event);
         }
     };
+    }, 200);
+    load();
 </script>
 </body>
 </html>

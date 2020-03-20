@@ -7,6 +7,7 @@ use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -124,28 +125,7 @@ class BrowserController extends AbstractBackendController
      */
     public function showAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        $this->view->setTemplate('Show');
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
-        $parameters = $request->getQueryParams();
-        $settings = [
-            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=' . base64_encode('http://' . $_SERVER['HTTP_HOST']),
-            'controller' => 'login',
-            'action' => 'app'
-        ];
-        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
-
-        $this->view->assignMultiple([
-            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudAuthCode,
-            'parameters' => [
-                'element' => $parameters['element'],
-                'irreObject' => $parameters['irreObject'],
-                'assetTypes' => $parameters['assetTypes']
-            ]
-        ]);
-        $response->getBody()->write($this->view->render());
-
-        return $response;
+        return $this->prepareShowUpload($request, $response,'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
     }
 
     /**
@@ -155,19 +135,26 @@ class BrowserController extends AbstractBackendController
      */
     public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        $this->view->setTemplate('Show');
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
-        $parameters = $request->getQueryParams();
-        $settings = [
-            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=' . base64_encode('http://' . $_SERVER['HTTP_HOST']),
-            'controller' => 'login',
-            'action' => 'app'
-        ];
-        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
+        return $this->prepareShowUpload($request, $response, 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=');
+    }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @param string $callbackUrl
+     * @return ResponseInterface
+     * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
+     */
+    public function prepareShowUpload(ServerRequestInterface $request, ResponseInterface $response, string $callbackUrl){
+        $this->view->setTemplate('Show');
+        $parameters = $request->getQueryParams();
+
+        /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
+        $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
+        $path = $uriBuilder->buildUriFromRoute('ajax_admiralcloud_browser_auth');
         $this->view->assignMultiple([
-            'iframeUrl' => $settings['callbackUrl'] . '&code=' . $admiralcloudAuthCode,
+            'ajaxUrl' => (string)$path,
+            'iframeUrl' => $callbackUrl . base64_encode('http://' . $_SERVER['HTTP_HOST']),
             'parameters' => [
                 'element' => $parameters['element'],
                 'irreObject' => $parameters['irreObject'],
@@ -175,9 +162,9 @@ class BrowserController extends AbstractBackendController
             ]
         ]);
         $response->getBody()->write($this->view->render());
-
         return $response;
     }
+
 
     public function apiAction()
     {
@@ -202,18 +189,22 @@ class BrowserController extends AbstractBackendController
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function authAction(): ResponseInterface
+    public function authAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $bodyParams = json_decode($request->getBody()->getContents());
         $settings = [
-            'callbackUrl' => 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=' . base64_encode('http//' . $_SERVER['HTTP_HOST'])
+            'callbackUrl' => $bodyParams->callbackUrl,
+            'controller' => 'login',
+            'action' => 'app',
+            'device' => $bodyParams->device
         ];
-        $admiralcloudApi = $this->admiralcloudService->getAdmiralcloudApi($settings);
+        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
 
         header('Content-type: application/json');
         $data = [
-            'code' => $admiralcloudApi->getCode()
+            'code' => $admiralcloudAuthCode
         ];
         echo json_encode($data);
         die();

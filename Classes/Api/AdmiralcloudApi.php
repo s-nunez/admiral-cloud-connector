@@ -134,6 +134,10 @@ class AdmiralcloudApi
     public static function auth($settings)
     {
         $credentials = new Credentials();
+        $device = md5($GLOBALS['BE_USER']->user['id']);
+        if(isset($settings['device'])){
+            $device = $settings['device'];
+        }
         if (self::validateSettings($credentials)) {
             $curl = curl_init();
 
@@ -169,7 +173,7 @@ class AdmiralcloudApi
                     "x-admiralcloud-hash: " . $signedValues['hash'],
                     "x-admiralcloud-debugsignature: 1",
                     "x-admiralcloud-clientid: " . $credentials->getClientId(),
-                    "x-admiralcloud-device: " . md5($GLOBALS['BE_USER']->user['id'])
+                    "x-admiralcloud-device: " . $device
 
 
                 ),
@@ -181,7 +185,7 @@ class AdmiralcloudApi
 
             $codeParams = [
                 'state' => $params['payload']['state'],
-                'device' => md5($GLOBALS['BE_USER']->user['id']),
+                'device' => $device,
                 'client_id' => $credentials->getClientId()
 
             ];
