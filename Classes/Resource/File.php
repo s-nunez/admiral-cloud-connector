@@ -3,6 +3,7 @@
 
 namespace CPSIT\AdmiralcloudConnector\Resource;
 
+use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -12,6 +13,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class File extends \TYPO3\CMS\Core\Resource\File
 {
+    use AdmiralcloudStorage;
+
     /**
      * Link hash to generate AdmiralCloud public url
      *
@@ -116,6 +119,25 @@ class File extends \TYPO3\CMS\Core\Resource\File
 
         $this->updatedProperties[] = 'type';
         return (int)$this->properties['type'];
+    }
+
+    /**
+     * Returns a modified version of the file.
+     *
+     * @param string $taskType The task type of this processing
+     * @param array $configuration the processing configuration, see manual for that
+     * @return ProcessedFile The processed file
+     */
+    public function process($taskType, array $configuration)
+    {
+        if ($taskType === ProcessedFile::CONTEXT_IMAGEPREVIEW
+            && $this->getStorage()->getUid() === $this->getAdmiralCloudStorage()->getUid()) {
+
+            // Return admiral cloud url for previews
+            return GeneralUtility::makeInstance(ProcessedFile::class, $this, $taskType, $configuration);
+        }
+
+        return $this->getStorage()->processFile($this, $taskType, $configuration);
     }
 
     /**

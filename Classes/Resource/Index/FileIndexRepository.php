@@ -15,22 +15,8 @@ class FileIndexRepository extends \TYPO3\CMS\Core\Resource\Index\FileIndexReposi
         'tx_admiralcloudconnector_linkhash'
     ];
 
-    public function mergeFieldsWithExtendedFields(): void
+    public function __construct()
     {
         $this->fields = array_merge($this->fields, $this->extendedFields);
-    }
-
-    /**
-     * Returns an Instance of the Repository
-     *
-     * @return FileIndexRepository
-     */
-    public static function getInstance()
-    {
-        $instance = GeneralUtility::makeInstance(self::class);
-
-        $instance->mergeFieldsWithExtendedFields();
-
-        return $instance;
     }
 }
