@@ -12,3 +12,30 @@ call_user_func(function ($extension, $table) {
         'after'
     );
 }, 'admiralcloud', 'be_users');
+
+
+/**
+ * Add extra fields to the be_users record
+ */
+$newBeUsersColumns = [
+    'first_name' => [
+        'label' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.first_name',
+        'config' => [
+            'type' => 'input',
+            'size' => 15,
+            'eval' => 'trim'
+        ]
+    ],
+    'last_name' => [
+        'label' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.last_name',
+        'config' => [
+            'type' => 'input',
+            'size' => 15,
+            'eval' => 'trim'
+        ]
+    ]
+];
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('be_users', $newBeUsersColumns);
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('be_users',
+    'first_name,last_name', '', 'after:realName');

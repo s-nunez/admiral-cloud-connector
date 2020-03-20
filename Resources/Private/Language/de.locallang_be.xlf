@@ -1,37 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.0">
-    <file source-language="en" datatype="plaintext" original="messages" date="2018-02-20T11:13:11Z" product-name="bynder">
+    <file source-language="en" target-language="de" datatype="plaintext" original="messages" date="2018-02-20T11:13:11Z" product-name="bynder">
         <header/>
         <body>
             <trans-unit id="browser.button">
                 <source>Admiralcloud</source>
+                <target>Admiralcloud</target>
             </trans-unit>
             <trans-unit id="browser.uploadbutton">
                 <source>Admiralcloud Upload</source>
+                <target>Admiralcloud Hochladen</target>
             </trans-unit>
             <trans-unit id="browser.header">
                 <source>Admiralcloud</source>
+                <target>Admiralcloud</target>
             </trans-unit>
             <trans-unit id="browser.error-no-storage-access">
                 <source>Please make sure you have access to the Admiralcloud file mount. This is needed to use the Admiralcloud file picker</source>
+                <target>Bitte Zugriff auf Admiralcloud Filemount prüfen.</target>
             </trans-unit>
             <trans-unit id="be_groups.file_permissions.folder_add_via_admiralcloud">
                 <source>Files: Add via Admiralcloud</source>
+                <target>Dateien: Hinzufügen via Admiracloud</target>
             </trans-unit>
             <trans-unit id="be_users.file_permissions.folder_add_via_admiralcloud">
                 <source>Files: Add via Admiralcloud</source>
+                <target>Dateien: Hinzufügen via Admiracloud</target>
             </trans-unit>
             <trans-unit id="sys_file.tx_admiralcloudconnector_linkhash">
                 <source>Link hash for AdmiralCloud</source>
+                <target>Link hash für AdmiralCloud</target>
             </trans-unit>
             <trans-unit id="sys_file_reference.tx_admiralcloudconnector_crop">
                 <source>Image crop for AdmiralCloud</source>
+                <target>Bildcropping für Admiracloud</target>
             </trans-unit>
             <trans-unit id="be_users.first_name">
                 <source>Firstname</source>
+                <target>Vorname</target>
             </trans-unit>
             <trans-unit id="be_users.last_name">
                 <source>Lastname</source>
+                <target>Nachname</target>
             </trans-unit>
         </body>
     </file>
