@@ -46,7 +46,7 @@ class AdmiralcloudService implements SingletonInterface
         try {
             return AdmiralcloudApiFactory::auth($settings);
         } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException('BynderApi cannot be created', 1559128418168, $e);
+            throw new InvalidArgumentException('AdmiralCloud Auth Code cannot be created', 1559128418168, $e);
         }
     }
 
@@ -55,7 +55,7 @@ class AdmiralcloudService implements SingletonInterface
         try {
             return AdmiralcloudApiFactory::create($settings);
         } catch (InvalidArgumentException $e) {
-            throw new InvalidArgumentException('AdmiralCloud cannot be created', 1559128418168, $e);
+            throw new InvalidArgumentException('AdmiralCloud API cannot be created', 1559128418168, $e);
         }
     }
 

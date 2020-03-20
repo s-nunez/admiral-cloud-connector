@@ -39,9 +39,19 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::cla
     'className' => \CPSIT\AdmiralcloudConnector\Resource\File::class
 ];
 
+// Override TYPO3 File class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\ProcessedFile::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\Resource\ProcessedFile::class
+];
+
 // Override TYPO3 FileIndexRepository class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Index\FileIndexRepository::class] = [
     'className' => \CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository::class
+];
+
+// Override Fluid ImageViewHelper class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
 ];
 
 $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
@@ -57,7 +67,4 @@ $iconRegistry->registerIcon(
 );
 unset($iconRegistry);
 
-// Override Fluid ImageViewHelper class
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
-];
+

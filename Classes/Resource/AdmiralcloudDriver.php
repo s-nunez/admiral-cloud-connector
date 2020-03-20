@@ -150,7 +150,7 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function getPublicUrl($identifier): string
     {
-        throw new NotImplementedException(sprintf('Method %s::%s() is not implemented', __CLASS__, __METHOD__), 1519045334);
+        return $this->getAsset($identifier)->getThumbnail();
     }
 
     /**
@@ -248,6 +248,12 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function deleteFile($fileIdentifier)
     {
+        // Deleting processed files isn't needed as this is just a link to a file in the CDN
+        // to prevent false errors for the user we just tell the API that deleting was successful
+        if ($this->isProcessedFile($fileIdentifier)) {
+            return true;
+        }
+
         throw new NotImplementedException(sprintf('Method %s::%s() is not implemented', __CLASS__, __METHOD__), 1519045448);
     }
 
@@ -328,7 +334,7 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function getFileForLocalProcessing($fileIdentifier, $writable = true)
     {
-        throw new NotImplementedException(sprintf('Method %s::%s() is not implemented', __CLASS__, __METHOD__), 1530716555);
+        return $this->getAsset($fileIdentifier)->getLocalThumbnail();
     }
 
     /**
@@ -440,5 +446,14 @@ class AdmiralcloudDriver implements DriverInterface
     public function countFoldersInFolder($folderIdentifier, $recursive = false, array $folderNameFilterCallbacks = []): int
     {
         return 0;
+    }
+
+    /**
+     * @param string $fileIdentifier
+     * @return bool
+     */
+    protected function isProcessedFile(string $fileIdentifier): bool
+    {
+        return (bool)preg_match('/^processed_([0-9A-Z\-]{35})_([a-z]+)/', $fileIdentifier);
     }
 }
