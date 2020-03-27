@@ -104,7 +104,7 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         }
 
         // TODO get information from Session if it is a new element
-        $file->setTxAdmiralcloudconnectorLinkhashCrop($parameterArray['itemFormElValue']);
+        #$file->setTxAdmiralcloudconnectorLinkhashCrop($parameterArray['itemFormElValue']);
 
         $fieldInformationResult = $this->renderFieldInformation();
         $fieldInformationHtml = $fieldInformationResult['html'];
