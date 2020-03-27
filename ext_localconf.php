@@ -54,6 +54,12 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\Image
     'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
 ];
 
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
+    'nodeName' => 'admiralCloudImageManipulation',
+    'class' => \CPSIT\AdmiralcloudConnector\Form\Element\AdmiralCloudImageManipulationElement::class,
+    'priority' => 50
+];
+
 $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
 $iconRegistry->registerIcon(
     'actions-admiralcloud-browser',
