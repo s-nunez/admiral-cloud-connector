@@ -171,9 +171,10 @@ class BrowserController extends AbstractBackendController
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
 
-        #$data = $this->admiralcloudService->getMediaInfo([33512,150403]);
+        $data = $this->admiralcloudService->getMediaInfo([33512]);
+        #$data = $this->admiralcloudService->getMetaData([33512]);
         #header('Content-type: application/json');
-        #DebuggerUtility::var_dump($data);
+        DebuggerUtility::var_dump($data);
 
         $data = $this->admiralcloudService->getSearch('Balu');
         #header('Content-type: application/json');

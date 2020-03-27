@@ -147,7 +147,8 @@ class Asset
                 // Do API call
                 // TODO api call
                 //$this->information = $this->getBynderService()->getMediaInfo($this->getIdentifier());
-                $this->information = [
+                $this->information = $this->getAdmiralcloudService()->getMediaInfo([$this->identifier], $this->getAdmiralCloudStorage()->getUid())[$this->identifier];
+                /*$this->information = [
                     'type' => self::TYPE_IMAGE,
                     'name' => $this->identifier . '.jpg',
                     'mimetype' => 'admiralcloud/image/jpg',
@@ -166,7 +167,7 @@ class Asset
                     'height' => 150,
                     'copyright' => 'copyright',
                     'keywords' => 'hello,world',
-                ];
+                ];*/
             } catch (\Exception $e) {
                 $this->information = [];
             }

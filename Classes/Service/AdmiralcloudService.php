@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralcloudConnector\Service;
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
 use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApiFactory;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -63,7 +64,7 @@ class AdmiralcloudService implements SingletonInterface
      * @param array $identifiers
      * @return string
      */
-    public function getMediaInfo(array $identifiers): array
+    public function getMetaData(array $identifiers): array
     {
         $settings = [
             'route' => 'metadata/findBatch',
@@ -91,6 +92,50 @@ class AdmiralcloudService implements SingletonInterface
         }
 
         return $metadata;
+    }
+
+    /**
+     * @param array $identifiers
+     * @return string
+     */
+    public function getMediaInfo(array $identifiers,int $admiralcloudStorageUid = 3): array
+    {
+        $settings = [
+            'route' => 'media/findBatch',
+            'controller' => 'media',
+            'action' => 'findbatch',
+            'payload' => [
+                'ids' => $identifiers
+            ]
+        ];
+        $fileInfo = $this->getAdmiralcloudApi($settings)->getData();
+        $fileMetaData = $this->getMetaData($identifiers);
+
+        $mediaInfo = [];
+        foreach (json_decode($fileInfo) as $file){
+            $mediaInfo[$file->mediaContainerId] = [
+                'type' => $file->type,
+                'name' => $file->mediaContainerId . '.' . $file->fileExtension,
+                'mimetype' => 'admiralcloud/' . $file->type . '/' . $file->fileExtension,
+                'storage' => $admiralcloudStorageUid,
+                'extension' => $file->fileExtension,
+                'size' => $file->fileSize,
+                'atime' => time(),
+                'mtime' => time(),
+                'ctime' => time(),
+                'identifier' => $file->mediaContainerId,
+                'identifier_hash' => sha1($file->mediaContainerId),
+                'folder_hash' => sha1('admiralcloud' . $admiralcloudStorageUid),
+                'title' => $fileMetaData[$file->mediaContainerId]['container_name'],
+                'description' => $fileMetaData[$file->mediaContainerId]['container_description'],
+                'width' => $file->width,
+                'height' => $file->height,
+                'copyright' => $fileMetaData[$file->mediaContainerId]['metadata_copyright'],
+                'keywords' => '',
+            ];
+        }
+
+        return $mediaInfo;
     }
 
     /**
