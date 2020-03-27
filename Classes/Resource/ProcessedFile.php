@@ -20,7 +20,7 @@ class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
      */
     public function getPublicUrl($relativeToCurrentScript = false): ?string
     {
-        if ($this->getOriginalFile()->getStorage()->getUid() === $this->getAdmiralCloudStorage()->getUid()) {
+        if ($this->getOriginalFile()->getProperties()['mime_type'] === 'admiracloud/image/jpg') {
 
             $this->properties['width'] = (int) $this->getProcessingConfiguration()['width'];
             $this->properties['height'] = (int) $this->getProcessingConfiguration()['height'];

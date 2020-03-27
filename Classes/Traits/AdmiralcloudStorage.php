@@ -4,6 +4,7 @@ namespace CPSIT\AdmiralcloudConnector\Traits;
 
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 
@@ -21,8 +22,11 @@ trait AdmiralcloudStorage
     /**
      * @return ResourceStorageInterface
      */
-    protected function getAdmiralCloudStorage(): ResourceStorage
+    protected function getAdmiralCloudStorage(int $storageUid = 0): ResourceStorage
     {
+        if($storageUid > 0){
+            $this->admiralCloudStorage = ResourceFactory::getInstance()->getStorageObject($storageUid);
+        }
         if ($this->admiralCloudStorage === null) {
             $backendUserAuthentication = $GLOBALS['BE_USER'];
             foreach ($backendUserAuthentication->getFileStorages() as $fileStorage) {

@@ -176,7 +176,7 @@ class BrowserController extends AbstractBackendController
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
 
-        $data = $this->admiralcloudService->getSearch('Balu');
+        $data = $this->admiralcloudService->getSearch('716821 ');
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
         #var_dump($data);

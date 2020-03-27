@@ -111,16 +111,16 @@ class Asset
         return $this->getInformation()['type'] === self::TYPE_DOCUMENT;
     }
 
-    public function getThumbnail(): ?string
+    public function getThumbnail(int $storageUid = 0): ?string
     {
         // TODO get thumbnail url from admiral cloud
 
         $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
-            $this->getAdmiralCloudStorage()->getUid(),
+            ($storageUid? $storageUid:$this->getAdmiralCloudStorage()->getUid()),
             $this->identifier
         );
 
-        $file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage());
+        $file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));
 
         return $this->getAdmiralcloudService()->getImagePublicUrl($file, 300, 150);
     }
@@ -307,9 +307,9 @@ class Asset
      * @return string|null The temporary path
      * @throws InvalidThumbnailException
      */
-    public function getLocalThumbnail(): ?string
+    public function getLocalThumbnail(int $storageUid=0): ?string
     {
-        $url = $this->getThumbnail();
+        $url = $this->getThumbnail($storageUid);
         if (!empty($url)) {
             $temporaryPath = $this->getTemporaryPathForFile($url);
             if (!is_file($temporaryPath)) {

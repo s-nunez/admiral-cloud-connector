@@ -150,7 +150,7 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function getPublicUrl($identifier): string
     {
-        return $this->getAsset($identifier)->getThumbnail();
+        return $this->getAsset($identifier)->getThumbnail($this->storageUid);
     }
 
     /**
@@ -334,7 +334,7 @@ class AdmiralcloudDriver implements DriverInterface
      */
     public function getFileForLocalProcessing($fileIdentifier, $writable = true)
     {
-        return $this->getAsset($fileIdentifier)->getLocalThumbnail();
+        return $this->getAsset($fileIdentifier)->getLocalThumbnail($this->storageUid);
     }
 
     /**

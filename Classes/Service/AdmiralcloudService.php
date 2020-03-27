@@ -8,6 +8,7 @@ use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
@@ -171,6 +172,9 @@ class AdmiralcloudService implements SingletonInterface
         // TODO implement me
         // TODO width, height
         // TODO crop
+        if($file instanceof FileReference){
+            return '';
+        }
 
         $width = $width ?: 800;
         $height = $height ?: 600;
