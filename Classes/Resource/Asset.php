@@ -80,11 +80,12 @@ class Asset
     }
 
     /**
+     * @param int $storageUid
      * @return bool
      */
-    public function isImage(): bool
+    public function isImage(int $storageUid = 0): bool
     {
-        return $this->getInformation()['type'] === self::TYPE_IMAGE;
+        return $this->getInformation($storageUid)['type'] === self::TYPE_IMAGE;
     }
 
     /**
@@ -138,16 +139,17 @@ class Asset
     }
 
     /**
+     * @param int $storageUid
      * @return array
      */
-    public function getInformation(): array
+    public function getInformation(int $storageUid = 0): array
     {
         if ($this->information === null) {
             try {
                 // Do API call
                 // TODO api call
                 //$this->information = $this->getBynderService()->getMediaInfo($this->getIdentifier());
-                $this->information = $this->getAdmiralcloudService()->getMediaInfo([$this->identifier], $this->getAdmiralCloudStorage()->getUid())[$this->identifier];
+                $this->information = $this->getAdmiralcloudService()->getMediaInfo([$this->identifier], ($storageUid?:$this->getAdmiralCloudStorage()->getUid()))[$this->identifier];
                 /*$this->information = [
                     'type' => self::TYPE_IMAGE,
                     'name' => $this->identifier . '.jpg',

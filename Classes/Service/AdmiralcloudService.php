@@ -173,7 +173,7 @@ class AdmiralcloudService implements SingletonInterface
         // TODO width, height
         // TODO crop
         if($file instanceof FileReference){
-            return '';
+            $file = $file->getOriginalFile();
         }
 
         $width = $width ?: 800;

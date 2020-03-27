@@ -54,6 +54,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\Image
     'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
 ];
 
+// Override Fluid ImageViewHelper class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper::class] = [
+    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\Uri\ImageViewHelper::class
+];
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
     'nodeName' => 'admiralCloudImageManipulation',
     'class' => \CPSIT\AdmiralcloudConnector\Form\Element\AdmiralCloudImageManipulationElement::class,
