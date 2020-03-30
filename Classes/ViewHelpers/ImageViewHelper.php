@@ -37,10 +37,24 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
                 $width = $this->arguments['maxWidth'];
             }
 
+            if (!$width) {
+                $width = 0;
+            }
+
             $height = $this->arguments['height'];
 
             if (!$height) {
                 $height = $this->arguments['maxHeight'];
+            }
+
+            if (!$height) {
+                $height = 0;
+            }
+            if (!$height) {
+                $height = round(($width / $image->_getMetaData()['width']) * $image->_getMetaData()['height']);
+            }
+            if (!$width) {
+                $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
             }
 
             /** @var AssetRenderer $assetRenderer */

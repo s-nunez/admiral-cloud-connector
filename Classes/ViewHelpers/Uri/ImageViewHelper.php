@@ -156,6 +156,12 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
                 if (!$height) {
                     $height = 0;
                 }
+                if (!$height) {
+                    $height = round(($width / $image->_getMetaData()['width']) * $image->_getMetaData()['height']);
+                }
+                if (!$width){
+                    $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
+                }
 
                 /** @var AssetRenderer $assetRenderer */
                 #$assetRenderer = GeneralUtility::makeInstance(AssetRenderer::class);

@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralcloudConnector\Resource;
 
 use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidAssetException;
+use CPSIT\AdmiralcloudConnector\Exception\InvalidPropertyException;
 use CPSIT\AdmiralcloudConnector\Exception\InvalidThumbnailException;
 use CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
@@ -219,75 +220,34 @@ class Asset
     {
         // TODO implement me
 
-        switch ($property) {
-            case 'name':
-                return $this->identifier . '.jpg';
-            case 'mimetype':
-                return 'admiralcloud/image/jpg';
-            case 'storage':
-                return $this->getAdmiralCloudStorage()->getUid();
-            case 'extension':
-                return 'jpg';
-            case 'size':
-                return 100;
-            case 'atime':
-            case 'mtime':
-            case 'ctime':
-                return time();
-            case 'identifier':
-                return $this->identifier;
-            case 'identifier_hash':
-                return sha1($this->identifier);
-            case 'folder_hash':
-                return sha1('admiralcloud' . $this->getAdmiralCloudStorage()->getUid());
-
-            // Metadata
-            case 'title':
-                return 'title';
-            case 'description':
-                return 'description';
-            case 'width':
-                return 300;
-            case 'height':
-                return 150;
-            case 'copyright':
-                return 'copyright';
-            case 'keywords':
-                return 'hello,world';
-        }
-
-        return '';
-
-        // TODO implement me
-
         $information = $this->getInformation();
         switch ($property) {
             case 'size':
-                return $information['fileSize'];
+                return $information['size'];
             case 'atime':
-                return strtotime($information['dateModified']);
+                return $information['atime'];
             case 'mtime':
-                return strtotime($information['dateModified']);
+                return $information['mtime'];
             case 'ctime':
-                return strtotime($information['dateCreated']);
+                return $information['ctime'];
             case 'name':
-                return $information['fileName'] . '.' . $information['fileExtension'];
+                return $information['name'];
             case 'mimetype':
-                return 'bynder/' . $information['type'];
+                return $information['mimetype'];
             case 'identifier':
-                return $information['id'];
+                return $information['identifier'];
             case 'extension':
-                return $information['fileExtension'];
+                return $information['extension'];
             case 'identifier_hash':
-                return sha1($information['id']);
+                return $information['identifier_hash'];
             case 'storage':
-                return $this->getAdmiralCloudStorage()->getUid();
+                return $information['storage'];
             case 'folder_hash':
-                return sha1('bynder' . $this->getAdmiralCloudStorage()->getUid());
+                return $information['folder_hash'];
 
             // Metadata
             case 'title':
-                return $information['name'];
+                return $information['title'];
             case 'description':
                 return $information['description'];
             case 'width':
@@ -297,7 +257,7 @@ class Asset
             case 'copyright':
                 return $information['copyright'];
             case 'keywords':
-                return implode(', ', $information['tags'] ?? []);
+                return $information['keywords'];
             default:
                 throw new InvalidPropertyException(sprintf('The information "%s" is not available.', $property), 1519130380);
         }
