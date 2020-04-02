@@ -105,8 +105,16 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
             return $resultArray;
         }
 
-        // TODO get information from Session if it is a new element
-        #$file->setTxAdmiralcloudconnectorLinkhashCrop($parameterArray['itemFormElValue']);
+        // If sys_file_reference is new, add crop information from BE session.
+        // Crop information was stored in \CPSIT\AdmiralcloudConnector\Controller\Backend\BrowserController
+        if ($this->data['command'] === 'new') {
+            $sessionData = $this->getBackendUser()->getSessionData('admiralCloud') ?? [];
+            if (!empty($sessionData['cropInformation'][$file->getUid()])) {
+                $parameterArray['itemFormElValue'] = json_encode($sessionData['cropInformation'][$file->getUid()]);
+                unset($sessionData['cropInformation'][$file->getUid()]);
+                $this->getBackendUser()->setAndSaveSessionData('admiralCloud', $sessionData);
+            }
+        }
 
         $fieldInformationResult = $this->renderFieldInformation();
         $fieldInformationHtml = $fieldInformationResult['html'];
@@ -136,19 +144,6 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
                 'validation' => '[]'
             ],
         ];
-
-        if ($arguments['isAllowedFileExtension']) {
-            // TODO
-            /*
-            $resultArray['requireJsModules'][] = [
-                'TYPO3/CMS/Backend/ImageManipulation' => 'function (ImageManipulation) {top.require(["cropper"], function() { ImageManipulation.initializeTrigger(); }); }'
-            ];
-            $arguments['formEngine']['field']['id'] = StringUtility::getUniqueId('formengine-image-manipulation-');
-            if (GeneralUtility::inList($config['eval'], 'required')) {
-                $arguments['formEngine']['validation'] = $this->getValidationDataAsJsonString(['required' => true]);
-            }
-            */
-        }
 
         $this->templateView->assignMultiple($arguments);
         $resultArray['html'] = $this->templateView->render();

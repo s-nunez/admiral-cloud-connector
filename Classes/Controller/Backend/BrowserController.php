@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -238,6 +239,9 @@ class BrowserController extends AbstractBackendController
 
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
+
+                $this->storeInSessionCropInformation($file, $media);
+
                 $files[] = $file->getUid();
             }
 
@@ -255,6 +259,22 @@ class BrowserController extends AbstractBackendController
                 ],
             ], 404);
         }
+    }
+
+    /**
+     * Store in BE session the crop information for given file
+     *
+     * @param FileInterface $file
+     * @param array $media
+     */
+    protected function storeInSessionCropInformation(FileInterface $file, array $media): void
+    {
+        $cropperData = $media['cropperData'];
+        unset($cropperData['smartCropperUrl'], $cropperData['smartCropperUrlAOI']);
+
+        $sessionData = $this->getBackendUser()->getSessionData('admiralCloud') ?? [];
+        $sessionData['cropInformation'][$file->getUid()] = $cropperData;
+        $this->getBackendUser()->setAndSaveSessionData('admiralCloud', $sessionData);
     }
 
     /**
@@ -295,5 +315,15 @@ class BrowserController extends AbstractBackendController
         }
 
         return $response;
+    }
+
+    /**
+     * Returns the current BE user.
+     *
+     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     */
+    protected function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
     }
 }
