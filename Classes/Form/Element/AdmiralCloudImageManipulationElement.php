@@ -3,6 +3,7 @@
 
 namespace CPSIT\AdmiralcloudConnector\Form\Element;
 
+use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -19,6 +20,8 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class AdmiralCloudImageManipulationElement extends AbstractFormElement
 {
+    use AdmiralcloudStorage;
+
     /**
      * Default element configuration
      *
@@ -97,9 +100,8 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         $config = $this->populateConfiguration($parameterArray['fieldConf']['config']);
 
         $file = $this->getFile($this->data['databaseRow'], $config['file_field']);
-        // TODO if it is not admiral cloud return default array
-        if (!$file) {
-            // Early return in case we do not find a file
+        if (!$file || $file->getStorage()->getUid() !== $this->getAdmiralCloudStorage()->getUid()) {
+            // Early return in case we do not find a file or does not come from AdmiralCloud
             return $resultArray;
         }
 

@@ -115,8 +115,6 @@ class Asset
 
     public function getThumbnail(int $storageUid = 0): ?string
     {
-        // TODO get thumbnail url from admiral cloud
-
         $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
             ($storageUid? $storageUid:$this->getAdmiralCloudStorage()->getUid()),
             $this->identifier
@@ -124,7 +122,7 @@ class Asset
 
         $file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));
 
-        return $this->getAdmiralcloudService()->getImagePublicUrl($file, 300, 150);
+        return $this->getAdmiralcloudService()->getThumbnailUrl($file);
     }
 
     /**
@@ -148,29 +146,8 @@ class Asset
         if ($this->information === null) {
             try {
                 // Do API call
-                // TODO api call
-                //$this->information = $this->getBynderService()->getMediaInfo($this->getIdentifier());
                 $this->information = $this->getAdmiralcloudService()->getMediaInfo([$this->identifier], ($storageUid?:$this->getAdmiralCloudStorage()->getUid()))[$this->identifier];
-                /*$this->information = [
-                    'type' => self::TYPE_IMAGE,
-                    'name' => $this->identifier . '.jpg',
-                    'mimetype' => 'admiralcloud/image/jpg',
-                    'storage' => $this->getAdmiralCloudStorage()->getUid(),
-                    'extension' => 'jpg',
-                    'size' => 100,
-                    'atime' => time(),
-                    'mtime' => time(),
-                    'ctime' => time(),
-                    'identifier' => $this->identifier,
-                    'identifier_hash' => sha1($this->identifier),
-                    'folder_hash' => sha1('admiralcloud' . $this->getAdmiralCloudStorage()->getUid()),
-                    'title' => 'title',
-                    'description' => 'description',
-                    'width' => 300,
-                    'height' => 150,
-                    'copyright' => 'copyright',
-                    'keywords' => 'hello,world',
-                ];*/
+
             } catch (\Exception $e) {
                 $this->information = [];
             }
@@ -218,8 +195,6 @@ class Asset
      */
     public function getSpecificProperty($property)
     {
-        // TODO implement me
-
         $information = $this->getInformation();
         switch ($property) {
             case 'size':
@@ -316,7 +291,6 @@ class Asset
 
         $info = $this->getInformation();
 
-        // TODO get file name from file information
         return $temporaryPath . $info['name'];
     }
 

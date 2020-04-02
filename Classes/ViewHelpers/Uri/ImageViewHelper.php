@@ -129,45 +129,45 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
             throw new Exception('You must either specify a string src or a File object.', 1460976233);
         }
 
-            $imageService = self::getImageService();
-            $image = $imageService->getImage($src, $image, $treatIdAsReference);
-            if (!($image instanceof File) && is_callable([$image, 'getOriginalFile'])) {
-                $image = $image->getOriginalFile();
-            } else {
-                $image = $image;
+        $imageService = self::getImageService();
+        $originalImage = $imageService->getImage($src, $image, $treatIdAsReference);
+
+        if (!($originalImage instanceof File) && is_callable([$originalImage, 'getOriginalFile'])) {
+            $image = $originalImage->getOriginalFile();
+        } else {
+            $image = $originalImage;
+        }
+
+        if (GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralcloud/')) {
+            $width = $arguments['width'];
+
+            if (!$width) {
+                $width = $arguments['maxWidth'];
             }
-            if ($image->getProperties()['mime_type'] === 'admiralcloud/image/jpg') {
-                $width = $arguments['width'];
 
-                if (!$width) {
-                    $width = $arguments['maxWidth'];
-                }
-
-                if (!$width) {
-                    $width = 0;
-                }
-
-                $height = $arguments['height'];
-
-                if (!$height) {
-                    $height = $arguments['maxHeight'];
-                }
-
-                if (!$height) {
-                    $height = 0;
-                }
-                if (!$height) {
-                    $height = round(($width / $image->_getMetaData()['width']) * $image->_getMetaData()['height']);
-                }
-                if (!$width){
-                    $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
-                }
-
-                /** @var AssetRenderer $assetRenderer */
-                #$assetRenderer = GeneralUtility::makeInstance(AssetRenderer::class);
-                $admiracloudService = GeneralUtility::makeInstance(AdmiralcloudService::class);
-                return $admiracloudService->getImagePublicUrl($image, $width, $height);
+            if (!$width) {
+                $width = 0;
             }
+
+            $height = $arguments['height'];
+
+            if (!$height) {
+                $height = $arguments['maxHeight'];
+            }
+
+            if (!$height) {
+                $height = 0;
+            }
+            if (!$height) {
+                $height = round(($width / $image->_getMetaData()['width']) * $image->_getMetaData()['height']);
+            }
+            if (!$width) {
+                $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
+            }
+
+            $admiracloudService = GeneralUtility::makeInstance(AdmiralcloudService::class);
+            return $admiracloudService->getImagePublicUrl($image, $width, $height);
+        }
         return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
     }
 

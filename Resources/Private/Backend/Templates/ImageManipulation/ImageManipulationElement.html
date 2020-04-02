@@ -4,6 +4,11 @@
 
 	<f:section name="Main">
 
+		<input type="hidden" id="{formEngine.field.id}"
+			   name="{formEngine.field.name}"
+			   value="{formEngine.field.value}"
+			   data-formengine-validation-rules="{formEngine.validation}"/>
+
 		<f:comment>TODO: implement me</f:comment>
 
 		<f:if condition="{image}">

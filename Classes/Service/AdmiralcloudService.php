@@ -116,14 +116,14 @@ class AdmiralcloudService implements SingletonInterface
         foreach (json_decode($fileInfo) as $file){
             $mediaInfo[$file->mediaContainerId] = [
                 'type' => $file->type,
-                'name' => $file->mediaContainerId . '.' . $file->fileExtension,
+                'name' => $file->fileName . '_' . $file->mediaContainerId . '.' . $file->fileExtension,
                 'mimetype' => 'admiralcloud/' . $file->type . '/' . $file->fileExtension,
                 'storage' => $admiralcloudStorageUid,
                 'extension' => $file->fileExtension,
                 'size' => $file->fileSize,
-                'atime' => time(),
-                'mtime' => time(),
-                'ctime' => time(),
+                'atime' => (new \DateTime($file->updatedAt))->getTimestamp(),
+                'mtime' => (new \DateTime($file->updatedAt))->getTimestamp(),
+                'ctime' => (new \DateTime($file->createdAt))->getTimestamp(),
                 'identifier' => $file->mediaContainerId,
                 'identifier_hash' => sha1($file->mediaContainerId),
                 'folder_hash' => sha1('admiralcloud' . $admiralcloudStorageUid),
@@ -188,5 +188,22 @@ class AdmiralcloudService implements SingletonInterface
             . '/0.8?poc=true';
 
         return $link;
+    }
+
+    /**
+     * Get public url for file thumbnail
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    public function getThumbnailUrl(FileInterface $file): string
+    {
+        if($file instanceof FileReference){
+            $file = $file->getOriginalFile();
+        }
+
+        return 'https://imagesdev.admiralcloud.com/v5/deliverEmbed/'
+            . $file->getTxAdmiralcloudconnectorLinkhash()
+            . '/image/144';
     }
 }
