@@ -70,7 +70,7 @@ class AssetRenderer implements FileRendererInterface
 
         $asset = $this->getAsset($originalFile->getIdentifier());
         switch (true) {
-            case $asset->isImage():
+            case $asset->isImage($originalFile->getStorage()->getUid()):
             case $asset->isDocument():
                 return $this->renderImageTag($file, $width, $height, $options, $usedPathsRelativeToCurrentScript);
 

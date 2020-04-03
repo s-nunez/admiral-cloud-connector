@@ -86,7 +86,7 @@ class Asset
      */
     public function isImage(int $storageUid = 0): bool
     {
-        return $this->getAssetType() === self::TYPE_IMAGE;
+        return $this->getAssetType($storageUid) === self::TYPE_IMAGE;
     }
 
     /**
@@ -116,13 +116,14 @@ class Asset
     /**
      * Get asset type from mime type of the file
      *
+     * @param int $storageUid
      * @return string
      */
-    public function getAssetType(): string
+    public function getAssetType(int $storageUid = 0): string
     {
         /** @var File $file */
         $file = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
-            $this->getAdmiralCloudStorage()->getUid(),
+            ($storageUid ? $storageUid : $this->getAdmiralCloudStorage()->getUid()),
             $this->identifier
         );
 
