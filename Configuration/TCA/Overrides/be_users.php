@@ -4,14 +4,14 @@ call_user_func(function ($extension, $table) {
         $table,
         'file_permissions',
         [
-            'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:be_users.file_permissions.folder_add_via_admiralcloud',
-            'addFileViaAdmiralcloud',
-            'permissions-admiralcloud-browser'
+            'LLL:EXT:' . $extension . '/Resources/Private/Language/locallang_be.xlf:be_users.file_permissions.folder_add_via_admiral_cloud',
+            'addFileViaAdmiralCloud',
+            'permissions-admiral_cloud-browser'
         ],
         'addFile',
         'after'
     );
-}, 'admiralcloud', 'be_users');
+}, 'admiral_cloud', 'be_users');
 
 
 /**
@@ -19,7 +19,7 @@ call_user_func(function ($extension, $table) {
  */
 $newBeUsersColumns = [
     'first_name' => [
-        'label' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.first_name',
+        'label' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.first_name',
         'config' => [
             'type' => 'input',
             'size' => 15,
@@ -27,7 +27,7 @@ $newBeUsersColumns = [
         ]
     ],
     'last_name' => [
-        'label' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.last_name',
+        'label' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.last_name',
         'config' => [
             'type' => 'input',
             'size' => 15,

@@ -4,22 +4,22 @@
         <header/>
         <body>
             <trans-unit id="browser.button">
-                <source>Admiralcloud</source>
+                <source>AdmiralCloud</source>
             </trans-unit>
             <trans-unit id="browser.uploadbutton">
-                <source>Admiralcloud Upload</source>
+                <source>AdmiralCloud Upload</source>
             </trans-unit>
             <trans-unit id="browser.header">
-                <source>Admiralcloud</source>
+                <source>AdmiralCloud</source>
             </trans-unit>
             <trans-unit id="browser.error-no-storage-access">
-                <source>Please make sure you have access to the Admiralcloud file mount. This is needed to use the Admiralcloud file picker</source>
+                <source>Please make sure you have access to the AdmiralCloud file mount. This is needed to use the AdmiralCloud file picker</source>
             </trans-unit>
-            <trans-unit id="be_groups.file_permissions.folder_add_via_admiralcloud">
-                <source>Files: Add via Admiralcloud</source>
+            <trans-unit id="be_groups.file_permissions.folder_add_via_admiral_cloud">
+                <source>Files: Add via AdmiralCloud</source>
             </trans-unit>
-            <trans-unit id="be_users.file_permissions.folder_add_via_admiralcloud">
-                <source>Files: Add via Admiralcloud</source>
+            <trans-unit id="be_users.file_permissions.folder_add_via_admiral_cloud">
+                <source>Files: Add via AdmiralCloud</source>
             </trans-unit>
             <trans-unit id="sys_file.tx_admiralcloudconnector_linkhash">
                 <source>Link hash for AdmiralCloud</source>

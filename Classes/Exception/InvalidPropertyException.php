@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Exception;
+namespace CPSIT\AdmiralCloudConnector\Exception;
 
 /**
  * Class InvalidPropertyException
- * @package CPSIT\AdmiralcloudConnector\Exception
+ * @package CPSIT\AdmiralCloudConnector\Exception
  */
-class InvalidPropertyException extends \InvalidArgumentException implements AdmiralcloudConnectorException
+class InvalidPropertyException extends \InvalidArgumentException implements AdmiralCloudConnectorException
 {
 }

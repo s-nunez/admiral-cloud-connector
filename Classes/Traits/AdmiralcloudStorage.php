@@ -1,18 +1,18 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Traits;
+namespace CPSIT\AdmiralCloudConnector\Traits;
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
-use CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 
 /**
- * Trait AdmiralcloudStorage
- * @package CPSIT\AdmiralcloudConnector\Traits
+ * Trait AdmiralCloudStorage
+ * @package CPSIT\AdmiralCloudConnector\Traits
  */
-trait AdmiralcloudStorage
+trait AdmiralCloudStorage
 {
     /**
      * @var ResourceStorageInterface
@@ -30,7 +30,7 @@ trait AdmiralcloudStorage
         if ($this->admiralCloudStorage === null) {
             $backendUserAuthentication = $GLOBALS['BE_USER'];
             foreach ($backendUserAuthentication->getFileStorages() as $fileStorage) {
-                if ($fileStorage->getDriverType() === AdmiralcloudDriver::KEY) {
+                if ($fileStorage->getDriverType() === AdmiralCloudDriver::KEY) {
                     return $this->admiralCloudStorage = $fileStorage;
                 }
             }

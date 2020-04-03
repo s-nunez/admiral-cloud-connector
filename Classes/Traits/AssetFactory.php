@@ -1,13 +1,13 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Traits;
+namespace CPSIT\AdmiralCloudConnector\Traits;
 
-use CPSIT\AdmiralcloudConnector\Resource;
+use CPSIT\AdmiralCloudConnector\Resource;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Trait AssetFactory
- * @package CPSIT\AdmiralcloudConnector\Traits
+ * @package CPSIT\AdmiralCloudConnector\Traits
  */
 trait AssetFactory
 {

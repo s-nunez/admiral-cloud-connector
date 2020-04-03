@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource;
+namespace CPSIT\AdmiralCloudConnector\Resource;
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidAssetException;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidAssetException;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class AssetFactory
- * @package CPSIT\AdmiralcloudConnector\Resource
+ * @package CPSIT\AdmiralCloudConnector\Resource
  */
 class AssetFactory implements SingletonInterface
 {

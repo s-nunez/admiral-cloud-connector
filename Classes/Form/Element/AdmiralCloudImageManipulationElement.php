@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Form\Element;
+namespace CPSIT\AdmiralCloudConnector\Form\Element;
 
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Form\NodeFactory;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
-use CPSIT\AdmiralcloudConnector\Resource\File;
+use CPSIT\AdmiralCloudConnector\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -16,11 +16,11 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class AdmiralCloudImageManipulationElement
- * @package CPSIT\AdmiralcloudConnector\Form\Element
+ * @package CPSIT\AdmiralCloudConnector\Form\Element
  */
 class AdmiralCloudImageManipulationElement extends AbstractFormElement
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
      * Default element configuration
@@ -84,9 +84,9 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         parent::__construct($nodeFactory, $data);
         // Would be great, if we could inject the view here, but since the constructor is in the interface, we can't
         $this->templateView = GeneralUtility::makeInstance(StandaloneView::class);
-        $this->templateView->setLayoutRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiralcloud_connector/Resources/Private/Backend/Layouts/')]);
-        $this->templateView->setPartialRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiralcloud_connector/Resources/Private/Backend/Partials/ImageManipulation/')]);
-        $this->templateView->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName('EXT:admiralcloud_connector/Resources/Private/Backend/Templates/ImageManipulation/ImageManipulationElement.html'));
+        $this->templateView->setLayoutRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Layouts/')]);
+        $this->templateView->setPartialRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Partials/ImageManipulation/')]);
+        $this->templateView->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Templates/ImageManipulation/ImageManipulationElement.html'));
         $this->uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
     }
 
@@ -106,7 +106,7 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         }
 
         // If sys_file_reference is new, add crop information from BE session.
-        // Crop information was stored in \CPSIT\AdmiralcloudConnector\Controller\Backend\BrowserController
+        // Crop information was stored in \CPSIT\AdmiralCloudConnector\Controller\Backend\BrowserController
         if ($this->data['command'] === 'new') {
             $sessionData = $this->getBackendUser()->getSessionData('admiralCloud') ?? [];
             if (!empty($sessionData['cropInformation'][$file->getUid()])) {

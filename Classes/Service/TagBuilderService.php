@@ -1,13 +1,13 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Service;
+namespace CPSIT\AdmiralCloudConnector\Service;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 /**
  * Class TagBuilderService
- * @package CPSIT\AdmiralcloudConnector\Service
+ * @package CPSIT\AdmiralCloudConnector\Service
  */
 class TagBuilderService
 {

@@ -1,19 +1,19 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource;
+namespace CPSIT\AdmiralCloudConnector\Resource;
 
-use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ProcessedFile
- * @package CPSIT\AdmiralcloudConnector\Resource
+ * @package CPSIT\AdmiralCloudConnector\Resource
  */
 class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
      * @inheritDoc
@@ -21,23 +21,23 @@ class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
     public function getPublicUrl($relativeToCurrentScript = false): ?string
     {
 
-        if (GeneralUtility::isFirstPartOfStr($this->getOriginalFile()->getMimeType(), 'admiralcloud/')) {
+        if (GeneralUtility::isFirstPartOfStr($this->getOriginalFile()->getMimeType(), 'admiralCloud/')) {
             $this->properties['width'] = (int) $this->getProcessingConfiguration()['width'];
             $this->properties['height'] = (int) $this->getProcessingConfiguration()['height'];
 
             // TODO get crop and focus information
 
-            return $this->getAdmiralcloudService()->getImagePublicUrl($this->getOriginalFile(), $this->properties['width'], $this->properties['height']);
+            return $this->getAdmiralCloudService()->getImagePublicUrl($this->getOriginalFile(), $this->properties['width'], $this->properties['height']);
         }
 
         return parent::getPublicUrl($relativeToCurrentScript);
     }
 
     /**
-     * @return AdmiralcloudService
+     * @return AdmiralCloudService
      */
-    protected function getAdmiralcloudService()
+    protected function getAdmiralCloudService()
     {
-        return GeneralUtility::makeInstance(AdmiralcloudService::class);
+        return GeneralUtility::makeInstance(AdmiralCloudService::class);
     }
 }

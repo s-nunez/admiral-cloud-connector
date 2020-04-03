@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Service;
+namespace CPSIT\AdmiralCloudConnector\Service;
 
-use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
-use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApiFactory;
-use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
+use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApiFactory;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -36,26 +36,31 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-class AdmiralcloudService implements SingletonInterface
+class AdmiralCloudService implements SingletonInterface
 {
     /**
-     * @var AdmiralcloudApi
+     * @var AdmiralCloudApi
      */
-    protected $admiralcloudApi;
+    protected $admiralCloudApi;
 
-    public function getAdmiralcloudAuthCode($settings): string
+    public function getAdmiralCloudAuthCode($settings): string
     {
         try {
-            return AdmiralcloudApiFactory::auth($settings);
+            return AdmiralCloudApiFactory::auth($settings);
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException('AdmiralCloud Auth Code cannot be created', 1559128418168, $e);
         }
     }
 
-    public function getAdmiralcloudApi($settings): AdmiralcloudApi
+    public function getAdmiralCloudApi($settings): AdmiralCloudApi
     {
+        if ($this->admiralCloudApi) {
+            return $this->admiralCloudApi;
+        }
+
         try {
-            return AdmiralcloudApiFactory::create($settings);
+            $this->admiralCloudApi = AdmiralCloudApiFactory::create($settings);
+            return $this->admiralCloudApi;
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException('AdmiralCloud API cannot be created', 1559128418168, $e);
         }
@@ -81,7 +86,8 @@ class AdmiralcloudService implements SingletonInterface
                 'language' => 'de'
             ]
         ];
-        $fileInfo = $this->getAdmiralcloudApi($settings)->getData();
+        $fileInfo = $this->getAdmiralCloudApi($settings)->getData();
+        // TODO if error --> log it
         $metadata = [];
         foreach (json_decode($fileInfo) as $file){
             foreach ($settings['payload']['title'] as $title){
@@ -99,8 +105,9 @@ class AdmiralcloudService implements SingletonInterface
      * @param array $identifiers
      * @return string
      */
-    public function getMediaInfo(array $identifiers,int $admiralcloudStorageUid = 3): array
+    public function getMediaInfo(array $identifiers, int $admiralCloudStorageUid = 3): array
     {
+        // TODO REMOVE this magic number
         $settings = [
             'route' => 'media/findBatch',
             'controller' => 'media',
@@ -109,7 +116,7 @@ class AdmiralcloudService implements SingletonInterface
                 'ids' => $identifiers
             ]
         ];
-        $fileInfo = $this->getAdmiralcloudApi($settings)->getData();
+        $fileInfo = $this->getAdmiralCloudApi($settings)->getData();
         $fileMetaData = $this->getMetaData($identifiers);
 
         $mediaInfo = [];
@@ -117,8 +124,8 @@ class AdmiralcloudService implements SingletonInterface
             $mediaInfo[$file->mediaContainerId] = [
                 'type' => $file->type,
                 'name' => $file->fileName . '_' . $file->mediaContainerId . '.' . $file->fileExtension,
-                'mimetype' => 'admiralcloud/' . $file->type . '/' . $file->fileExtension,
-                'storage' => $admiralcloudStorageUid,
+                'mimetype' => 'admiralCloud/' . $file->type . '/' . $file->fileExtension,
+                'storage' => $admiralCloudStorageUid,
                 'extension' => $file->fileExtension,
                 'size' => $file->fileSize,
                 'atime' => (new \DateTime($file->updatedAt))->getTimestamp(),
@@ -126,7 +133,7 @@ class AdmiralcloudService implements SingletonInterface
                 'ctime' => (new \DateTime($file->createdAt))->getTimestamp(),
                 'identifier' => $file->mediaContainerId,
                 'identifier_hash' => sha1($file->mediaContainerId),
-                'folder_hash' => sha1('admiralcloud' . $admiralcloudStorageUid),
+                'folder_hash' => sha1('AdmiralCloud' . $admiralCloudStorageUid),
                 'title' => $fileMetaData[$file->mediaContainerId]['container_name'],
                 'description' => $fileMetaData[$file->mediaContainerId]['container_description'],
                 'width' => $file->width,
@@ -153,7 +160,7 @@ class AdmiralcloudService implements SingletonInterface
                 'searchTerm' => $search
             ]
         ];
-        $metaData = json_decode($this->getAdmiralcloudApi($settings)->getData());
+        $metaData = json_decode($this->getAdmiralCloudApi($settings)->getData());
         DebuggerUtility::var_dump($metaData);
         die();
         return $metaData;
@@ -175,25 +182,25 @@ class AdmiralcloudService implements SingletonInterface
             // Save crop information from FileReference and set it in the File object
             $crop = $file->getProperty('tx_admiralcloudconnector_crop');
             $file = $file->getOriginalFile();
-            $file->setTxAdmiralcloudconnectorCrop($crop);
+            $file->setTxAdmiralCloudConnectorCrop($crop);
         }
 
         $width = $width ?: 800;
         $height = $height ?: 600;
 
-        if ($file->getTxAdmiralcloudconnectorCrop()) {
+        if ($file->getTxAdmiralCloudConnectorCrop()) {
             $link = 'https://smartcropdev.admiralcloud.com/v3/deliverEmbed/'
-                . $file->getTxAdmiralcloudconnectorLinkhash()
+                . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/cropperjsfocus/'
                 . $width
                 . '/'
                 . $height
                 . '/'
-                . $file->getTxAdmiralcloudconnectorCropUrlPath()
+                . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true&env=dev';
         } else {
             $link = 'https://images.admiralcloud.com/v3/deliverEmbed/'
-                . $file->getTxAdmiralcloudconnectorLinkhash()
+                . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/autocrop/'
                 . $width
                 . '/'
@@ -217,7 +224,7 @@ class AdmiralcloudService implements SingletonInterface
         }
 
         return 'https://imagesdev.admiralcloud.com/v5/deliverEmbed/'
-            . $file->getTxAdmiralcloudconnectorLinkhash()
+            . $file->getTxAdmiralCloudConnectorLinkhash()
             . '/image/144';
     }
 }

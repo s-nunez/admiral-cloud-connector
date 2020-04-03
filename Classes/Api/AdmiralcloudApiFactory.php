@@ -7,38 +7,38 @@
  */
 
 // src/Bynder/Api/BynderApiFactory.php
-namespace CPSIT\AdmiralcloudConnector\Api;
+namespace CPSIT\AdmiralCloudConnector\Api;
 
-use CPSIT\AdmiralcloudConnector\Api\AdmiralcloudApi;
+use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Static Factory class used to create instances of BynderApi.
  */
-class AdmiralcloudApiFactory
+class AdmiralCloudApiFactory
 {
 
     /**
      * Creates an instance of BynderApi using the given settings.
      *
-     * @return AdmiralcloudApi instance.
+     * @return AdmiralCloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
     public static function create($settings)
     {
-        return AdmiralcloudApi::create($settings);
+        return AdmiralCloudApi::create($settings);
     }
 
     /**
      * Creates an instance of BynderApi using the given settings.
      *
-     * @return AdmiralcloudApi instance.
+     * @return AdmiralCloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
     public static function auth($settings)
     {
-        return AdmiralcloudApi::auth($settings);
+        return AdmiralCloudApi::auth($settings);
     }
 
 }

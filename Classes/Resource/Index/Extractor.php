@@ -1,9 +1,9 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Resource\Index;
+namespace CPSIT\AdmiralCloudConnector\Resource\Index;
 
-use CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver;
-use CPSIT\AdmiralcloudConnector\Traits\AssetFactory;
+use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
+use CPSIT\AdmiralCloudConnector\Traits\AssetFactory;
 use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -28,7 +28,7 @@ class Extractor implements Resource\Index\ExtractorInterface
      */
     public function getDriverRestrictions(): array
     {
-        return [AdmiralcloudDriver::KEY];
+        return [AdmiralCloudDriver::KEY];
     }
 
     /**
@@ -53,7 +53,7 @@ class Extractor implements Resource\Index\ExtractorInterface
      */
     public function canProcess(Resource\File $file): bool
     {
-        return GeneralUtility::isFirstPartOfStr($file->getMimeType(), 'admiralcloud/');
+        return GeneralUtility::isFirstPartOfStr($file->getMimeType(), 'admiralCloud/');
     }
 
     /**

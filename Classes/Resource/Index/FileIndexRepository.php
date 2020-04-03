@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource\Index;
+namespace CPSIT\AdmiralCloudConnector\Resource\Index;
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class FileIndexRepository
- * @package CPSIT\AdmiralcloudConnector\Resource\Index
+ * @package CPSIT\AdmiralCloudConnector\Resource\Index
  */
 class FileIndexRepository extends \TYPO3\CMS\Core\Resource\Index\FileIndexRepository
 {

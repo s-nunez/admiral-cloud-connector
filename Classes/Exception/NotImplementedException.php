@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Exception;
+namespace CPSIT\AdmiralCloudConnector\Exception;
 
 /**
  * Class NotImplementedException
- * @package CPSIT\AdmiralcloudConnector\Exception
+ * @package CPSIT\AdmiralCloudConnector\Exception
  */
-class NotImplementedException extends \Exception implements AdmiralcloudConnectorException
+class NotImplementedException extends \Exception implements AdmiralCloudConnectorException
 {
 }

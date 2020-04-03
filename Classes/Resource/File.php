@@ -1,39 +1,39 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource;
+namespace CPSIT\AdmiralCloudConnector\Resource;
 
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class File
- * @package CPSIT\AdmiralcloudConnector\Resource
+ * @package CPSIT\AdmiralCloudConnector\Resource
  */
 class File extends \TYPO3\CMS\Core\Resource\File
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
      * Link hash to generate AdmiralCloud public url
      *
      * @var string
      */
-    protected $txAdmiralcloudconnectorLinkhash = '';
+    protected $txAdmiralCloudConnectorLinkhash = '';
 
     /**
      * @var string
      */
-    protected $txAdmiralcloudconnectorLinkhashCrop = '';
+    protected $txAdmiralCloudConnectorCrop = '';
 
     /**
      * @return string
      */
-    public function getTxAdmiralcloudconnectorLinkhash(): string
+    public function getTxAdmiralCloudConnectorLinkhash(): string
     {
-        if (!$this->txAdmiralcloudconnectorLinkhash && !empty($this->properties['tx_admiralcloudconnector_linkhash'])) {
-            $this->txAdmiralcloudconnectorLinkhash = $this->properties['tx_admiralcloudconnector_linkhash'];
+        if (!$this->txAdmiralCloudConnectorLinkhash && !empty($this->properties['tx_admiralcloudconnector_linkhash'])) {
+            $this->txAdmiralCloudConnectorLinkhash = $this->properties['tx_admiralcloudconnector_linkhash'];
         } else {
             // Load field "tx_admiralcloudconnector_linkhash" from DB
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -50,20 +50,20 @@ class File extends \TYPO3\CMS\Core\Resource\File
 
             if (!empty($row['tx_admiralcloudconnector_linkhash'])) {
                 $this->properties['tx_admiralcloudconnector_linkhash'] = $row['tx_admiralcloudconnector_linkhash'];
-                $this->txAdmiralcloudconnectorLinkhash = $row['tx_admiralcloudconnector_linkhash'];
+                $this->txAdmiralCloudConnectorLinkhash = $row['tx_admiralcloudconnector_linkhash'];
             }
         }
 
-        return $this->txAdmiralcloudconnectorLinkhash;
+        return $this->txAdmiralCloudConnectorLinkhash;
     }
 
     /**
-     * @param string $txAdmiralcloudconnectorLinkhash
+     * @param string $txAdmiralCloudConnectorLinkhash
      */
-    public function setTxAdmiralcloudconnectorLinkhash(string $txAdmiralcloudconnectorLinkhash): void
+    public function setTxAdmiralCloudConnectorLinkhash(string $txAdmiralCloudConnectorLinkhash): void
     {
-        $this->txAdmiralcloudconnectorLinkhash = $txAdmiralcloudconnectorLinkhash;
-        $this->properties['tx_admiralcloudconnector_linkhash'] = $txAdmiralcloudconnectorLinkhash;
+        $this->txAdmiralCloudConnectorLinkhash = $txAdmiralCloudConnectorLinkhash;
+        $this->properties['tx_admiralcloudconnector_linkhash'] = $txAdmiralCloudConnectorLinkhash;
 
         $this->updatedProperties[] = 'tx_admiralcloudconnector_linkhash';
     }
@@ -72,7 +72,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
      * @param array $mediaContainer
      * @return string
      */
-    public function setTxAdmiralcloudconnectorLinkhashFromMediaContainer(array $mediaContainer): string
+    public function setTxAdmiralCloudConnectorLinkhashFromMediaContainer(array $mediaContainer): string
     {
         $links = $mediaContainer['links'];
 
@@ -88,7 +88,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
         }
 
         if ($linkhash) {
-            $this->setTxAdmiralcloudconnectorLinkhash($linkhash);
+            $this->setTxAdmiralCloudConnectorLinkhash($linkhash);
         }
 
         return $linkhash;
@@ -97,18 +97,18 @@ class File extends \TYPO3\CMS\Core\Resource\File
     /**
      * @return string
      */
-    public function getTxAdmiralcloudconnectorCrop(): string
+    public function getTxAdmiralCloudConnectorCrop(): string
     {
-        if (!$this->txAdmiralcloudconnectorLinkhashCrop && !empty($this->properties['tx_admiralcloudconnector_crop'])) {
-            $this->txAdmiralcloudconnectorLinkhashCrop = $this->properties['tx_admiralcloudconnector_crop'];
+        if (!$this->txAdmiralCloudConnectorCrop && !empty($this->properties['tx_admiralcloudconnector_crop'])) {
+            $this->txAdmiralCloudConnectorCrop = $this->properties['tx_admiralcloudconnector_crop'];
         }
 
-        return $this->txAdmiralcloudconnectorLinkhashCrop;
+        return $this->txAdmiralCloudConnectorCrop;
     }
 
-    public function getTxAdmiralcloudconnectorCropUrlPath(): string
+    public function getTxAdmiralCloudConnectorCropUrlPath(): string
     {
-        $cropArray = json_decode($this->getTxAdmiralcloudconnectorCrop(), true);
+        $cropArray = json_decode($this->getTxAdmiralCloudConnectorCrop(), true);
 
         if (!$cropArray) {
             return '';
@@ -118,11 +118,11 @@ class File extends \TYPO3\CMS\Core\Resource\File
     }
 
     /**
-     * @param string $txAdmiralcloudconnectorLinkhashCrop
+     * @param string $txAdmiralCloudconnectorLinkhashCrop
      */
-    public function setTxAdmiralcloudconnectorCrop(string $txAdmiralcloudconnectorLinkhashCrop): void
+    public function setTxAdmiralCloudConnectorCrop(string $txAdmiralCloudconnectorLinkhashCrop): void
     {
-        $this->txAdmiralcloudconnectorLinkhashCrop = $txAdmiralcloudconnectorLinkhashCrop;
+        $this->txAdmiralCloudConnectorCrop = $txAdmiralCloudconnectorLinkhashCrop;
     }
 
     public function setTypeFromMimeType(string $mimeType)

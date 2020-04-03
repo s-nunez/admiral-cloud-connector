@@ -1,5 +1,5 @@
 <?php
-namespace CPSIT\AdmiralcloudConnector\ViewHelpers\Uri;
+namespace CPSIT\AdmiralCloudConnector\ViewHelpers\Uri;
 
 /*                                                                        *
  * This script is part of the TYPO3 project - inspiring people to share!  *
@@ -14,8 +14,8 @@ namespace CPSIT\AdmiralcloudConnector\ViewHelpers\Uri;
  * Public License for more details.                                       *
  *                                                                        */
 
-use CPSIT\AdmiralcloudConnector\Resource\Rendering\AssetRenderer;
-use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
+use CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer;
+use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -124,15 +124,15 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
             $image = $originalImage;
         }
 
-        if (GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralcloud/')) {
+        if (GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralCloud/')) {
             $crop = $arguments['txAdmiralCloudCrop'];
 
             if ($crop) {
-                $image->setTxAdmiralcloudconnectorCrop($arguments['txAdmiralCloudCrop']);
+                $image->setTxAdmiralCloudConnectorCrop($arguments['txAdmiralCloudCrop']);
             }
 
             if (!$crop && $originalImage->getProperty('tx_admiralcloudconnector_crop')) {
-                $image->setTxAdmiralcloudconnectorCrop($originalImage->getProperty('tx_admiralcloudconnector_crop'));
+                $image->setTxAdmiralCloudConnectorCrop($originalImage->getProperty('tx_admiralcloudconnector_crop'));
             }
 
             $width = $arguments['width'];
@@ -161,8 +161,8 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
                 $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
             }
 
-            /** @var AdmiralcloudService $admiracloudService */
-            $admiracloudService = GeneralUtility::makeInstance(AdmiralcloudService::class);
+            /** @var AdmiralCloudService $admiracloudService */
+            $admiracloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
             return $admiracloudService->getImagePublicUrl($image, $width, $height);
         }
         return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
