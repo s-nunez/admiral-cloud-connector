@@ -16,21 +16,40 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 {
     use AdmiralcloudStorage;
 
+    /**
+     * Initialize arguments.
+     */
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('txAdmiralCloudCrop', 'string', 'AdmiralCloud crop information', false, '');
+    }
+
     public function render()
     {
         if (($this->arguments['src'] === null && $this->arguments['image'] === null) || ($this->arguments['src'] !== null && $this->arguments['image'] !== null)) {
             throw new Exception('You must either specify a string src or a File object.', 1382284106);
         }
 
-        $image = $this->imageService->getImage($this->arguments['src'], $this->arguments['image'], $this->arguments['treatIdAsReference']);
+        $file = $this->imageService->getImage($this->arguments['src'], $this->arguments['image'], $this->arguments['treatIdAsReference']);
 
-        if (!($image instanceof File) && is_callable([$image, 'getOriginalFile'])) {
-            $image = $image->getOriginalFile();
+        if (!($file instanceof File) && is_callable([$file, 'getOriginalFile'])) {
+            $image = $file->getOriginalFile();
         } else {
-            $image = $image;
+            $image = $file;
         }
 
         if ($image->getStorage()->getUid() === $this->getAdmiralCloudStorage()->getUid()) {
+            $crop = $this->arguments['txAdmiralCloudCrop'];
+
+            if ($crop) {
+                $image->setTxAdmiralcloudconnectorCrop($this->arguments['txAdmiralCloudCrop']);
+            }
+
+            if (!$crop && $file->getProperty('tx_admiralcloudconnector_crop')) {
+                $image->setTxAdmiralcloudconnectorCrop($file->getProperty('tx_admiralcloudconnector_crop'));
+            }
+
             $width = $this->arguments['width'];
 
             if (!$width) {

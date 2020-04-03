@@ -171,21 +171,35 @@ class AdmiralcloudService implements SingletonInterface
     {
         // TODO implement me
         // TODO width, height
-        // TODO crop
-        if($file instanceof FileReference){
+        if ($file instanceof FileReference) {
+            // Save crop information from FileReference and set it in the File object
+            $crop = $file->getProperty('tx_admiralcloudconnector_crop');
             $file = $file->getOriginalFile();
+            $file->setTxAdmiralcloudconnectorCrop($crop);
         }
 
         $width = $width ?: 800;
         $height = $height ?: 600;
 
-        $link = 'https://images.admiralcloud.com/v3/deliverEmbed/'
-            . $file->getTxAdmiralcloudconnectorLinkhash()
-            . '/image/autocrop/'
-            . $width
-            . '/'
-            . $height
-            . '/0.8?poc=true';
+        if ($file->getTxAdmiralcloudconnectorCrop()) {
+            $link = 'https://smartcropdev.admiralcloud.com/v3/deliverEmbed/'
+                . $file->getTxAdmiralcloudconnectorLinkhash()
+                . '/image/cropperjsfocus/'
+                . $width
+                . '/'
+                . $height
+                . '/'
+                . $file->getTxAdmiralcloudconnectorCropUrlPath()
+                . '?poc=true&env=dev';
+        } else {
+            $link = 'https://images.admiralcloud.com/v3/deliverEmbed/'
+                . $file->getTxAdmiralcloudconnectorLinkhash()
+                . '/image/autocrop/'
+                . $width
+                . '/'
+                . $height
+                . '/0.8?poc=true';
+        }
 
         return $link;
     }

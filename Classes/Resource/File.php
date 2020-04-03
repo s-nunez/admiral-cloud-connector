@@ -23,6 +23,11 @@ class File extends \TYPO3\CMS\Core\Resource\File
     protected $txAdmiralcloudconnectorLinkhash = '';
 
     /**
+     * @var string
+     */
+    protected $txAdmiralcloudconnectorLinkhashCrop = '';
+
+    /**
      * @return string
      */
     public function getTxAdmiralcloudconnectorLinkhash(): string
@@ -87,6 +92,37 @@ class File extends \TYPO3\CMS\Core\Resource\File
         }
 
         return $linkhash;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTxAdmiralcloudconnectorCrop(): string
+    {
+        if (!$this->txAdmiralcloudconnectorLinkhashCrop && !empty($this->properties['tx_admiralcloudconnector_crop'])) {
+            $this->txAdmiralcloudconnectorLinkhashCrop = $this->properties['tx_admiralcloudconnector_crop'];
+        }
+
+        return $this->txAdmiralcloudconnectorLinkhashCrop;
+    }
+
+    public function getTxAdmiralcloudconnectorCropUrlPath(): string
+    {
+        $cropArray = json_decode($this->getTxAdmiralcloudconnectorCrop(), true);
+
+        if (!$cropArray) {
+            return '';
+        }
+
+        return implode(',', $cropArray['cropData']) . '/' . implode(',', $cropArray['focusPoint']);
+    }
+
+    /**
+     * @param string $txAdmiralcloudconnectorLinkhashCrop
+     */
+    public function setTxAdmiralcloudconnectorCrop(string $txAdmiralcloudconnectorLinkhashCrop): void
+    {
+        $this->txAdmiralcloudconnectorLinkhashCrop = $txAdmiralcloudconnectorLinkhashCrop;
     }
 
     public function setTypeFromMimeType(string $mimeType)

@@ -86,7 +86,7 @@ class Asset
      */
     public function isImage(int $storageUid = 0): bool
     {
-        return $this->getInformation($storageUid)['type'] === self::TYPE_IMAGE;
+        return $this->getAssetType() === self::TYPE_IMAGE;
     }
 
     /**
@@ -94,7 +94,7 @@ class Asset
      */
     public function isVideo(): bool
     {
-        return $this->getInformation()['type'] === self::TYPE_VIDEO;
+        return $this->getAssetType() === self::TYPE_VIDEO;
     }
 
     /**
@@ -102,7 +102,7 @@ class Asset
      */
     public function isAudio(): bool
     {
-        return $this->getInformation()['type'] === self::TYPE_AUDIO;
+        return $$this->getAssetType() === self::TYPE_AUDIO;
     }
 
     /**
@@ -110,7 +110,29 @@ class Asset
      */
     public function isDocument(): bool
     {
-        return $this->getInformation()['type'] === self::TYPE_DOCUMENT;
+        return $this->getAssetType() === self::TYPE_DOCUMENT;
+    }
+
+    /**
+     * Get asset type from mime type of the file
+     *
+     * @return string
+     */
+    public function getAssetType(): string
+    {
+        /** @var File $file */
+        $file = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
+            $this->getAdmiralCloudStorage()->getUid(),
+            $this->identifier
+        );
+
+        if ($file) {
+            $mimeType = str_replace('admiralcloud/', '', $file['mime_type']);
+            [$fileType, $subType] = explode('/', $mimeType);
+            return $fileType ?? '';
+        }
+
+        return '';
     }
 
     public function getThumbnail(int $storageUid = 0): ?string
@@ -146,8 +168,10 @@ class Asset
         if ($this->information === null) {
             try {
                 // Do API call
-                $this->information = $this->getAdmiralcloudService()->getMediaInfo([$this->identifier], ($storageUid?:$this->getAdmiralCloudStorage()->getUid()))[$this->identifier];
-
+                $this->information = $this->getAdmiralcloudService()->getMediaInfo(
+                    [$this->identifier],
+                    ($storageUid?:$this->getAdmiralCloudStorage()->getUid())
+                )[$this->identifier];
             } catch (\Exception $e) {
                 $this->information = [];
             }
@@ -244,7 +268,7 @@ class Asset
      * @return string|null The temporary path
      * @throws InvalidThumbnailException
      */
-    public function getLocalThumbnail(int $storageUid=0): ?string
+    public function getLocalThumbnail(int $storageUid = 0): ?string
     {
         $url = $this->getThumbnail($storageUid);
         if (!empty($url)) {
