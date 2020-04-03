@@ -1,20 +1,20 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\ViewHelpers;
+namespace CPSIT\AdmiralCloudConnector\ViewHelpers;
 
-use CPSIT\AdmiralcloudConnector\Resource\Rendering\AssetRenderer;
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ImageViewHelper
- * @package CPSIT\AdmiralcloudConnector\ViewHelpers
+ * @package CPSIT\AdmiralCloudConnector\ViewHelpers
  */
 class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
      * Initialize arguments.
@@ -43,11 +43,11 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
             $crop = $this->arguments['txAdmiralCloudCrop'];
 
             if ($crop) {
-                $image->setTxAdmiralcloudconnectorCrop($this->arguments['txAdmiralCloudCrop']);
+                $image->setTxAdmiralCloudConnectorCrop($this->arguments['txAdmiralCloudCrop']);
             }
 
             if (!$crop && $file->getProperty('tx_admiralcloudconnector_crop')) {
-                $image->setTxAdmiralcloudconnectorCrop($file->getProperty('tx_admiralcloudconnector_crop'));
+                $image->setTxAdmiralCloudConnectorCrop($file->getProperty('tx_admiralcloudconnector_crop'));
             }
 
             $width = $this->arguments['width'];

@@ -1,12 +1,12 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Exception;
+namespace CPSIT\AdmiralCloudConnector\Exception;
 
 /**
  * Interface: Implemented by all extension specific exceptions
- * @package CPSIT\AdmiralcloudConnector\Exception
+ * @package CPSIT\AdmiralCloudConnector\Exception
  * @mixin \Exception
  */
-interface AdmiralcloudConnectorException
+interface AdmiralCloudConnectorException
 {
 }

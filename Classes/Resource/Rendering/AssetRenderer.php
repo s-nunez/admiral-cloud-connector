@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Resource\Rendering;
+namespace CPSIT\AdmiralCloudConnector\Resource\Rendering;
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidAssetException;
-use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
-use CPSIT\AdmiralcloudConnector\Service\TagBuilderService;
-use CPSIT\AdmiralcloudConnector\Traits\AssetFactory;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidAssetException;
+use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Service\TagBuilderService;
+use CPSIT\AdmiralCloudConnector\Traits\AssetFactory;
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\File;
@@ -21,7 +21,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
 /**
  * Class AssetRenderer
- * @package CPSIT\AdmiralcloudConnector\Resource\Rendering
+ * @package CPSIT\AdmiralCloudConnector\Resource\Rendering
  */
 class AssetRenderer implements FileRendererInterface
 {
@@ -41,7 +41,7 @@ class AssetRenderer implements FileRendererInterface
     public function canRender(FileInterface $file)
     {
         try {
-            if (GeneralUtility::isFirstPartOfStr($file->getMimeType(), 'admiralcloud/')) {
+            if (GeneralUtility::isFirstPartOfStr($file->getMimeType(), 'admiralCloud/')) {
                 $asset = $this->getAsset($file->getIdentifier());
                 return $asset->isImage($file->getStorage()->getUid()) || $asset->isDocument() || $asset->isAudio() || $asset->isVideo();
             }
@@ -187,12 +187,12 @@ class AssetRenderer implements FileRendererInterface
      */
     protected function renderImageTag(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
     {
-        /** @var AdmiralcloudService $admiralcloudService */
-        $admiralcloudService = GeneralUtility::makeInstance(AdmiralcloudService::class);
+        /** @var AdmiralCloudService $admiralCloudService */
+        $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
 
         $tag = $this->getTagBuilder('img', $options);
 
-        $tag->addAttribute('src', $admiralcloudService->getImagePublicUrl($file, (int)$width, (int)$height),
+        $tag->addAttribute('src', $admiralCloudService->getImagePublicUrl($file, (int)$width, (int)$height),
             $usedPathsRelativeToCurrentScript
         );
 

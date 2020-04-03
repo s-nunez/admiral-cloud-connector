@@ -1,23 +1,23 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource;
+namespace CPSIT\AdmiralCloudConnector\Resource;
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
-use CPSIT\AdmiralcloudConnector\Exception\NotImplementedException;
-use CPSIT\AdmiralcloudConnector\Traits\AssetFactory;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralCloudConnector\Exception\NotImplementedException;
+use CPSIT\AdmiralCloudConnector\Traits\AssetFactory;
 use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 
 /**
- * Class AdmiralcloudDriver
- * @package CPSIT\AdmiralcloudConnector\Resource
+ * Class AdmiralCloudDriver
+ * @package CPSIT\AdmiralCloudConnector\Resource
  */
-class AdmiralcloudDriver implements DriverInterface
+class AdmiralCloudDriver implements DriverInterface
 {
     use AssetFactory;
 
-    public const KEY = 'admiralCloud';
+    public const KEY = 'AdmiralCloud';
 
     /**
      * @var string
@@ -379,7 +379,7 @@ class AdmiralcloudDriver implements DriverInterface
     {
         return [
             'identifier' => $folderIdentifier,
-            'name' => 'Admiralcloud',
+            'name' => 'AdmiralCloud',
             'mtime' => 0,
             'ctime' => 0,
             'storage' => $this->storageUid

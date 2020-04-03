@@ -1,5 +1,5 @@
 /**
- * Module: TYPO3/CMS/AdmiralcloudConnector/Browser
+ * Module: TYPO3/CMS/AdmiralCloudConnector/Browser
  */
 define(['jquery',
     'nprogress',
@@ -14,10 +14,10 @@ define(['jquery',
      * @exports TYPO3/CMS/Bynder/CompactView
      */
     var Browser = {
-        overviewButton: '.t3js-admiralcloud-browser-btn.overview',
-        uploadButton: '.t3js-admiralcloud-browser-btn.upload',
+        overviewButton: '.t3js-admiral_cloud-browser-btn.overview',
+        uploadButton: '.t3js-admiral_cloud-browser-btn.upload',
         browserUrl: '',
-        title: 'Admiralcloud'
+        title: 'AdmiralCloud'
     };
 
     /**
@@ -32,15 +32,15 @@ define(['jquery',
 
         // Add all listeners based on inline button
         $button.on('click', function (event) {
-            Browser.browserUrl = $button.data('admiralcloudBrowserUrl');
+            Browser.browserUrl = $button.data('admiralCloudBrowserUrl');
             Browser.open();
         });
         $uploadButton.on('click', function (event) {
-            Browser.browserUrl = $uploadButton.data('admiralcloudBrowserUrl');
+            Browser.browserUrl = $uploadButton.data('admiralCloudBrowserUrl');
             Browser.open();
         });
 
-        $(document).on('AdmiralcloudBrowserAddMedia', function (event) {
+        $(document).on('AdmiralCloudBrowserAddMedia', function (event) {
             //console.log('received', event.detail.media);
             var target = event.detail.target;
             var media = event.detail.media;
@@ -75,7 +75,7 @@ define(['jquery',
     Browser.addMedia = function (target, media) {
         return $.ajax({
             type: 'POST',
-            url: TYPO3.settings.ajaxUrls['admiralcloud_browser_get_files'],
+            url: TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_files'],
             dataType: 'json',
             data: {
                 target: target,

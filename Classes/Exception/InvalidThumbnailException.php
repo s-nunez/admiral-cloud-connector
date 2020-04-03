@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Exception;
+namespace CPSIT\AdmiralCloudConnector\Exception;
 
 /**
  * Class InvalidThumbnailException
- * @package CPSIT\AdmiralcloudConnector\Exception
+ * @package CPSIT\AdmiralCloudConnector\Exception
  */
-class InvalidThumbnailException extends \OutOfRangeException implements AdmiralcloudConnectorException
+class InvalidThumbnailException extends \OutOfRangeException implements AdmiralCloudConnectorException
 {
 }

@@ -11,14 +11,14 @@ if (TYPO3_MODE === 'BE') {
         $GLOBALS['TBE_STYLES']['skins'][$_EXTKEY] = [
             'name' => $_EXTKEY,
             'stylesheetDirectories' => [
-                'css' => 'EXT:admiralcloud_connector/Resources/Public/Backend/Css/'
+                'css' => 'EXT:admiral_cloud_connector/Resources/Public/Backend/Css/'
             ]
         ];
     }
 
     $pathEventIcon = 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/ac.svg';
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule(
-        'Admiralcloud',
+        'AdmiralCloud',
         '',
         '',
         [
@@ -26,7 +26,7 @@ if (TYPO3_MODE === 'BE') {
             'access' => 'group,user',
             'name' => 'events',
             'icon' => 'EXT:t3events/Resources/Public/Icons/event-calendar.svg',
-            'labels' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_mod_main.xlf',
+            'labels' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_mod_main.xlf',
         ]
     );
 
@@ -36,7 +36,7 @@ if (TYPO3_MODE === 'BE') {
      */
     \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
         'CPSIT.' . $_EXTKEY,
-        'Admiralcloud',
+        'AdmiralCloud',
         'm1',
         '',
         [

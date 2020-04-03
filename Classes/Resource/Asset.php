@@ -1,29 +1,29 @@
 <?php
 
 
-namespace CPSIT\AdmiralcloudConnector\Resource;
+namespace CPSIT\AdmiralCloudConnector\Resource;
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidArgumentException;
-use CPSIT\AdmiralcloudConnector\Exception\InvalidAssetException;
-use CPSIT\AdmiralcloudConnector\Exception\InvalidPropertyException;
-use CPSIT\AdmiralcloudConnector\Exception\InvalidThumbnailException;
-use CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository;
-use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidAssetException;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidPropertyException;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidThumbnailException;
+use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
+use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Asset
- * @package CPSIT\AdmiralcloudConnector\Resource
+ * @package CPSIT\AdmiralCloudConnector\Resource
  */
 class Asset
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
-     * Available Types used by Admiralcloud
+     * Available Types used by AdmiralCloud
      */
     const TYPE_VIDEO = 'video';
     const TYPE_IMAGE = 'image';
@@ -40,6 +40,11 @@ class Asset
      * @var array
      */
     protected $information;
+
+    /**
+     * @var string
+     */
+    protected $type;
 
     /**
      * Asset constructor.
@@ -120,6 +125,12 @@ class Asset
      */
     public function getAssetType(): string
     {
+        if (isset($this->type)) {
+            return $this->type;
+        }
+
+        $this->type = '';
+
         /** @var File $file */
         $file = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
             $this->getAdmiralCloudStorage()->getUid(),
@@ -127,12 +138,12 @@ class Asset
         );
 
         if ($file) {
-            $mimeType = str_replace('admiralcloud/', '', $file['mime_type']);
+            $mimeType = str_replace('admiralCloud/', '', $file['mime_type']);
             [$fileType, $subType] = explode('/', $mimeType);
-            return $fileType ?? '';
+            $this->type = $fileType ?? '';
         }
 
-        return '';
+        return $this->type;
     }
 
     public function getThumbnail(int $storageUid = 0): ?string
@@ -144,7 +155,7 @@ class Asset
 
         $file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));
 
-        return $this->getAdmiralcloudService()->getThumbnailUrl($file);
+        return $this->getAdmiralCloudService()->getThumbnailUrl($file);
     }
 
     /**
@@ -168,7 +179,7 @@ class Asset
         if ($this->information === null) {
             try {
                 // Do API call
-                $this->information = $this->getAdmiralcloudService()->getMediaInfo(
+                $this->information = $this->getAdmiralCloudService()->getMediaInfo(
                     [$this->identifier],
                     ($storageUid?:$this->getAdmiralCloudStorage()->getUid())
                 )[$this->identifier];
@@ -308,7 +319,7 @@ class Asset
      */
     protected function getTemporaryPathForFile($url): string
     {
-        $temporaryPath = PATH_site . 'typo3temp/assets/' . AdmiralcloudDriver::KEY . '/';
+        $temporaryPath = PATH_site . 'typo3temp/assets/' . AdmiralCloudDriver::KEY . '/';
         if (!is_dir($temporaryPath)) {
             GeneralUtility::mkdir_deep($temporaryPath);
         }
@@ -319,11 +330,11 @@ class Asset
     }
 
     /**
-     * @return AdmiralcloudService
+     * @return AdmiralCloudService
      */
-    protected function getAdmiralcloudService()
+    protected function getAdmiralCloudService()
     {
-        return GeneralUtility::makeInstance(AdmiralcloudService::class);
+        return GeneralUtility::makeInstance(AdmiralCloudService::class);
     }
 
     /**

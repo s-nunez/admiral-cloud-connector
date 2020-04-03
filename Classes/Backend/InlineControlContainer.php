@@ -1,6 +1,6 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Backend;
+namespace CPSIT\AdmiralCloudConnector\Backend;
 
 /*
  * This source file is proprietary property of Beech.it
@@ -10,8 +10,8 @@ namespace CPSIT\AdmiralcloudConnector\Backend;
 
 
 
-use CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver;
-use CPSIT\AdmiralcloudConnector\Utility\ConfigurationUtility;
+use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Resource\ResourceStorage;
 /**
  * Class InlineControlContainer
  *
- * Override core InlineControlContainer to inject Admiralcloud button
+ * Override core InlineControlContainer to inject AdmiralCloud button
  */
 class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineControlContainer
 {
@@ -42,8 +42,8 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
                 }
             }
         }
-        if ($this->displayAdmiralcloudButton()) {
-            $button = $this->renderAdmiralcloudOverviewButton($inlineConfiguration);
+        if ($this->displayAdmiralCloudButton()) {
+            $button = $this->renderAdmiralCloudOverviewButton($inlineConfiguration);
 
             // Inject button before help-block
             if (strpos($selector, '</div><div class="help-block">') > 0) {
@@ -54,7 +54,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             } else {
                 $selector .= $button;
             }
-            $button = $this->renderAdmiralcloudUploadButton($inlineConfiguration);
+            $button = $this->renderAdmiralCloudUploadButton($inlineConfiguration);
 
             // Inject button before help-block
             if (strpos($selector, '</div><div class="help-block">') > 0) {
@@ -74,15 +74,15 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
      * @param array $inlineConfiguration
      * @return string
      */
-    protected function renderAdmiralcloudOverviewButton(array $inlineConfiguration): string
+    protected function renderAdmiralCloudOverviewButton(array $inlineConfiguration): string
     {
         $languageService = $this->getLanguageService();
 
-        if (!$this->admiralcloudStorageAvailable()) {
+        if (!$this->admiralCloudStorageAvailable()) {
             $errorTextHtml = [];
             $errorTextHtml[] = '<div class="alert alert-danger" style="display: inline-block">';
-            $errorTextHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
-            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.error-no-storage-access'));
+            $errorTextHtml[] = $this->iconFactory->getIcon('actions-admiral_cloud-browser', Icon::SIZE_SMALL)->render();
+            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.error-no-storage-access'));
             $errorTextHtml[] = '</div>';
 
             return LF . implode(LF, $errorTextHtml);
@@ -94,22 +94,22 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $allowedAssetTypes = ConfigurationUtility::getAssetTypesByAllowedElements($groupFieldConfiguration['appearance']['elementBrowserAllowed']);
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
-        $element = 'admiralcloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
-        $compactViewUrl = BackendUtility::getModuleUrl('admiralcloud_browser_show', [
+        $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
+        $compactViewUrl = BackendUtility::getModuleUrl('admiral_cloud_browser_show', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
             'assetTypes' => implode(',', $allowedAssetTypes)
         ]);
 
-        $this->requireJsModules[] = 'TYPO3/CMS/AdmiralcloudConnector/Browser';
-        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.button'));
-        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
+        $this->requireJsModules[] = 'TYPO3/CMS/AdmiralCloudConnector/Browser';
+        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.button'));
+        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
 
         $buttonHtml = [];
-        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiralcloud-browser-btn overview ' . $element . '"'
-            . ' data-admiralcloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
+        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn overview ' . $element . '"'
+            . ' data-admiral_cloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
             . ' data-title="' . htmlspecialchars($titleText) . '">';
-        $buttonHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
+        $buttonHtml[] = $this->iconFactory->getIcon('actions-admiral_cloud-browser', Icon::SIZE_SMALL)->render();
         $buttonHtml[] = $buttonText;
         $buttonHtml[] = '</a>';
         return LF . implode(LF, $buttonHtml);
@@ -119,15 +119,15 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
      * @param array $inlineConfiguration
      * @return string
      */
-    protected function renderAdmiralcloudUploadButton(array $inlineConfiguration): string
+    protected function renderAdmiralCloudUploadButton(array $inlineConfiguration): string
     {
         $languageService = $this->getLanguageService();
 
-        if (!$this->admiralcloudStorageAvailable()) {
+        if (!$this->admiralCloudStorageAvailable()) {
             $errorTextHtml = [];
             $errorTextHtml[] = '<div class="alert alert-danger" style="display: inline-block">';
-            $errorTextHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
-            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.error-no-storage-access'));
+            $errorTextHtml[] = $this->iconFactory->getIcon('actions-admiral_cloud-browser', Icon::SIZE_SMALL)->render();
+            $errorTextHtml[] = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.error-no-storage-access'));
             $errorTextHtml[] = '</div>';
 
             return LF . implode(LF, $errorTextHtml);
@@ -139,40 +139,40 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $allowedAssetTypes = ConfigurationUtility::getAssetTypesByAllowedElements($groupFieldConfiguration['appearance']['elementBrowserAllowed']);
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
-        $element = 'admiralcloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
-        $compactViewUrl = BackendUtility::getModuleUrl('admiralcloud_browser_upload', [
+        $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
+        $compactViewUrl = BackendUtility::getModuleUrl('admiral_cloud_browser_upload', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
             'assetTypes' => implode(',', $allowedAssetTypes)
         ]);
 
-        $this->requireJsModules[] = 'TYPO3/CMS/AdmiralcloudConnector/Browser';
-        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.uploadbutton'));
-        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
+        $this->requireJsModules[] = 'TYPO3/CMS/AdmiralCloudConnector/Browser';
+        $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.uploadbutton'));
+        $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
 
         $buttonHtml = [];
-        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiralcloud-browser-btn upload ' . $element . '"'
-            . ' data-admiralcloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
+        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn upload ' . $element . '"'
+            . ' data-admiral_cloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
             . ' data-title="' . htmlspecialchars($titleText) . '">';
-        $buttonHtml[] = $this->iconFactory->getIcon('actions-admiralcloud-browser', Icon::SIZE_SMALL)->render();
+        $buttonHtml[] = $this->iconFactory->getIcon('actions-admiral_cloud-browser', Icon::SIZE_SMALL)->render();
         $buttonHtml[] = $buttonText;
         $buttonHtml[] = '</a>';
         return LF . implode(LF, $buttonHtml);
     }
 
     /**
-     * Check if the BE user has access to the Admiralcloud storage
+     * Check if the BE user has access to the AdmiralCloud storage
      *
-     * Admin has access when there is a resource storage with driver type admiralcloud
+     * Admin has access when there is a resource storage with driver type AdmiralCloud
      * Editors need to have access to a mount of that storage
      *
      * @return bool
      */
-    protected function admiralcloudStorageAvailable(): bool
+    protected function admiralCloudStorageAvailable(): bool
     {
         /** @var ResourceStorage $fileStorage */
         foreach ($this->getBackendUserAuthentication()->getFileStorages() as $fileStorage) {
-            if ($fileStorage->getDriverType() === AdmiralcloudDriver::KEY) {
+            if ($fileStorage->getDriverType() === AdmiralCloudDriver::KEY) {
                 return true;
             }
         }
@@ -180,18 +180,18 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
     }
 
     /**
-     * Check if the BE user has access to the Admiralcloud browser
+     * Check if the BE user has access to the AdmiralCloud browser
      *
-     * Admin has access when there is a resource storage with driver type admiralcloud
+     * Admin has access when there is a resource storage with driver type AdmiralCloud
      * Editors need to have access to a mount of that storage
      *
      * @return bool
      */
-    protected function displayAdmiralcloudButton(): bool
+    protected function displayAdmiralCloudButton(): bool
     {
         $backendUser = $this->getBackendUserAuthentication();
         $filePermissions = $backendUser->getFilePermissions();
 
-        return $backendUser->isAdmin() || (bool)$filePermissions['addFileViaAdmiralcloud'];
+        return $backendUser->isAdmin() || (bool)$filePermissions['addFileViaAdmiralCloud'];
     }
 }

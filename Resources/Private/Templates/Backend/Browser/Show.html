@@ -8,7 +8,7 @@
 </head>
 <body style="height:100%;width:100%">
 <div id="images"></div>
-<div id="admiralcloud-browser"
+<div id="admiral_cloud-browser"
     data-irreObject="{parameters.irreObject}"
     data-typo3-ajax-url="{ajaxUrl}"
     data-iframeurl="{iframeUrl}">
@@ -19,14 +19,14 @@
         const iframe = document.getElementById('elAdmiralCloud');
         //Path to Auth-Helper Node Script
         console.info(iframe.src);
-        const resp = await fetch(document.getElementById('admiralcloud-browser').getAttribute('data-typo3-ajax-url'), {
+        const resp = await fetch(document.getElementById('admiral_cloud-browser').getAttribute('data-typo3-ajax-url'), {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                callbackUrl: document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl'),
+                callbackUrl: document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl'),
                 device,
             }),
         });
@@ -37,11 +37,11 @@
 
     function applyAuthCode(code) {
         const iframe = document.getElementById('elAdmiralCloud');
-        iframe.src = document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl') + '&code=' + code;
+        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&code=' + code;
     }
     function load(){
         const iframe = document.getElementById('elAdmiralCloud');
-        iframe.src = document.getElementById('admiralcloud-browser').getAttribute('data-iframeurl') + '&auth=1' ;
+        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&auth=1' ;
     }
 
 
@@ -76,8 +76,8 @@
                 parentDocument = contentIframe.contentDocument;
             }
 
-            // Dispatch internal interaction for TYPO3/CMS/AdmiralcloudConnector/Browser
-            var target = document.getElementById('admiralcloud-browser').getAttribute('data-irreObject');
+            // Dispatch internal interaction for TYPO3/CMS/AdmiralCloudConnector/Browser
+            var target = document.getElementById('admiral_cloud-browser').getAttribute('data-irreObject');
             var event, parameters = {
                 detail: {
                     target: target,
@@ -86,11 +86,11 @@
             };
 
             if (typeof CustomEvent === 'function') {
-                event = new CustomEvent('AdmiralcloudBrowserAddMedia', parameters);
+                event = new CustomEvent('AdmiralCloudBrowserAddMedia', parameters);
             } else {
                 // Add IE11 support
                 event = document.createEvent('CustomEvent');
-                event.initCustomEvent('AdmiralcloudBrowserAddMedia', true, true, parameters);
+                event.initCustomEvent('AdmiralCloudBrowserAddMedia', true, true, parameters);
             }
 
             parentDocument.dispatchEvent(event);

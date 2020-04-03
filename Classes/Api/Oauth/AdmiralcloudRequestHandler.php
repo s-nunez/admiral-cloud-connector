@@ -9,9 +9,9 @@
  */
 
 // src/Bynder/Api/Impl/Oauth/AssetBankManager.php
-namespace CPSIT\AdmiralcloudConnector\Api\Oauth;
+namespace CPSIT\AdmiralCloudConnector\Api\Oauth;
 
-use CPSIT\AdmiralcloudConnector\Api\Oauth\Credentials;
+use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
@@ -23,7 +23,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Implementation of IOauthRequestHandler. Using Guzzle as HTTP library.
  */
-class AdmiralcloudRequestHandler
+class AdmiralCloudRequestHandler
 {
 
     /**
@@ -59,12 +59,12 @@ class AdmiralcloudRequestHandler
      * @param string $baseUrl Api base url used for all requests.
      * @param Client $client Optional client passed for handler creation.
      *
-     * @return AdmiralcloudRequestHandler An instance of the request handler properly configured.
+     * @return AdmiralCloudRequestHandler An instance of the request handler properly configured.
      */
     public static function create(Credentials $credentials, $baseUrl, Client $client = null)
     {
 
-        $newOauthHandler = new AdmiralcloudRequestHandler($credentials, $baseUrl);
+        $newOauthHandler = new AdmiralCloudRequestHandler($credentials, $baseUrl);
         $newOauthHandler->initOauthRequestClient($client);
 
         return $newOauthHandler;

@@ -1,6 +1,6 @@
 <?php
 
-use CPSIT\AdmiralcloudConnector\Backend\InlineControlContainer;
+use CPSIT\AdmiralCloudConnector\Backend\InlineControlContainer;
 
 defined('TYPO3_MODE') || die('Access denied.');
 
@@ -11,11 +11,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1433198160] = [
 ];
 
 // Register the FAL driver for AdmiralCloud
-$GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver::KEY] = [
-'class' => \CPSIT\AdmiralcloudConnector\Resource\AdmiralcloudDriver::class,
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver::KEY] = [
+'class' => \CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver::class,
 'label' => 'Admiral Cloud',
 // @todo: is currently needed to not break the backend. Needs to be fixed in TYPO3
-'flexFormDS' => 'FILE:EXT:admiralcloud_connector/Configuration/FlexForms/AdmiralcloudDriverFlexForm.xml'
+'flexFormDS' => 'FILE:EXT:admiral_cloud_connector/Configuration/FlexForms/AdmiralCloudDriverFlexForm.xml'
 ];
 
 // Register slot to use AdmiralCloud API for processed file
@@ -23,58 +23,58 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\Admiralclo
     ->connect(
         \TYPO3\CMS\Extensionmanager\Utility\InstallUtility::class,
         'afterExtensionInstall',
-        \CPSIT\AdmiralcloudConnector\Slot\InstallSlot::class,
+        \CPSIT\AdmiralCloudConnector\Slot\InstallSlot::class,
         'createAdmiralCloudFileStorage'
     );
 
 \TYPO3\CMS\Core\Resource\Rendering\RendererRegistry::getInstance()
-    ->registerRendererClass(\CPSIT\AdmiralcloudConnector\Resource\Rendering\AssetRenderer::class);
+    ->registerRendererClass(\CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer::class);
 
 // Register the extractor to fetch metadata from AdmiralCloud
 \TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::getInstance()
-    ->registerExtractionService(\CPSIT\AdmiralcloudConnector\Resource\Index\Extractor::class);
+    ->registerExtractionService(\CPSIT\AdmiralCloudConnector\Resource\Index\Extractor::class);
 
 // Override TYPO3 File class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\Resource\File::class
+    'className' => \CPSIT\AdmiralCloudConnector\Resource\File::class
 ];
 
 // Override TYPO3 File class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\ProcessedFile::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\Resource\ProcessedFile::class
+    'className' => \CPSIT\AdmiralCloudConnector\Resource\ProcessedFile::class
 ];
 
 // Override TYPO3 FileIndexRepository class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\Index\FileIndexRepository::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository::class
+    'className' => \CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository::class
 ];
 
 // Override Fluid ImageViewHelper class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\ImageViewHelper::class
+    'className' => \CPSIT\AdmiralCloudConnector\ViewHelpers\ImageViewHelper::class
 ];
 
 // Override Fluid ImageViewHelper class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper::class] = [
-    'className' => \CPSIT\AdmiralcloudConnector\ViewHelpers\Uri\ImageViewHelper::class
+    'className' => \CPSIT\AdmiralCloudConnector\ViewHelpers\Uri\ImageViewHelper::class
 ];
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
     'nodeName' => 'admiralCloudImageManipulation',
-    'class' => \CPSIT\AdmiralcloudConnector\Form\Element\AdmiralCloudImageManipulationElement::class,
+    'class' => \CPSIT\AdmiralCloudConnector\Form\Element\AdmiralCloudImageManipulationElement::class,
     'priority' => 50
 ];
 
 $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
 $iconRegistry->registerIcon(
-    'actions-admiralcloud-browser',
+    'actions-admiral_cloud-browser',
     \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-    ['source' => 'EXT:admiralcloud_connector/Resources/Public/Icons/actions-admiralcloud-browser.svg']
+    ['source' => 'EXT:admiral_cloud_connector/Resources/Public/Icons/actions-admiral_cloud-browser.svg']
 );
 $iconRegistry->registerIcon(
-    'permissions-admiralcloud-browser',
+    'permissions-admiral_cloud-browser',
     \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
-    ['source' => 'EXT:admiralcloud_connector/Resources/Public/Icons/permissions-admiralcloud-browser.svg']
+    ['source' => 'EXT:admiral_cloud_connector/Resources/Public/Icons/permissions-admiral_cloud-browser.svg']
 );
 unset($iconRegistry);
 

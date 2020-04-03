@@ -1,9 +1,9 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Controller\Backend;
-use CPSIT\AdmiralcloudConnector\Resource\Index\FileIndexRepository;
-use CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService;
-use CPSIT\AdmiralcloudConnector\Traits\AdmiralcloudStorage;
+namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
+use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
+use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -50,7 +50,7 @@ use TYPO3\CMS\Core\Resource\File;
  ***************************************************************/
 class BrowserController extends AbstractBackendController
 {
-    use AdmiralcloudStorage;
+    use AdmiralCloudStorage;
 
     /**
      * Fluid Standalone View
@@ -64,21 +64,21 @@ class BrowserController extends AbstractBackendController
      *
      * @var string[]
      */
-    protected $templateRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Templates/Backend/Browser'];
+    protected $templateRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Templates/Backend/Browser'];
 
     /**
      * PartialRootPath
      *
      * @var string[]
      */
-    protected $partialRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Partials/Backend/Browser'];
+    protected $partialRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Partials/Backend/Browser'];
 
     /**
      * LayoutRootPath
      *
      * @var string[]
      */
-    protected $layoutRootPaths = ['EXT:admiralcloud_connector/Resources/Private/Layouts/Backend/Browser'];
+    protected $layoutRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Layouts/Backend/Browser'];
 
     /**
      * BackendTemplateView Container
@@ -114,10 +114,10 @@ class BrowserController extends AbstractBackendController
     /**
      * locationRepository
      *
-     * @var \CPSIT\AdmiralcloudConnector\Service\AdmiralcloudService
+     * @var \CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService
      * @TYPO3\CMS\Extbase\Annotation\Inject
      */
-    protected $admiralcloudService = null;
+    protected $admiralCloudService = null;
 
     /**
      * @param ServerRequestInterface|null $request
@@ -152,7 +152,7 @@ class BrowserController extends AbstractBackendController
 
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
-        $path = $uriBuilder->buildUriFromRoute('ajax_admiralcloud_browser_auth');
+        $path = $uriBuilder->buildUriFromRoute('ajax_admiral_cloud_browser_auth');
         $this->view->assignMultiple([
             'ajaxUrl' => (string)$path,
             'iframeUrl' => $callbackUrl . base64_encode('http://' . $_SERVER['HTTP_HOST']),
@@ -170,14 +170,14 @@ class BrowserController extends AbstractBackendController
     public function apiAction()
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
 
-        $data = $this->admiralcloudService->getMediaInfo([33512]);
-        #$data = $this->admiralcloudService->getMetaData([33512]);
+        $data = $this->admiralCloudService->getMediaInfo([33512]);
+        #$data = $this->admiralCloudService->getMetaData([33512]);
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
 
-        $data = $this->admiralcloudService->getSearch('716821 ');
+        $data = $this->admiralCloudService->getSearch('716821 ');
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
         #var_dump($data);
@@ -194,7 +194,7 @@ class BrowserController extends AbstractBackendController
     public function authAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralcloudService = $objectManager->get(AdmiralcloudService::class);
+        $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
         $bodyParams = json_decode($request->getBody()->getContents());
         $settings = [
             'callbackUrl' => $bodyParams->callbackUrl,
@@ -202,11 +202,11 @@ class BrowserController extends AbstractBackendController
             'action' => 'app',
             'device' => $bodyParams->device
         ];
-        $admiralcloudAuthCode = $this->admiralcloudService->getAdmiralcloudAuthCode($settings);
+        $admiralCloudAuthCode = $this->admiralCloudService->getAdmiralCloudAuthCode($settings);
 
         header('Content-type: application/json');
         $data = [
-            'code' => $admiralcloudAuthCode
+            'code' => $admiralCloudAuthCode
         ];
         echo json_encode($data);
         die();
@@ -232,7 +232,7 @@ class BrowserController extends AbstractBackendController
 
             $file = $storage->getFile($mediaContainer['id']);
             if ($file instanceof File) {
-                $file->setTxAdmiralcloudconnectorLinkhashFromMediaContainer($mediaContainer);
+                $file->setTxAdmiralCloudConnectorLinkhashFromMediaContainer($mediaContainer);
                 $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
 
                 $this->getFileIndexRepository()->add($file);
@@ -269,12 +269,14 @@ class BrowserController extends AbstractBackendController
      */
     protected function storeInSessionCropInformation(FileInterface $file, array $media): void
     {
-        $cropperData = $media['cropperData'];
-        unset($cropperData['smartCropperUrl'], $cropperData['smartCropperUrlAOI']);
+        if (!empty($media['cropperData'])) {
+            $cropperData = $media['cropperData'];
+            unset($cropperData['smartCropperUrl'], $cropperData['smartCropperUrlAOI']);
 
-        $sessionData = $this->getBackendUser()->getSessionData('admiralCloud') ?? [];
-        $sessionData['cropInformation'][$file->getUid()] = $cropperData;
-        $this->getBackendUser()->setAndSaveSessionData('admiralCloud', $sessionData);
+            $sessionData = $this->getBackendUser()->getSessionData('admiralCloud') ?? [];
+            $sessionData['cropInformation'][$file->getUid()] = $cropperData;
+            $this->getBackendUser()->setAndSaveSessionData('admiralCloud', $sessionData);
+        }
     }
 
     /**

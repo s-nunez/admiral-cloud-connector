@@ -9,7 +9,7 @@
  */
 
 // src/Bynder/Api/Impl/Oauth/Credentials.php
-namespace CPSIT\AdmiralcloudConnector\Api\Oauth;
+namespace CPSIT\AdmiralCloudConnector\Api\Oauth;
 
 /**
  * Class to hold Oauth tokens necessary for every API request.

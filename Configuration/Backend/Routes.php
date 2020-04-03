@@ -5,19 +5,19 @@
  * All code (c) Beech.it all rights reserved
  */
 
-use CPSIT\AdmiralcloudConnector\Controller\Backend\BrowserController;
+use CPSIT\AdmiralCloudConnector\Controller\Backend\BrowserController;
 
 return [
-    'admiralcloud_browser_show' => [
-        'path' => '/admiralcloud/browser/show',
+    'admiral_cloud_browser_show' => [
+        'path' => '/admiral_cloud/browser/show',
         'target' => BrowserController::class . '::showAction'
     ],
-    'admiralcloud_browser_upload' => [
-        'path' => '/admiralcloud/browser/upload',
+    'admiral_cloud_browser_upload' => [
+        'path' => '/admiral_cloud/browser/upload',
         'target' => BrowserController::class . '::uploadAction'
     ],
-    'admiralcloud_browser_api' => [
-        'path' => '/admiralcloud/browser/api',
+    'admiral_cloud_browser_api' => [
+        'path' => '/admiral_cloud/browser/api',
         'target' => BrowserController::class . '::apiAction'
     ],
 ];

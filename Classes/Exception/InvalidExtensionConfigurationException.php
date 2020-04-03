@@ -1,6 +1,6 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Exception;
+namespace CPSIT\AdmiralCloudConnector\Exception;
 
 /*
  * This source file is proprietary property of Beech.it
@@ -8,6 +8,6 @@ namespace CPSIT\AdmiralcloudConnector\Exception;
  * All code (c) Beech.it all rights reserved
  */
 
-class InvalidExtensionConfigurationException extends \InvalidArgumentException implements AdmiralcloudConnectorException
+class InvalidExtensionConfigurationException extends \InvalidArgumentException implements AdmiralCloudConnectorException
 {
 }

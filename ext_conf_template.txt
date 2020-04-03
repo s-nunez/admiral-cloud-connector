@@ -1,5 +1,5 @@
 # cat=basic/API; type=string; label=Image Unavailable: Displayed image when file is not retrievable like when the file status is deleted or unpublished
-image_unavailable = EXT:admiralcloud_connector/Resources/Public/Icons/ImageUnavailable.svg
+image_unavailable = EXT:admiral_cloud_connector/Resources/Public/Icons/ImageUnavailable.svg
 
 # cat=basic/assets; type=string; label=File extensions for audio; Used for audio in your Bynder environment
 asset_type_audio = mp4, mov

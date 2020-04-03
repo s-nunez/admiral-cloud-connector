@@ -1,7 +1,7 @@
 {
-  "name": "cpsit/admiralcloud-connector",
+  "name": "cpsit/admiral-cloud-connector",
   "type": "typo3-cms-extension",
-  "description": "Admiral cloud connector",
+  "description": "AdmiralCloud connector",
   "keywords": [
     "TYPO3"
   ],
@@ -15,7 +15,7 @@
   },
   "autoload": {
     "psr-4": {
-      "CPSIT\\AdmiralcloudConnector\\": "Classes/"
+      "CPSIT\\AdmiralCloudConnector\\": "Classes/"
     }
   },
   "autoload-dev": {
@@ -23,6 +23,6 @@
     }
   },
   "replace": {
-    "cpsit/admiralcloud-connector": "self.version"
+    "cpsit/admiral-cloud-connector": "self.version"
   }
 }

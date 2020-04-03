@@ -3,7 +3,7 @@
 $additionalFields = [
     'tx_admiralcloudconnector_crop' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:admiralcloud_connector/Resources/Private/Language/locallang_be.xlf:sys_file_reference.tx_admiralcloudconnector_crop',
+        'label' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:sys_file_reference.tx_admiralcloudconnector_crop',
         'config' => [
             'type' => 'input',
             'renderType' => 'admiralCloudImageManipulation'

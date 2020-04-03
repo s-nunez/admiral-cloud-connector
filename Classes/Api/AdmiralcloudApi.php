@@ -1,8 +1,8 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Api;
-use CPSIT\AdmiralcloudConnector\Api\Oauth\Credentials;
-use CPSIT\AdmiralcloudConnector\Api\Oauth\AdmiralcloudRequestHandler;
+namespace CPSIT\AdmiralCloudConnector\Api;
+use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
+use CPSIT\AdmiralCloudConnector\Api\Oauth\AdmiralCloudRequestHandler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
@@ -34,7 +34,7 @@ use Psr\Http\Message\ServerRequestInterface;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-class AdmiralcloudApi
+class AdmiralCloudApi
 {
     /**
      * @var string Base Url necessary for API calls.
@@ -42,7 +42,7 @@ class AdmiralcloudApi
     protected $baseUrl;
 
     /**
-     * @var AdmiralcloudRequestHandler Instance of the Oauth request handler.
+     * @var AdmiralCloudRequestHandler Instance of the Oauth request handler.
      */
     protected $requestHandler;
 
@@ -76,9 +76,9 @@ class AdmiralcloudApi
     }
 
     /**
-     * Creates an instance of AdmiralcloudApi
+     * Creates an instance of AdmiralCloudApi
      *
-     * @return AdmiralcloudApi instance.
+     * @return AdmiralCloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
     public static function create($settings){
@@ -119,16 +119,16 @@ class AdmiralcloudApi
 
             curl_close($curl);
 
-            return new AdmiralcloudApi($response);
+            return new AdmiralCloudApi($response);
         } else {
-            throw new InvalidArgumentException("Settings passed for AdmiralcloudApi service creation are not valid.");
+            throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
         }
     }
 
     /**
-     * Creates an instance of AdmiralcloudApi
+     * Creates an instance of AdmiralCloudApi
      *
-     * @return AdmiralcloudApi instance.
+     * @return AdmiralCloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
     public static function auth($settings)
@@ -208,7 +208,7 @@ class AdmiralcloudApi
             $code = json_decode($response);
             return $code->code;
         } else {
-            throw new InvalidArgumentException("Settings passed for AdmiralcloudApi service creation are not valid.");
+            throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
         }
     }
 
@@ -277,17 +277,17 @@ class AdmiralcloudApi
     }
 
     /**
-     * @return AdmiralcloudRequestHandler
+     * @return AdmiralCloudRequestHandler
      */
-    public function getRequestHandler(): AdmiralcloudRequestHandler
+    public function getRequestHandler(): AdmiralCloudRequestHandler
     {
         return $this->requestHandler;
     }
 
     /**
-     * @param AdmiralcloudRequestHandler $requestHandler
+     * @param AdmiralCloudRequestHandler $requestHandler
      */
-    public function setRequestHandler(AdmiralcloudRequestHandler $requestHandler)
+    public function setRequestHandler(AdmiralCloudRequestHandler $requestHandler)
     {
         $this->requestHandler = $requestHandler;
     }

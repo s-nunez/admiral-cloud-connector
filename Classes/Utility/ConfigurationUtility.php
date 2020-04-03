@@ -1,11 +1,11 @@
 <?php
 
-namespace CPSIT\AdmiralcloudConnector\Utility;
+namespace CPSIT\AdmiralCloudConnector\Utility;
 
 
 
-use CPSIT\AdmiralcloudConnector\Exception\InvalidExtensionConfigurationException;
-use CPSIT\AdmiralcloudConnector\Resource\Asset;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidExtensionConfigurationException;
+use CPSIT\AdmiralCloudConnector\Resource\Asset;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -15,11 +15,11 @@ use TYPO3\CMS\Extensionmanager\Utility\ConfigurationUtility as CoreConfiguration
 
 /**
  * Utility: Configuration
- * @package CPSIT\AdmiralcloudConnector\Utility
+ * @package CPSIT\AdmiralCloudConnector\Utility
  */
 class ConfigurationUtility
 {
-    const EXTENSION = 'admiralcloud_connector';
+    const EXTENSION = 'admiral_cloud_connector';
 
     /**
      * @param string $allowedElements
@@ -62,7 +62,7 @@ class ConfigurationUtility
     {
         $path = GeneralUtility::getFileAbsFileName(
             (self::getExtensionConfiguration())['image_unavailable'] ??
-            'EXT:admiralcloud_connector/Resources/Public/Icons/ImageUnavailable.svg'
+            'EXT:admiral_cloud_connector/Resources/Public/Icons/ImageUnavailable.svg'
         );
 
         return ($relativeToCurrentScript) ? PathUtility::getAbsoluteWebPath($path) : str_replace(PATH_site, '', $path);
@@ -126,20 +126,20 @@ class ConfigurationUtility
                 'consumer_secret' => '',
                 'token_key' => '',
                 'token_secret' => '',
-                'image_unavailable' => 'EXT:admiralcloud_connector/Resources/Public/Icons/ImageUnavailable.svg',
+                'image_unavailable' => 'EXT:admiral_cloud_connector/Resources/Public/Icons/ImageUnavailable.svg',
                 'asset_type_image' => 'jpg,png,gif',
                 'asset_type_video' => 'mp4'
             ];
 
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             if (class_exists(CoreConfigurationUtility::class)) {
-                $currentConfiguration = $objectManager->get(CoreConfigurationUtility::class)->getCurrentConfiguration('admiralcloud_connector');
+                $currentConfiguration = $objectManager->get(CoreConfigurationUtility::class)->getCurrentConfiguration('admiral_cloud_connector');
                 $configuration = [];
                 foreach ($currentConfiguration as $key => $value) {
                     $configuration[$key] = $value['value'];
                 }
             } else {
-                ArrayUtility::mergeRecursiveWithOverrule($configuration, (array)$objectManager->get(ExtensionConfiguration::class)->get('admiralcloud_connector'));
+                ArrayUtility::mergeRecursiveWithOverrule($configuration, (array)$objectManager->get(ExtensionConfiguration::class)->get('admiral_cloud_connector'));
             }
 
             /*

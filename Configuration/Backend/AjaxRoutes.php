@@ -5,15 +5,15 @@
  * All code (c) Beech.it all rights reserved
  */
 
-use CPSIT\AdmiralcloudConnector\Controller\Backend\BrowserController;
+use CPSIT\AdmiralCloudConnector\Controller\Backend\BrowserController;
 
 return [
-    'admiralcloud_browser_auth' => [
-        'path' => '/admiralcloud/browser/auth',
+    'admiral_cloud_browser_auth' => [
+        'path' => '/admiral_cloud/browser/auth',
         'target' => BrowserController::class . '::authAction'
     ],
-    'admiralcloud_browser_get_files' => [
-        'path' => '/admiralcloud/browser/getfiles',
+    'admiral_cloud_browser_get_files' => [
+        'path' => '/admiral_cloud/browser/getfiles',
         'target' => BrowserController::class . '::getFilesAction'
     ],
 ];
