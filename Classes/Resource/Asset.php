@@ -160,18 +160,6 @@ class Asset
     }
 
     /**
-     * @param string $width
-     * @param string $height
-     * @return string
-     * @throws InvalidExtensionConfigurationException
-     * @throws InvalidThumbnailException
-     */
-    public function getOnTheFlyPublicUrl($width, $height): string
-    {
-        // TODO implement me or remove me if it is not needed
-    }
-
-    /**
      * @param int $storageUid
      * @return array
      */

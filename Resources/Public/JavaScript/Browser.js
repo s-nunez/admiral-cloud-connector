@@ -32,11 +32,11 @@ define(['jquery',
 
         // Add all listeners based on inline button
         $button.on('click', function (event) {
-            Browser.browserUrl = $button.data('admiralCloudBrowserUrl');
+            Browser.browserUrl = $button.data('admiral_cloudBrowserUrl');
             Browser.open();
         });
         $uploadButton.on('click', function (event) {
-            Browser.browserUrl = $uploadButton.data('admiralCloudBrowserUrl');
+            Browser.browserUrl = $uploadButton.data('admiral_cloudBrowserUrl');
             Browser.open();
         });
 
