@@ -11,10 +11,17 @@
 <div id="admiral_cloud-browser"
     data-irreObject="{parameters.irreObject}"
     data-typo3-ajax-url="{ajaxUrl}"
-    data-iframeurl="{iframeUrl}">
+    data-iframeurl="{iframeUrl}"
+    data-mediaContainerId="{mediaContainerId}"
+    data-embedLink="{embedLink}"
+     data-iframeHost="{iframeHost}"
+     data-modus="{modus}"
+>
 </div>
 <iframe id="elAdmiralCloud" src="" style="width:100%;height:100%"></iframe>
 <script>
+    var iframeURL_HOST = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeHost');
+    var readyCallbacks = [];
     async function loadIframeWithAuthCode(device) {
         const iframe = document.getElementById('elAdmiralCloud');
         //Path to Auth-Helper Node Script
@@ -40,10 +47,27 @@
         iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&code=' + code;
     }
     function load(){
+        mediaContainerId = document.getElementById('admiral_cloud-browser').getAttribute('data-mediaContainerId');
+        embedLink = document.getElementById('admiral_cloud-browser').getAttribute('data-embedLink');
+        if (mediaContainerId && embedLink) {
+            readyCallbacks.unshift(function () {
+                document.getElementById('elAdmiralCloud').contentWindow.postMessage(JSON.stringify({
+                    command: 'CROP_IMAGE',
+                    mediaContainerId,
+                    embedLink
+                }), iframeURL_HOST);
+            });
+        }
         const iframe = document.getElementById('elAdmiralCloud');
-        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&auth=1' ;
+        iframe.src = '';
+        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&auth=1';
     }
 
+    function executeReadyCallbacks() {
+        while (readyCallbacks.length > 0) {
+            readyCallbacks.pop().call();
+        }
+    }
 
     window.onmessage = function (e) {
         if(e.data) {
@@ -63,6 +87,15 @@
             return;
         }
 
+        // Receive Signal to execute Ready Callbacks
+        if (data.command === 'READY') {
+            console.info('ready');
+            setTimeout(function () {
+                executeReadyCallbacks();
+            }, 3000);
+            return;
+        }
+
         // Receive Media
         if (data.command === 'MEDIA') {
             console.log('MEDIA', data);
@@ -77,11 +110,13 @@
             }
 
             // Dispatch internal interaction for TYPO3/CMS/AdmiralCloudConnector/Browser
+            var modus = document.getElementById('admiral_cloud-browser').getAttribute('data-modus');
             var target = document.getElementById('admiral_cloud-browser').getAttribute('data-irreObject');
             var event, parameters = {
                 detail: {
                     target: target,
-                    media: data
+                    media: data,
+                    modus: modus
                 }
             };
 

@@ -12,6 +12,7 @@ use CPSIT\AdmiralCloudConnector\Resource\File;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
@@ -127,7 +128,11 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         $fieldWizardResult = $this->renderFieldWizard();
         $fieldWizardHtml = $fieldWizardResult['html'];
         $resultArray = $this->mergeChildReturnIntoExistingResult($resultArray, $fieldWizardResult, false);
-
+        $cropParams = [
+            'mediaContainerId' => $file->getIdentifier(),
+            'embedLink' => $file->getTxAdmiralCloudConnectorLinkhash(),
+            'irreObject' => $parameterArray['itemFormElID']
+        ];
         $arguments = [
             'fieldInformation' => $fieldInformationHtml,
             'fieldControl' => $fieldControlHtml,
@@ -139,12 +144,13 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
             'formEngine' => [
                 'field' => [
                     'value' => $parameterArray['itemFormElValue'],
-                    'name' => $parameterArray['itemFormElName']
+                    'name' => $parameterArray['itemFormElName'],
+                    'id' => $parameterArray['itemFormElID']
                 ],
                 'validation' => '[]'
             ],
+            'cropUrl' => $this->uriBuilder->buildUriFromRoute('admiral_cloud_browser_crop', $cropParams)
         ];
-
         $this->templateView->assignMultiple($arguments);
         $resultArray['html'] = $this->templateView->render();
 

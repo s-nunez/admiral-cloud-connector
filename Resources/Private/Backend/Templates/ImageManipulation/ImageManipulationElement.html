@@ -3,22 +3,22 @@
 	<f:layout name="ImageManipulation" />
 
 	<f:section name="Main">
+		<div class="form-control-wrap">
+			<input type="hidden" id="{formEngine.field.id}"
+				   name="{formEngine.field.name}"
+				   value="{formEngine.field.value}"
+				   data-formengine-validation-rules="{formEngine.validation}"/>
 
-		<input type="hidden" id="{formEngine.field.id}"
-			   name="{formEngine.field.name}"
-			   value="{formEngine.field.value}"
-			   data-formengine-validation-rules="{formEngine.validation}"/>
+			<f:comment>TODO: implement me</f:comment>
 
-		<f:comment>TODO: implement me</f:comment>
-
+			<f:if condition="{image}">
+				<f:render section="cropButton" arguments="{_all}" />
+			</f:if>
+		</div>
 		<f:if condition="{image}">
-			<f:image image="{image}"
-					 txAdmiralCloudCrop="{formEngine.field.value}"
-					 maxHeight="150"
-					 class="thumbnail thumbnail-status"
-					 />
+			<img id="{formEngine.field.id}_image" src="{f:uri.image(image:image,txAdmiralCloudCrop:'{formEngine.field.value -> f:format.raw()}',maxHeight: '150')}"
+				 class="thumbnail thumbnail-status" alt="" title="" />
 		</f:if>
-
 		<f:comment>
 
 		<f:if condition="{isAllowedFileExtension} && {image.properties.width}">
@@ -96,5 +96,13 @@
 		</f:if>
 
 		</f:comment>
+	</f:section>
+	<f:section name="cropButton">
+			<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn crop "
+					data-admiral_cloud-browser-url="{cropUrl}"
+			>
+				<span class="t3-icon fa fa-crop"></span>
+				<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_wizards.xlf:imwizard.open-editor"/>
+			</a>
 	</f:section>
 </html>

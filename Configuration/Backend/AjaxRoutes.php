@@ -16,4 +16,8 @@ return [
         'path' => '/admiral_cloud/browser/getfiles',
         'target' => BrowserController::class . '::getFilesAction'
     ],
+    'admiral_cloud_browser_crop_file' => [
+        'path' => '/admiral_cloud/browser/cropfile',
+        'target' => BrowserController::class . '::cropFileAction'
+    ],
 ];

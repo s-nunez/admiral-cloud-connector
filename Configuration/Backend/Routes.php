@@ -16,6 +16,10 @@ return [
         'path' => '/admiral_cloud/browser/upload',
         'target' => BrowserController::class . '::uploadAction'
     ],
+    'admiral_cloud_browser_crop' => [
+        'path' => '/admiral_cloud/browser/crop',
+        'target' => BrowserController::class . '::cropAction'
+    ],
     'admiral_cloud_browser_api' => [
         'path' => '/admiral_cloud/browser/api',
         'target' => BrowserController::class . '::apiAction'

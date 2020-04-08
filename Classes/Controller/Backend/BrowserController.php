@@ -126,7 +126,7 @@ class BrowserController extends AbstractBackendController
      */
     public function showAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        return $this->prepareShowUpload($request, $response,'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
+        return $this->prepareIframe($request, $response,'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
     }
 
     /**
@@ -136,7 +136,22 @@ class BrowserController extends AbstractBackendController
      */
     public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        return $this->prepareShowUpload($request, $response, 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=');
+        return $this->prepareIframe($request, $response, 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=');
+    }
+
+    /**
+     * @param ServerRequestInterface|null $request
+     * @param ResponseInterface|null $response
+     * @return ResponseInterface
+     */
+    public function cropAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    {
+        $this->view->assignMultiple([
+            'mediaContainerId' => $request->getQueryParams()['mediaContainerId'],
+            'embedLink' => $request->getQueryParams()['embedLink'],
+            'modus' => 'crop'
+        ]);
+        return $this->prepareIframe($request, $response, 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
     }
 
     /**
@@ -146,7 +161,7 @@ class BrowserController extends AbstractBackendController
      * @return ResponseInterface
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    public function prepareShowUpload(ServerRequestInterface $request, ResponseInterface $response, string $callbackUrl){
+    public function prepareIframe(ServerRequestInterface $request, ResponseInterface $response, string $callbackUrl){
         $this->view->setTemplate('Show');
         $parameters = $request->getQueryParams();
 
@@ -154,6 +169,7 @@ class BrowserController extends AbstractBackendController
         $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
         $path = $uriBuilder->buildUriFromRoute('ajax_admiral_cloud_browser_auth');
         $this->view->assignMultiple([
+            'iframeHost' => 'https://t3intpoc.admiralcloud.com',
             'ajaxUrl' => (string)$path,
             'iframeUrl' => $callbackUrl . base64_encode('http://' . $_SERVER['HTTP_HOST']),
             'parameters' => [
@@ -250,6 +266,44 @@ class BrowserController extends AbstractBackendController
             }
 
             return $this->createJsonResponse($response, ['files' => $files], 201);
+        } catch (Exception $e) {
+            return $this->createJsonResponse($response, [
+                'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
+                'exception' => [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage()
+                ],
+            ], 404);
+        }
+    }
+
+    /**
+     * Action: Retrieve file from storage
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function cropFileAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $media = $request->getParsedBody()['media'];
+        $target = $request->getParsedBody()['target'];
+        $cropperData = $media['cropperData'];
+        unset($cropperData['smartCropperUrl'], $cropperData['smartCropperUrlAOI']);
+        $cropperData = json_encode($cropperData);
+
+
+        try {
+            $storage = $this->getAdmiralCloudStorage();
+            $mediaContainer = $media['mediaContainer'];
+            $file = $storage->getFile($mediaContainer['id']);
+            $file->setTxAdmiralCloudConnectorLinkhashFromMediaContainer($mediaContainer);
+            $file->setTxAdmiralCloudConnectorCrop($cropperData);
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
+            $link = $this->admiralCloudService->getImagePublicUrl($file,226,150);
+
+            return $this->createJsonResponse($response, ['target' => $target,'cropperData' => $cropperData,'link' => $link], 201);
         } catch (Exception $e) {
             return $this->createJsonResponse($response, [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
