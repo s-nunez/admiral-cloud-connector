@@ -6,6 +6,7 @@ use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApiFactory;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -189,7 +190,7 @@ class AdmiralCloudService implements SingletonInterface
         $height = $height ?: 600;
 
         if ($file->getTxAdmiralCloudConnectorCrop()) {
-            $link = 'https://smartcropdev.admiralcloud.com/v3/deliverEmbed/'
+            $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/cropperjsfocus/'
                 . $width
@@ -199,7 +200,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true&env=dev';
         } else {
-            $link = 'https://images.admiralcloud.com/v3/deliverEmbed/'
+            $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/autocrop/'
                 . $width
@@ -223,7 +224,7 @@ class AdmiralCloudService implements SingletonInterface
             $file = $file->getOriginalFile();
         }
 
-        return 'https://imagesdev.admiralcloud.com/v5/deliverEmbed/'
+        return ConfigurationUtility::getThumbnailUrl() . '/v5/deliverEmbed/'
             . $file->getTxAdmiralCloudConnectorLinkhash()
             . '/image/144';
     }

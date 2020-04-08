@@ -4,6 +4,7 @@
 namespace CPSIT\AdmiralCloudConnector\Resource;
 
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -81,7 +82,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
         foreach ($links as $link) {
             // TODO make this numbers from configuration
             if (isset($link['playerConfigurationId']) && isset($link['flag'])
-                && $link['playerConfigurationId'] == 3 && $link['flag'] == 0) {
+                && $link['playerConfigurationId'] == ConfigurationUtility::getImageConfigId() && $link['flag'] == 0) {
                 $linkhash = $link['link'];
                 break;
             }

@@ -181,4 +181,105 @@ class ConfigurationUtility
 
         return $url;
     }
+
+    public static function isProduction(): bool {
+        if(getenv('ADMIRALCLOUD_IS_PRODUCTION')){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getApiUrl(): string {
+        $add = '';
+        if(!self::isProduction()){
+            $add = 'dev';
+        }
+        return 'https://api' . $add . '.admiralcloud.com/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getAuthUrl(): string {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = 'dev';
+        }
+        return 'https://auth' . $add . '.admiralcloud.com/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getSmartcropUrl(): string {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = 'dev';
+        }
+        return 'https://smartcrop' . $add . '.admiralcloud.com/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImageUrl(): string {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = '';
+        }
+        return 'https://images' . $add . '.admiralcloud.com/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getThumbnailUrl(): string {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = 'dev';
+        }
+        return 'https://images' . $add . '.admiralcloud.com';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getIframeUrl(): string {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = '';
+        }
+        return 'https://t3intpoc' . $add . '.admiralcloud.com/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImageConfigId(): string {
+        return getenv('ADMIRALCLOUD_IMAGE_CONFIG_ID') ?: 3;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getVideoConfigId(): string {
+        return getenv('ADMIRALCLOUD_VIDEO_CONFIG_ID') ?: 2;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getDocumentConfigId(): string {
+        return getenv('ADMIRALCLOUD_DOCUMENT_CONFIG_ID') ?: 5;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getAudioConfigId(): string {
+        return getenv('ADMIRALCLOUD_AUDIO_CONFIG_ID') ?: 4;
+    }
 }

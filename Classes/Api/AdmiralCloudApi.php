@@ -3,6 +3,7 @@
 namespace CPSIT\AdmiralCloudConnector\Api;
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use CPSIT\AdmiralCloudConnector\Api\Oauth\AdmiralCloudRequestHandler;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
@@ -98,7 +99,7 @@ class AdmiralCloudApi
             $signedValues = self::acSignatureSign($params,'v5');
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://apidev.admiralcloud.com/v5/" . $settings['route'],
+                CURLOPT_URL => ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'],
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -158,7 +159,7 @@ class AdmiralCloudApi
             $signedValues = self::acSignatureSign($params);
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://authdev.admiralcloud.com/v4/login/app?poc=true",
+                CURLOPT_URL => ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -191,7 +192,7 @@ class AdmiralCloudApi
             ];
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://authdev.admiralcloud.com/v4/requestCode?" . http_build_query($codeParams),
+                CURLOPT_URL => ConfigurationUtility::getAuthUrl() . "v4/requestCode?" . http_build_query($codeParams),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,

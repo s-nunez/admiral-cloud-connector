@@ -4,6 +4,7 @@ namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -126,7 +127,7 @@ class BrowserController extends AbstractBackendController
      */
     public function showAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        return $this->prepareIframe($request, $response,'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
+        return $this->prepareIframe($request, $response,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
     }
 
     /**
@@ -136,7 +137,7 @@ class BrowserController extends AbstractBackendController
      */
     public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        return $this->prepareIframe($request, $response, 'https://t3intpoc.admiralcloud.com/upload/files?cmsOrigin=');
+        return $this->prepareIframe($request, $response, ConfigurationUtility::getIframeUrl() . 'upload/files?cmsOrigin=');
     }
 
     /**
@@ -151,7 +152,7 @@ class BrowserController extends AbstractBackendController
             'embedLink' => $request->getQueryParams()['embedLink'],
             'modus' => 'crop'
         ]);
-        return $this->prepareIframe($request, $response, 'https://t3intpoc.admiralcloud.com/overview?cmsOrigin=');
+        return $this->prepareIframe($request, $response, ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
     }
 
     /**
@@ -169,7 +170,7 @@ class BrowserController extends AbstractBackendController
         $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
         $path = $uriBuilder->buildUriFromRoute('ajax_admiral_cloud_browser_auth');
         $this->view->assignMultiple([
-            'iframeHost' => 'https://t3intpoc.admiralcloud.com',
+            'iframeHost' => rtrim(ConfigurationUtility::getIframeUrl(),'/'),
             'ajaxUrl' => (string)$path,
             'iframeUrl' => $callbackUrl . base64_encode('http://' . $_SERVER['HTTP_HOST']),
             'parameters' => [
