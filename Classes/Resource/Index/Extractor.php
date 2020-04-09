@@ -67,16 +67,15 @@ class Extractor implements Resource\Index\ExtractorInterface
     {
         $asset = $this->getAsset($file->getIdentifier());
         $expectedData = [
+            'alternative',
             'title',
             'description',
             'copyright',
             'keywords',
         ];
         if ($asset->isImage() || $asset->isDocument()) {
-            ArrayUtility::mergeRecursiveWithOverrule($expectedData, [
-                'height',
-                'width'
-            ]);
+            $expectedData[] = 'height';
+            $expectedData[] = 'width';
         }
 
         $meta = $asset->extractProperties($expectedData);

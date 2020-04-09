@@ -44,7 +44,7 @@ define(['jquery',
             Browser.open();
         });
         $(document).on("click", Browser.cropButton, function () {
-            Browser.browserUrl = $cropButton.data('admiral_cloudBrowserUrl');
+            Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
             Browser.open();
         });
 

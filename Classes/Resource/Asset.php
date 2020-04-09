@@ -245,6 +245,8 @@ class Asset
                 return $information['folder_hash'];
 
             // Metadata
+            case 'alternative':
+                return $information['alternative'];
             case 'title':
                 return $information['title'];
             case 'description':

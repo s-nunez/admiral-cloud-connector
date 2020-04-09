@@ -39,6 +39,8 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  ***************************************************************/
 class AdmiralCloudService implements SingletonInterface
 {
+    use AdmiralCloudStorage;
+
     /**
      * @var AdmiralCloudApi
      */
@@ -53,12 +55,8 @@ class AdmiralCloudService implements SingletonInterface
         }
     }
 
-    public function getAdmiralCloudApi($settings): AdmiralCloudApi
+    public function callAdmiralCloudApi($settings): AdmiralCloudApi
     {
-        if ($this->admiralCloudApi) {
-            return $this->admiralCloudApi;
-        }
-
         try {
             $this->admiralCloudApi = AdmiralCloudApiFactory::create($settings);
             return $this->admiralCloudApi;
@@ -78,23 +76,30 @@ class AdmiralCloudService implements SingletonInterface
             'controller' => 'metadata',
             'action' => 'findbatch',
             'payload' => [
-                'ids' => $identifiers,
+                'ids' => array_map(
+                    function ($item) {
+                        return (int)$item;
+                    },
+                    $identifiers
+                ),
                 'title' => [
                     'container_name',
                     'container_description',
-                    'metadata_copyright'
+                    'meta_copyright',
+                    'meta_altTag',
                 ],
-                'language' => 'de'
             ]
         ];
-        $fileInfo = $this->getAdmiralCloudApi($settings)->getData();
+        $fileInfo = $this->callAdmiralCloudApi($settings)->getData();
         // TODO if error --> log it
         $metadata = [];
         foreach (json_decode($fileInfo) as $file){
-            foreach ($settings['payload']['title'] as $title){
+            foreach ($settings['payload']['title'] as $index => $title){
                 $metadata[$file->mediaContainerId][$title] = '';
-                if($file->title == $title){
+                if(strtolower($file->title) === strtolower($title)){
                     $metadata[$file->mediaContainerId][$title] = $file->content;
+                    unset($settings['payload']['title'][$index]);
+                    break;
                 }
             }
         }
@@ -104,21 +109,33 @@ class AdmiralCloudService implements SingletonInterface
 
     /**
      * @param array $identifiers
-     * @return string
+     * @param int $admiralCloudStorageUid
+     * @return array
+     * @throws \Exception
      */
-    public function getMediaInfo(array $identifiers, int $admiralCloudStorageUid = 3): array
+    public function getMediaInfo(array $identifiers, int $admiralCloudStorageUid = 0): array
     {
-        // TODO REMOVE this magic number
+        if (!$admiralCloudStorageUid) {
+            $admiralCloudStorageUid = $this->getAdmiralCloudStorage()->getUid();
+        }
+
         $settings = [
             'route' => 'media/findBatch',
             'controller' => 'media',
             'action' => 'findbatch',
             'payload' => [
-                'ids' => $identifiers
+                'ids' => array_map(
+                    function ($item) {
+                        return (int)$item;
+                    },
+                    $identifiers
+                )
             ]
         ];
-        $fileInfo = $this->getAdmiralCloudApi($settings)->getData();
+        $fileInfo = $this->callAdmiralCloudApi($settings)->getData();
         $fileMetaData = $this->getMetaData($identifiers);
+
+        // TODO handle error in API call
 
         $mediaInfo = [];
         foreach (json_decode($fileInfo) as $file){
@@ -135,11 +152,12 @@ class AdmiralCloudService implements SingletonInterface
                 'identifier' => $file->mediaContainerId,
                 'identifier_hash' => sha1($file->mediaContainerId),
                 'folder_hash' => sha1('AdmiralCloud' . $admiralCloudStorageUid),
-                'title' => $fileMetaData[$file->mediaContainerId]['container_name'],
-                'description' => $fileMetaData[$file->mediaContainerId]['container_description'],
+                'alternative' => $fileMetaData[$file->mediaContainerId]['meta_altTag'] ?? '',
+                'title' => $fileMetaData[$file->mediaContainerId]['container_name'] ?? '',
+                'description' => $fileMetaData[$file->mediaContainerId]['container_description'] ?? '',
                 'width' => $file->width,
                 'height' => $file->height,
-                'copyright' => $fileMetaData[$file->mediaContainerId]['metadata_copyright'],
+                'copyright' => $fileMetaData[$file->mediaContainerId]['meta_copyright'] ?? '',
                 'keywords' => '',
             ];
         }
@@ -161,10 +179,7 @@ class AdmiralCloudService implements SingletonInterface
                 'searchTerm' => $search
             ]
         ];
-        $metaData = json_decode($this->getAdmiralCloudApi($settings)->getData());
-        DebuggerUtility::var_dump($metaData);
-        die();
-        return $metaData;
+        return json_decode($this->callAdmiralCloudApi($settings)->getData()) ?? [];
     }
 
     /**
@@ -200,7 +215,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true&env=dev';
         } else {
-            $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
+            $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/autocrop/'
                 . $width
@@ -220,7 +235,7 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getThumbnailUrl(FileInterface $file): string
     {
-        if($file instanceof FileReference){
+        if ($file instanceof FileReference) {
             $file = $file->getOriginalFile();
         }
 
