@@ -75,7 +75,7 @@ define(['jquery',
             content: Browser.browserUrl,
             size: Modal.sizes.full
         });
-        $(document).on("click", '.acModalParent', function () {
+        $(parent.document).on("click", '.acModalParent', function () {
             Modal.dismiss();
         });
 
