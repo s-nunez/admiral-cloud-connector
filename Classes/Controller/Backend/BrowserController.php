@@ -166,13 +166,17 @@ class BrowserController extends AbstractBackendController
         $this->view->setTemplate('Show');
         $parameters = $request->getQueryParams();
 
+        $protocol = 'http';
+        if(isset($_SERVER['HTTP_HTTPS']) && $_SERVER['HTTP_HTTPS'] === 'on'){
+            $protocol = 'https';
+        }
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Backend\Routing\UriBuilder::class);
         $path = $uriBuilder->buildUriFromRoute('ajax_admiral_cloud_browser_auth');
         $this->view->assignMultiple([
             'iframeHost' => rtrim(ConfigurationUtility::getIframeUrl(),'/'),
             'ajaxUrl' => (string)$path,
-            'iframeUrl' => $callbackUrl . base64_encode('http://' . $_SERVER['HTTP_HOST']),
+            'iframeUrl' => $callbackUrl . base64_encode($protocol .'://' . $_SERVER['HTTP_HOST']),
             'parameters' => [
                 'element' => $parameters['element'],
                 'irreObject' => $parameters['irreObject'],
