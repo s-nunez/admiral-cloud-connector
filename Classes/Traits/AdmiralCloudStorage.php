@@ -7,6 +7,8 @@ use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
+use TYPO3\CMS\Core\Resource\StorageRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Trait AdmiralCloudStorage
@@ -28,8 +30,10 @@ trait AdmiralCloudStorage
             $this->admiralCloudStorage = ResourceFactory::getInstance()->getStorageObject($storageUid);
         }
         if ($this->admiralCloudStorage === null) {
-            $backendUserAuthentication = $GLOBALS['BE_USER'];
-            foreach ($backendUserAuthentication->getFileStorages() as $fileStorage) {
+            /** @var StorageRepository $storageRepository */
+            $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
+            $storageObjects = $storageRepository->findAll();
+            foreach ($storageObjects as $fileStorage) {
                 if ($fileStorage->getDriverType() === AdmiralCloudDriver::KEY) {
                     return $this->admiralCloudStorage = $fileStorage;
                 }
