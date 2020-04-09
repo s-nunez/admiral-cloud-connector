@@ -32,6 +32,7 @@ define(['jquery',
         var $uploadButton = $(Browser.uploadButton);
 
         var $cropButton = $(Browser.cropButton);
+        $('#iframeContainer').append($('#elAdmiralCloud'))
 
         // Add all listeners based on inline button
         $button.on('click', function (event) {
@@ -74,6 +75,10 @@ define(['jquery',
             content: Browser.browserUrl,
             size: Modal.sizes.full
         });
+        $(document).on("click", '.acModalParent', function () {
+            Modal.dismiss();
+        });
+
     };
 
     /**

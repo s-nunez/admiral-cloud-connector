@@ -18,14 +18,13 @@
      data-modus="{modus}"
 >
 </div>
-<iframe id="elAdmiralCloud" src="" style="width:100%;height:100%"></iframe>
+
 <script>
     var iframeURL_HOST = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeHost');
     var readyCallbacks = [];
+    var elAdmiralCloud = document.querySelector('.acModalParent');
     async function loadIframeWithAuthCode(device) {
-        const iframe = document.getElementById('elAdmiralCloud');
-        //Path to Auth-Helper Node Script
-        console.info(iframe.src);
+
         const resp = await fetch(document.getElementById('admiral_cloud-browser').getAttribute('data-typo3-ajax-url'), {
             method: 'POST',
             headers: {
@@ -43,27 +42,66 @@
     }
 
     function applyAuthCode(code) {
-        const iframe = document.getElementById('elAdmiralCloud');
-        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&code=' + code;
+        var currentIframeURL = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl');
+        load();
+        const iframe = elAdmiralCloud.querySelector('iframe');
+        iframe.src = currentIframeURL + '&code=' + code;
     }
+
     function load(){
         mediaContainerId = document.getElementById('admiral_cloud-browser').getAttribute('data-mediaContainerId');
         embedLink = document.getElementById('admiral_cloud-browser').getAttribute('data-embedLink');
-        if (mediaContainerId && embedLink) {
-            readyCallbacks.unshift(function () {
-                document.getElementById('elAdmiralCloud').contentWindow.postMessage(JSON.stringify({
-                    command: 'CROP_IMAGE',
-                    mediaContainerId,
-                    embedLink
-                }), iframeURL_HOST);
-            });
+
+        var iframeURL = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl');
+        if (elAdmiralCloud) {
+            if (mediaContainerId && embedLink) {
+                editImage(mediaContainerId, embedLink);
+            }
+            const iframe = elAdmiralCloud.querySelector('iframe');
+
+            // If the requested URL is already open, simply show it
+            if (currentIframeURL.includes(iframeURL)) {
+                elAdmiralCloud.querySelector('.acBackdrop').classList.remove('hidden');
+                executeReadyCallbacks();
+                return;
+            }
+
+            // Otherwise navigate to the requested URL
+            iframe.src = iframeURL;
+            currentIframeURL = iframeURL;
+            elAdmiralCloud.querySelector('.acBackdrop').classList.remove('hidden');
+            return;
         }
-        const iframe = document.getElementById('elAdmiralCloud');
-        iframe.src = '';
-        iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&auth=1';
+
+        // Create a new iframe and authenticate
+        var el = document.createElement('div');
+        el.setAttribute('class','acModalParent');
+        el.innerHTML = '<div class="acBackdrop"><iframe src="' + iframeURL + '&auth=1"></iframe><div class="close"><i class="fa fa-times"></i></div></div>';
+        currentIframeURL = iframeURL;
+        document.body.appendChild(el);
+
+        el.addEventListener('click', () => hideAC());
+        elAdmiralCloud = el;
+        if (mediaContainerId && embedLink) {
+            editImage(mediaContainerId, embedLink);
+        }
+        //const iframe = document.getElementById('elAdmiralCloud');
+        //iframe.src = '';
+        //iframe.src = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl') + '&auth=1';
+    }
+
+    function editImage(mediaContainerId, embedLink) {
+        readyCallbacks.unshift(function () {
+            elAdmiralCloud.querySelector('iframe').contentWindow.postMessage(JSON.stringify({
+                command: 'CROP_IMAGE',
+                mediaContainerId,
+                embedLink
+            }), iframeURL_HOST);
+        });
     }
 
     function executeReadyCallbacks() {
+        console.info(readyCallbacks);
         while (readyCallbacks.length > 0) {
             readyCallbacks.pop().call();
         }
@@ -89,7 +127,11 @@
 
         // Receive Signal to execute Ready Callbacks
         if (data.command === 'READY') {
-            console.info('ready');
+            mediaContainerId = document.getElementById('admiral_cloud-browser').getAttribute('data-mediaContainerId');
+            embedLink = document.getElementById('admiral_cloud-browser').getAttribute('data-embedLink');
+            if (mediaContainerId && embedLink) {
+                editImage(mediaContainerId, embedLink);
+            }
             setTimeout(function () {
                 executeReadyCallbacks();
             }, 3000);
@@ -133,6 +175,58 @@
     };
     load();
 
+    function hideAC() {
+        elAdmiralCloud.querySelector('.acBackdrop').classList.add('hidden');
+        window.close();
+    }
 </script>
+
+<style>
+    .acModalParent {
+        z-index: 99999;
+        position: relative;
+    }
+    .acBackdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+
+    }
+
+    .acBackdrop iframe {
+        position: absolute;
+        top: 10px;
+        left: 40px;
+        width: calc(100% - 80px);
+        height: calc(100% - 20px);
+        border: 0;
+        background: white;
+    }
+
+    .acBackdrop .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        color: white;
+        font-size: 20px;
+        line-height: 20px;
+        cursor: pointer;
+        z-index: 999;
+    }
+
+    .acBackdrop.hidden {
+        position: absolute;
+        left: -5000%;
+        top: -5000%;
+        right: auto;
+        left: auto;
+        width: 100%;
+        height: 100%;
+    }
+
+</style>
 </body>
 </html>
