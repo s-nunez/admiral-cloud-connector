@@ -8,13 +8,8 @@ $additionalFields = [
             'type' => 'input',
             'renderType' => 'admiralCloudImageManipulation'
         ],
-        'displayCond' => 'FIELD:tx_admiralcloudconnector_crop:REQ:true',
     ],
 ];
-
-// Show TYPO3 crop field only if AdmiralCloud crop is empty
-// AdmiralCloud files have always crop information
-$GLOBALS['TCA']['sys_file_reference']['columns']['crop']['displayCond'] = 'FIELD:tx_admiralcloudconnector_crop:REQ:false';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns(
     'sys_file_reference',
