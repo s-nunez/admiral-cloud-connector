@@ -47,6 +47,11 @@ class Asset
     protected $type;
 
     /**
+     * @var File
+     */
+    protected $file;
+
+    /**
      * Asset constructor.
      * @param string $identifier
      * @param array $properties
@@ -149,14 +154,7 @@ class Asset
 
     public function getThumbnail(int $storageUid = 0): ?string
     {
-        $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
-            ($storageUid? $storageUid:$this->getAdmiralCloudStorage()->getUid()),
-            $this->identifier
-        );
-
-        $file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));
-
-        return $this->getAdmiralCloudService()->getThumbnailUrl($file);
+        return $this->getAdmiralCloudService()->getThumbnailUrl($this->getFile($storageUid));
     }
 
     /**
@@ -272,9 +270,15 @@ class Asset
      */
     public function getLocalThumbnail(int $storageUid = 0): ?string
     {
+        $file = $this->getFile($storageUid);
+
+        if (!$file) {
+            return null;
+        }
+
         $url = $this->getThumbnail($storageUid);
         if (!empty($url)) {
-            $temporaryPath = $this->getTemporaryPathForFile($url);
+            $temporaryPath = $this->getTemporaryPathForFile($url, $file);
             if (!is_file($temporaryPath)) {
                 try {
                     $data = GeneralUtility::getUrl($url, 0, false);
@@ -303,21 +307,46 @@ class Asset
     }
 
     /**
+     * Get file from asset identifier
+     *
+     * @param int $storageUid
+     * @return File
+     */
+    public function getFile(int $storageUid = 0): ?File
+    {
+        if ($this->file) {
+            return $this->file;
+        }
+
+        $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
+            ($storageUid ?: $this->getAdmiralCloudStorage()->getUid()),
+            $this->identifier
+        );
+
+        if ($fileData) {
+            $this->file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));
+        } else {
+            $this->file = null;
+        }
+
+        return $this->file;
+    }
+
+    /**
      * Returns a temporary path for a given file, including the file extension.
      *
      * @param string $url
+     * @param File $file
      * @return string
      */
-    protected function getTemporaryPathForFile($url): string
+    protected function getTemporaryPathForFile($url, File $file): string
     {
         $temporaryPath = PATH_site . 'typo3temp/assets/' . AdmiralCloudDriver::KEY . '/';
         if (!is_dir($temporaryPath)) {
             GeneralUtility::mkdir_deep($temporaryPath);
         }
 
-        $info = $this->getInformation();
-
-        return $temporaryPath . $info['name'];
+        return $temporaryPath . $this->getIdentifier() . '.' . $file->getExtension();
     }
 
     /**
