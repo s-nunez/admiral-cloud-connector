@@ -8,7 +8,7 @@ define(['jquery',
 ], function ($, NProgress, Modal, Notification) {
     'use strict';
     /**
-     * The main CompactView object for Bynder
+     * The main CompactView object for AdmiralCloud
      *
      * @type {{compactViewUrl: string, inlineButton: string, title: string}}
      * @exports TYPO3/CMS/Bynder/CompactView
@@ -35,12 +35,12 @@ define(['jquery',
         $('#iframeContainer').append($('#elAdmiralCloud'))
 
         // Add all listeners based on inline button
-        $button.on('click', function (event) {
-            Browser.browserUrl = $button.data('admiral_cloudBrowserUrl');
+        $(document).on('click', Browser.overviewButton, function () {
+            Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
             Browser.open();
         });
-        $uploadButton.on('click', function (event) {
-            Browser.browserUrl = $uploadButton.data('admiral_cloudBrowserUrl');
+        $(document).on('click', Browser.uploadButton, function () {
+            Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
             Browser.open();
         });
         $(document).on("click", Browser.cropButton, function () {
