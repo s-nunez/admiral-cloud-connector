@@ -192,8 +192,6 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getImagePublicUrl(FileInterface $file, int $width = 0, int $height = 0): string
     {
-        // TODO implement me
-        // TODO width, height
         if ($file instanceof FileReference) {
             // Save crop information from FileReference and set it in the File object
             $crop = $file->getProperty('tx_admiralcloudconnector_crop');
@@ -201,8 +199,20 @@ class AdmiralCloudService implements SingletonInterface
             $file->setTxAdmiralCloudConnectorCrop($crop);
         }
 
-        $width = $width ?: 800;
-        $height = $height ?: 600;
+        $fileWidth = (int)$file->getProperty('width');
+        $fileHeight = (int)$file->getProperty('height');
+
+        if (!$width && !$height) {
+            $width = min($fileWidth, ConfigurationUtility::getDefaultImageWidth());
+        }
+
+        if (!$width && $height) {
+            $width = (int)round(($height / $fileHeight) * $fileWidth);
+        }
+
+        if (!$height) {
+            $height = (int)round(($width / $fileWidth) * $fileHeight);
+        }
 
         if ($file->getTxAdmiralCloudConnectorCrop()) {
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'

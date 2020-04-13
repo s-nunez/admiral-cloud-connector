@@ -7,6 +7,7 @@ use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidAssetException;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidPropertyException;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidThumbnailException;
+use CPSIT\AdmiralCloudConnector\Exception\NotImplementedException;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
@@ -152,9 +153,27 @@ class Asset
         return $this->type;
     }
 
+    /**
+     * @param int $storageUid
+     * @return string|null
+     */
     public function getThumbnail(int $storageUid = 0): ?string
     {
         return $this->getAdmiralCloudService()->getThumbnailUrl($this->getFile($storageUid));
+    }
+
+    /**
+     * @param int $storageUid
+     * @return string|null
+     */
+    public function getPublicUrl(int $storageUid = 0): ?string
+    {
+        if ($this->isImage()) {
+            return $this->getAdmiralCloudService()->getImagePublicUrl($this->getFile($storageUid));
+        } else {
+            // TODO implement me
+            throw new NotImplementedException('TODO public url for this type');
+        }
     }
 
     /**
