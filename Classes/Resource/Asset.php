@@ -103,25 +103,25 @@ class Asset
     /**
      * @return bool
      */
-    public function isVideo(): bool
+    public function isVideo(int $storageUid = 0): bool
     {
-        return $this->getAssetType() === self::TYPE_VIDEO;
+        return $this->getAssetType($storageUid) === self::TYPE_VIDEO;
     }
 
     /**
      * @return bool
      */
-    public function isAudio(): bool
+    public function isAudio(int $storageUid = 0): bool
     {
-        return $$this->getAssetType() === self::TYPE_AUDIO;
+        return $$this->getAssetType($storageUid) === self::TYPE_AUDIO;
     }
 
     /**
      * @return bool
      */
-    public function isDocument(): bool
+    public function isDocument(int $storageUid = 0): bool
     {
-        return $this->getAssetType() === self::TYPE_DOCUMENT;
+        return $this->getAssetType($storageUid) === self::TYPE_DOCUMENT;
     }
 
     /**
@@ -165,15 +165,32 @@ class Asset
     /**
      * @param int $storageUid
      * @return string|null
+     * @throws NotImplementedException
      */
     public function getPublicUrl(int $storageUid = 0): ?string
     {
-        if ($this->isImage()) {
-            return $this->getAdmiralCloudService()->getImagePublicUrl($this->getFile($storageUid));
-        } else {
-            // TODO implement me
-            throw new NotImplementedException('TODO public url for this type');
+        $assetType = $this->getAssetType($storageUid);
+        $file = $this->getFile($storageUid);
+
+        switch ($assetType) {
+            case self::TYPE_IMAGE:
+                $publicUrl = $this->getAdmiralCloudService()->getImagePublicUrl($file);
+                break;
+            case self::TYPE_DOCUMENT:
+                $publicUrl = $this->getAdmiralCloudService()->getDocumentPublicUrl($file);
+                break;
+            case self::TYPE_AUDIO:
+                $publicUrl = $this->getAdmiralCloudService()->getAudioPublicUrl($file);
+                break;
+            case self::TYPE_VIDEO:
+                $publicUrl = $this->getAdmiralCloudService()->getVideoPublicUrl($file);
+                break;
+            default:
+                throw new NotImplementedException('No public url for asset type ' . $assetType);
+                break;
         }
+
+        return $publicUrl;
     }
 
     /**

@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralCloudConnector\Service;
 use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApiFactory;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidFileConfigurationException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Http\Message\ServerRequestInterface;
@@ -183,6 +184,39 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * Get public url for AdmiralCloud video
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    public function getVideoPublicUrl(FileInterface $file): string
+    {
+        return $this->getDirectPublicUrlForFile($file);
+    }
+
+    /**
+     * Get public url for AdmiralCloud audio
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    public function getAudioPublicUrl(FileInterface $file): string
+    {
+        return $this->getDirectPublicUrlForFile($file);
+    }
+
+    /**
+     * Get public url for AdmiralCloud document
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    public function getDocumentPublicUrl(FileInterface $file): string
+    {
+        return $this->getDirectPublicUrlForFile($file);
+    }
+
+    /**
      * Get public url for admiral cloud image
      *
      * @param FileInterface $file
@@ -252,5 +286,72 @@ class AdmiralCloudService implements SingletonInterface
         return ConfigurationUtility::getThumbnailUrl() . '/v5/deliverEmbed/'
             . $file->getTxAdmiralCloudConnectorLinkhash()
             . '/image/144';
+    }
+
+    /**
+     * @param array $mediaContainer
+     * @return string
+     * @throws InvalidFileConfigurationException
+     */
+    public function getLinkHashFromMediaContainer(array $mediaContainer): string
+    {
+        $links = $mediaContainer['links'];
+
+        $linkHash = '';
+
+        // Flag Id for given media container type
+        $flagId = ConfigurationUtility::getFlagPlayerConfigId();
+
+        // Player configuration id for given media container type
+        switch ($mediaContainer['type']) {
+            case 'image':
+                $playerConfigurationId = ConfigurationUtility::getImagePlayerConfigId();
+                break;
+            case 'video':
+                $playerConfigurationId = ConfigurationUtility::getVideoPlayerConfigId();
+                break;
+            case 'audio':
+                $playerConfigurationId = ConfigurationUtility::getAudioPlayerConfigId();
+                break;
+            case 'document':
+                $playerConfigurationId = ConfigurationUtility::getDocumentPlayerConfigId();
+                break;
+            default:
+                throw new InvalidFileConfigurationException(
+                    'Any valid type was found for file in mediaContainer. Given type: ' . $mediaContainer['type'],
+                    111222444580
+                );
+        }
+
+        // Find link with flag id and player configuration id for given media container
+        foreach ($links as $link) {
+            if (isset($link['playerConfigurationId']) && isset($link['flag'])
+                && $link['playerConfigurationId'] == $playerConfigurationId && $link['flag'] == $flagId) {
+                $linkHash = $link['link'];
+                break;
+            }
+        }
+
+        // If there isn't link, it is not possible to obtain the public url
+        // Link is required for AdmiralCloud field
+        if (!$linkHash) {
+            throw new InvalidFileConfigurationException(
+                'Any valid hash was found for file in mediaContainer given configuration: ' . json_encode($mediaContainer),
+                111222444578
+            );
+        }
+
+        return $linkHash;
+    }
+
+    /**
+     * Get direct public url for given file
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    protected function getDirectPublicUrlForFile(FileInterface $file): string
+    {
+        return ConfigurationUtility::getDirectFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
     }
 }
