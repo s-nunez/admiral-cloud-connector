@@ -3,13 +3,14 @@
 namespace CPSIT\AdmiralCloudConnector\Api;
 
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
-use CPSIT\AdmiralCloudConnector\Exception\InvalidPropertyException;
 use CPSIT\AdmiralCloudConnector\Exception\RuntimeException;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 
 /***************************************************************
  *
@@ -118,6 +119,7 @@ class AdmiralCloudApi
 
             // Log error
             if (!$httpCode || $httpCode >= 400) {
+                /** @var LoggerInterface $logger */
                 $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
                 $logger->error(sprintf(
                     'Error in AdmiralCloud route process. URL: %s. HTTP code: %d. Error message: %s',
@@ -161,11 +163,14 @@ class AdmiralCloudApi
                 "action" => $settings['action'],
                 "payload" => [
                     "email" => $GLOBALS['BE_USER']->user['email'],
-                    "firstname" => $GLOBALS['BE_USER']->user['realName'],
-                    "lastname" => $GLOBALS['BE_USER']->user['realName'],
+                    "firstname" => $GLOBALS['BE_USER']->user['first_name'] ?: $GLOBALS['BE_USER']->user['realName'],
+                    "lastname" => $GLOBALS['BE_USER']->user['last_name'] ?: $GLOBALS['BE_USER']->user['realName'],
                     "state" => $state,
                     "client_id" => $credentials->getClientId(),
-                    "callbackUrl" => base64_encode($settings['callbackUrl'])
+                    "callbackUrl" => base64_encode($settings['callbackUrl']),
+                    "settings" => [
+                        "typo3group" => self::getSecurityGroup()
+                    ]
                 ]
             ];
             $signedValues = self::acSignatureSign($params);
@@ -189,8 +194,6 @@ class AdmiralCloudApi
                     "x-admiralcloud-debugsignature: 1",
                     "x-admiralcloud-clientid: " . $credentials->getClientId(),
                     "x-admiralcloud-device: " . $device
-
-
                 ),
             ));
 
@@ -200,6 +203,7 @@ class AdmiralCloudApi
 
             // Log error
             if (!$httpCode || $httpCode >= 400) {
+                /** @var LoggerInterface $logger */
                 $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
                 $logger->error(sprintf(
                     'Error in AdmiralCloud login process. URL: %s. HTTP Code: %d. Error message: %s',
@@ -241,6 +245,7 @@ class AdmiralCloudApi
 
             // Log error
             if (!$httpCode || $httpCode >= 400) {
+                /** @var LoggerInterface $logger */
                 $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
                 $logger->error(sprintf(
                     'Error in AdmiralCloud auth process. URL: %s. HTTP Code: %d. Error message: %s',
@@ -322,6 +327,30 @@ class AdmiralCloudApi
     public static function random()
     {
         return (float)rand() / (float)getrandmax();
+    }
+
+    public static function getSecurityGroup(){
+        $groups = $GLOBALS['BE_USER']->user['usergroup_cached_list'];
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_admiralcloudconnector_security_groups');
+        $queryBuilder->getRestrictions()->removeAll();
+        $res = $queryBuilder->select('sg.*')
+            ->from('tx_admiralcloudconnector_security_groups', 'sg')
+            ->where(
+                $queryBuilder->expr()->eq('sg.deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
+            )
+            ->execute();
+        $sgs = [];
+        while ($row = $res->fetch()) {
+            $sgs[$row['ac_security_group_id']] = $row['be_groups'];
+        }
+        foreach ($sgs as $sgId=>$be_groups){
+            $containsAllValues = !array_diff(explode(',', $be_groups), explode(',', $groups));
+            if($containsAllValues){
+                return (string)$sgId;
+            }
+        }
+        return '';
     }
 
     /**

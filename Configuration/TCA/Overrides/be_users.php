@@ -11,7 +11,7 @@ call_user_func(function ($extension, $table) {
         'addFile',
         'after'
     );
-}, 'admiral_cloud', 'be_users');
+}, 'admiral_cloud_connector', 'be_users');
 
 
 /**
