@@ -1,6 +1,7 @@
 <?php
 
 namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
+use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;

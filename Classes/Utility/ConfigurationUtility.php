@@ -257,11 +257,11 @@ class ConfigurationUtility
      * @return string
      */
     public static function getIframeUrl(): string {
-        $add = '';
         if (!self::isProduction()) {
-            $add = '';
+            return 'https://t3intpoc.admiralcloud.com/';
         }
-        return 'https://t3intpoc' . $add . '.admiralcloud.com/';
+        return 'https://t3prod.admiralcloud.com/';
+
     }
 
     /**

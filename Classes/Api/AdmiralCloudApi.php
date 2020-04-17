@@ -1,6 +1,7 @@
 <?php
 
 namespace CPSIT\AdmiralCloudConnector\Api;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use CPSIT\AdmiralCloudConnector\Api\Oauth\AdmiralCloudRequestHandler;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
@@ -10,6 +11,9 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
  *
@@ -149,11 +153,14 @@ class AdmiralCloudApi
                 "action" => $settings['action'],
                 "payload" => [
                     "email" => $GLOBALS['BE_USER']->user['email'],
-                    "firstname" => $GLOBALS['BE_USER']->user['realName'],
-                    "lastname" => $GLOBALS['BE_USER']->user['realName'],
+                    "firstname" => $GLOBALS['BE_USER']->user['first_name'] ?: $GLOBALS['BE_USER']->user['realName'],
+                    "lastname" => $GLOBALS['BE_USER']->user['last_name'] ?: $GLOBALS['BE_USER']->user['realName'],
                     "state" => $state,
                     "client_id" => $credentials->getClientId(),
-                    "callbackUrl" => base64_encode($settings['callbackUrl'])
+                    "callbackUrl" => base64_encode($settings['callbackUrl']),
+                    "settings" => [
+                        "typo3group" => self::getSecurityGroup()
+                    ]
                 ]
             ];
             $signedValues = self::acSignatureSign($params);
@@ -259,6 +266,30 @@ class AdmiralCloudApi
     public static function random()
     {
         return (float)rand() / (float)getrandmax();
+    }
+
+    public static function getSecurityGroup(){
+        $groups = $GLOBALS['BE_USER']->user['usergroup_cached_list'];
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_admiralcloudconnector_security_groups');
+        $queryBuilder->getRestrictions()->removeAll();
+        $res = $queryBuilder->select('sg.*')
+            ->from('tx_admiralcloudconnector_security_groups', 'sg')
+            ->where(
+                $queryBuilder->expr()->eq('sg.deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
+            )
+            ->execute();
+        $sgs = [];
+        while ($row = $res->fetch()) {
+            $sgs[$row['ac_security_group_id']] = $row['be_groups'];
+        }
+        foreach ($sgs as $sgId=>$be_groups){
+            $containsAllValues = !array_diff(explode(',', $be_groups), explode(',', $groups));
+            if($containsAllValues){
+                return implode('',explode(',',$be_groups));
+            }
+        }
+        return '';
     }
 
     /**
