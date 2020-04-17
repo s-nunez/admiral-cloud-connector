@@ -11,7 +11,7 @@ define(['jquery',
      * The main CompactView object for AdmiralCloud
      *
      * @type {{compactViewUrl: string, inlineButton: string, title: string}}
-     * @exports TYPO3/CMS/Bynder/CompactView
+     * @exports TYPO3/CMS/AdmiralCloud/CompactView
      */
     var Browser = {
         overviewButton: '.t3js-admiral_cloud-browser-btn.overview',

@@ -113,7 +113,7 @@ class Asset
      */
     public function isAudio(int $storageUid = 0): bool
     {
-        return $$this->getAssetType($storageUid) === self::TYPE_AUDIO;
+        return $this->getAssetType($storageUid) === self::TYPE_AUDIO;
     }
 
     /**

@@ -124,7 +124,8 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
             $image = $originalImage;
         }
 
-        if (GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralCloud/')) {
+        if ($image->getType() === File::FILETYPE_IMAGE
+            && GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralCloud/')) {
             $crop = $arguments['txAdmiralCloudCrop'];
 
             if ($crop) {
@@ -134,6 +135,9 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
             if (!$crop && $originalImage->getProperty('tx_admiralcloudconnector_crop')) {
                 $image->setTxAdmiralCloudConnectorCrop($originalImage->getProperty('tx_admiralcloudconnector_crop'));
             }
+
+            $fileImageWidth = $image->_getMetaData()['width'];
+            $fileImageHeight = $image->_getMetaData()['height'];
 
             $width = $arguments['width'];
 
@@ -155,17 +159,19 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
                 $height = 0;
             }
 
-            if (!$height && $width) {
-                $height = round(($width / $image->_getMetaData()['width']) * $image->_getMetaData()['height']);
+            if ($fileImageWidth && $fileImageHeight) {
+                if (!$height && $width) {
+                    $height = round(($width / $fileImageWidth) * $fileImageHeight);
+                }
+
+                if (!$width && $height) {
+                    $width = round(($height / $fileImageHeight) * $fileImageWidth);
+                }
             }
 
-            if (!$width && $height) {
-                $width = round(($height / $image->_getMetaData()['height']) * $image->_getMetaData()['width']);
-            }
-
-            /** @var AdmiralCloudService $admiracloudService */
-            $admiracloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
-            return $admiracloudService->getImagePublicUrl($image, $width, $height);
+            /** @var AdmiralCloudService $admiralCloudService */
+            $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
+            return $admiralCloudService->getImagePublicUrl($image, $width, $height);
         }
         return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
     }

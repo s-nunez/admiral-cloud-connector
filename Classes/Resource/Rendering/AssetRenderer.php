@@ -237,7 +237,7 @@ class AssetRenderer implements FileRendererInterface
                 'crop' => $cropArea->isEmpty() ? null : $cropArea->makeAbsoluteBasedOnFile($file),
             ];
 
-            // Process and generate/retrieve image from Bynder API
+            // Process and generate/retrieve image from AdmiralCloud API
             $imageService = $this->getImageService();
             $processedImage = $imageService->applyProcessingInstructions($file, $processingInstructions);
             $url = $imageService->getImageUri($processedImage);

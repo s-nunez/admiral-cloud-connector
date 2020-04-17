@@ -57,7 +57,7 @@ class Extractor implements Resource\Index\ExtractorInterface
     }
 
     /**
-     * Extract metadata of Bynder assets
+     * Extract metadata of AdmiralCloud assets
      *
      * @param Resource\File $file
      * @param array $previousExtractedData

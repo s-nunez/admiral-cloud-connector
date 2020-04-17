@@ -101,8 +101,10 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         $config = $this->populateConfiguration($parameterArray['fieldConf']['config']);
 
         $file = $this->getFile($this->data['databaseRow'], $config['file_field']);
-        if (!$file || $file->getStorage()->getUid() !== $this->getAdmiralCloudStorage()->getUid()) {
-            // Early return in case we do not find a file or does not come from AdmiralCloud
+        if (!$file
+            || $file->getType() !== File::FILETYPE_IMAGE
+            || $file->getStorage()->getUid() !== $this->getAdmiralCloudStorage()->getUid()) {
+            // Early return in case we do not find a file or it isn't an image or does not come from AdmiralCloud
             return $resultArray;
         }
 

@@ -4,7 +4,6 @@
 namespace CPSIT\AdmiralCloudConnector\Resource;
 
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
-use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -13,21 +12,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
 {
-    use AdmiralCloudStorage;
-
     /**
      * @inheritDoc
      */
     public function getPublicUrl($relativeToCurrentScript = false): ?string
     {
-
         if (GeneralUtility::isFirstPartOfStr($this->getOriginalFile()->getMimeType(), 'admiralCloud/')) {
             $this->properties['width'] = (int) $this->getProcessingConfiguration()['width'];
             $this->properties['height'] = (int) $this->getProcessingConfiguration()['height'];
 
-            // TODO get crop and focus information
-
-            return $this->getAdmiralCloudService()->getImagePublicUrl($this->getOriginalFile(), $this->properties['width'], $this->properties['height']);
+            return $this->getAdmiralCloudService()->getImagePublicUrl(
+                $this->getOriginalFile(),
+                $this->properties['width'],
+                $this->properties['height']
+            );
         }
 
         return parent::getPublicUrl($relativeToCurrentScript);
@@ -36,7 +34,7 @@ class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
     /**
      * @return AdmiralCloudService
      */
-    protected function getAdmiralCloudService()
+    protected function getAdmiralCloudService(): AdmiralCloudService
     {
         return GeneralUtility::makeInstance(AdmiralCloudService::class);
     }

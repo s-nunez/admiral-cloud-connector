@@ -8,8 +8,10 @@ use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\Index\Indexer;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
@@ -92,6 +94,11 @@ class BrowserController extends AbstractBackendController
     protected $admiralCloudService = null;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * CompactViewController constructor.
      */
     public function __construct()
@@ -103,6 +110,7 @@ class BrowserController extends AbstractBackendController
         $this->view->setTemplateRootPaths($this->templateRootPaths);
         $this->view->setLayoutRootPaths($this->layoutRootPaths);
         $this->admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
     /**
@@ -267,6 +275,7 @@ class BrowserController extends AbstractBackendController
 
             return $this->createJsonResponse($response, ['files' => $files], 201);
         } catch (Exception $e) {
+            $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
             return $this->createJsonResponse($response, [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [
@@ -302,6 +311,7 @@ class BrowserController extends AbstractBackendController
 
             return $this->createJsonResponse($response, ['target' => $target,'cropperData' => $cropperData,'link' => $link], 201);
         } catch (Exception $e) {
+            $this->logger->error('Error cropping file from AdmiralCloud.', ['exception' => $e]);
             return $this->createJsonResponse($response, [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [

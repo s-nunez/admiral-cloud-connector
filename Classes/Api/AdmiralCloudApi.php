@@ -1,15 +1,15 @@
 <?php
 
 namespace CPSIT\AdmiralCloudConnector\Api;
+
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
-use CPSIT\AdmiralCloudConnector\Api\Oauth\AdmiralCloudRequestHandler;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidPropertyException;
+use CPSIT\AdmiralCloudConnector\Exception\RuntimeException;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /***************************************************************
  *
@@ -43,11 +43,6 @@ class AdmiralCloudApi
     protected $baseUrl;
 
     /**
-     * @var AdmiralCloudRequestHandler Instance of the Oauth request handler.
-     */
-    protected $requestHandler;
-
-    /**
      * @var string code token
      */
     protected $code;
@@ -73,22 +68,22 @@ class AdmiralCloudApi
         $this->baseUrl = getenv('ADMIRALCLOUD_BASE_URL');
         $this->device = md5($GLOBALS['BE_USER']->user['id']);
         $this->data = $data;
-
     }
 
     /**
      * Creates an instance of AdmiralCloudApi
      *
+     * @param array $settings
      * @return AdmiralCloudApi instance.
-     * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      */
-    public static function create($settings){
+    public static function create(array $settings)
+    {
         $credentials = new Credentials();
         if (self::validateSettings($credentials)) {
             $curl = curl_init();
 
-            $state = '0.' . base_convert(self::random() . '00', 10, 36);
-            #$state = '0.abcdefghi';
             $params = [
                 "accessSecret" => $credentials->getAccessSecret(),
                 "controller" => $settings['controller'],
@@ -98,8 +93,10 @@ class AdmiralCloudApi
 
             $signedValues = self::acSignatureSign($params,'v5');
 
+            $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
+
             curl_setopt_array($curl, array(
-                CURLOPT_URL => ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'],
+                CURLOPT_URL => $routeUrl,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -117,6 +114,20 @@ class AdmiralCloudApi
 
             $response = curl_exec($curl);
             $err = curl_error($curl);
+            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            // Log error
+            if (!$httpCode || $httpCode >= 400) {
+                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+                $logger->error(sprintf(
+                    'Error in AdmiralCloud route process. URL: %s. HTTP code: %d. Error message: %s',
+                    $routeUrl,
+                    $httpCode,
+                    $response ?: $err
+                ));
+
+                throw new RuntimeException('Error in AdmiralCloud route process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+            }
 
             curl_close($curl);
 
@@ -129,10 +140,11 @@ class AdmiralCloudApi
     /**
      * Creates an instance of AdmiralCloudApi
      *
-     * @return AdmiralCloudApi instance.
+     * @param array $settings
+     * @return string
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      */
-    public static function auth($settings)
+    public static function auth(array $settings): string
     {
         $credentials = new Credentials();
         $device = md5($GLOBALS['BE_USER']->user['id']);
@@ -158,8 +170,10 @@ class AdmiralCloudApi
             ];
             $signedValues = self::acSignatureSign($params);
 
+            $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true";
+
             curl_setopt_array($curl, array(
-                CURLOPT_URL => ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true",
+                CURLOPT_URL => $loginUrl,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -182,6 +196,21 @@ class AdmiralCloudApi
 
             $response = curl_exec($curl);
             $err = curl_error($curl);
+            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            // Log error
+            if (!$httpCode || $httpCode >= 400) {
+                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+                $logger->error(sprintf(
+                    'Error in AdmiralCloud login process. URL: %s. HTTP Code: %d. Error message: %s',
+                    $loginUrl,
+                    $httpCode,
+                    $response ?: $err
+                ));
+
+                throw new RuntimeException('Error in AdmiralCloud login process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+            }
+
             curl_close($curl);
 
             $codeParams = [
@@ -190,9 +219,12 @@ class AdmiralCloudApi
                 'client_id' => $credentials->getClientId()
 
             ];
+
+            $authUrl = ConfigurationUtility::getAuthUrl() . "v4/requestCode?" . http_build_query($codeParams);
+
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL => ConfigurationUtility::getAuthUrl() . "v4/requestCode?" . http_build_query($codeParams),
+                CURLOPT_URL => $authUrl,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -205,15 +237,43 @@ class AdmiralCloudApi
 
             $response = curl_exec($curl);
             $err = curl_error($curl);
+            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            // Log error
+            if (!$httpCode || $httpCode >= 400) {
+                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+                $logger->error(sprintf(
+                    'Error in AdmiralCloud auth process. URL: %s. HTTP Code: %d. Error message: %s',
+                    $authUrl,
+                    $httpCode,
+                    $response ?: $err
+                ));
+
+                throw new RuntimeException('Error in AdmiralCloud auth process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+            }
+
             curl_close($curl);
+
             $code = json_decode($response);
+
+            if ($response && !$code) {
+                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+                $logger->error('Error decoding JSON from auth response. JSON: ' . $response);
+
+                throw new RuntimeException('Error decoding JSON from auth response.');
+            }
+
+            if (empty($code->code)) {
+                throw new RuntimeException('There is not any code in the response of the AUTH process');
+            }
+
             return $code->code;
         } else {
             throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
         }
     }
 
-    public static function acSignatureSign($params,$version='v4')
+    public static function acSignatureSign($params, $version='v4')
     {
         $accessSecret = $params['accessSecret'];
         if (!$accessSecret) return 'accessSecretMissing';
@@ -229,21 +289,24 @@ class AdmiralCloudApi
         foreach ($data as $key => $value) {
             $payload[$key] = $data[$key];
         }
-        #var_dump(json_encode($payload));
+
         $ts = time();
-        #$ts = '1583770833';
-        #echo 'ts: ' . $ts . PHP_EOL;
-        if($version == 'v4'){
+
+        if ($version !== 'v4' && $version !== 'v5') {
+            throw new InvalidArgumentException('Version for acSignatureSign should be v4 or v5. Version given: ' . $version);
+        }
+
+        if ($version === 'v4') {
             $valueToHash = strtolower($params['controller']) . PHP_EOL .
                 strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . '{}');
         }
-        if($version == 'v5'){
+        if ($version === 'v5') {
             $valueToHash = strtolower($params['controller']) . PHP_EOL .
                 strtolower($params['action']) . PHP_EOL . $ts . (empty($payload) ? '' : PHP_EOL . json_encode($payload));
         }
-        #echo 'valueToHash: ' . $valueToHash . PHP_EOL;
+
         $hash = hash_hmac('sha256', $valueToHash, $accessSecret);
-        #echo 'hash: ' . $hash . PHP_EOL;
+
         return [
             'hash' => $hash,
             'timestamp' => $ts
@@ -275,22 +338,6 @@ class AdmiralCloudApi
     public function setBaseUrl(string $baseUrl)
     {
         $this->baseUrl = $baseUrl;
-    }
-
-    /**
-     * @return AdmiralCloudRequestHandler
-     */
-    public function getRequestHandler(): AdmiralCloudRequestHandler
-    {
-        return $this->requestHandler;
-    }
-
-    /**
-     * @param AdmiralCloudRequestHandler $requestHandler
-     */
-    public function setRequestHandler(AdmiralCloudRequestHandler $requestHandler)
-    {
-        $this->requestHandler = $requestHandler;
     }
 
     /**

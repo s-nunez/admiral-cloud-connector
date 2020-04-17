@@ -9,9 +9,12 @@ use CPSIT\AdmiralCloudConnector\Exception\InvalidFileConfigurationException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
@@ -47,7 +50,24 @@ class AdmiralCloudService implements SingletonInterface
      */
     protected $admiralCloudApi;
 
-    public function getAdmiralCloudAuthCode($settings): string
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * AdmiralCloudService constructor.
+     */
+    public function __construct()
+    {
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    }
+
+    /**
+     * @param array $settings
+     * @return string
+     */
+    public function getAdmiralCloudAuthCode(array $settings): string
     {
         try {
             return AdmiralCloudApiFactory::auth($settings);
@@ -56,7 +76,11 @@ class AdmiralCloudService implements SingletonInterface
         }
     }
 
-    public function callAdmiralCloudApi($settings): AdmiralCloudApi
+    /**
+     * @param array $settings
+     * @return AdmiralCloudApi
+     */
+    public function callAdmiralCloudApi(array $settings): AdmiralCloudApi
     {
         try {
             $this->admiralCloudApi = AdmiralCloudApiFactory::create($settings);
@@ -91,13 +115,35 @@ class AdmiralCloudService implements SingletonInterface
                 ],
             ]
         ];
-        $fileInfo = $this->callAdmiralCloudApi($settings)->getData();
-        // TODO if error --> log it
+
+        $fileInfoData = $this->callAdmiralCloudApi($settings)->getData();
+
+        if (!$fileInfoData) {
+            $this->logger->error('Empty data received after calling getMetaData of identifiers: '
+                . implode(',', $identifiers));
+
+            return [];
+        }
+
+        $fileInfo = json_decode($fileInfoData);
+
+        if (!$fileInfo) {
+            $this->logger->error(sprintf(
+                'Error decoding JSON by getMetaData of identifiers [%s]. Json error code: %d. Json message: %s. Json: %s',
+                implode(',', $identifiers),
+                json_last_error(),
+                json_last_error_msg(),
+                $fileInfoData
+            ));
+
+            return [];
+        }
+
         $metadata = [];
-        foreach (json_decode($fileInfo) as $file){
-            foreach ($settings['payload']['title'] as $index => $title){
+        foreach ($fileInfo as $file) {
+            foreach ($settings['payload']['title'] as $index => $title) {
                 $metadata[$file->mediaContainerId][$title] = '';
-                if(strtolower($file->title) === strtolower($title)){
+                if (strtolower($file->title) === strtolower($title)) {
                     $metadata[$file->mediaContainerId][$title] = $file->content;
                     unset($settings['payload']['title'][$index]);
                     break;
@@ -133,13 +179,34 @@ class AdmiralCloudService implements SingletonInterface
                 )
             ]
         ];
-        $fileInfo = $this->callAdmiralCloudApi($settings)->getData();
+
         $fileMetaData = $this->getMetaData($identifiers);
 
-        // TODO handle error in API call
+        $fileInfoData = $this->callAdmiralCloudApi($settings)->getData();
+
+        if (!$fileInfoData) {
+            $this->logger->error('Empty data received after calling getMediaInfo of identifiers: '
+                . implode(',', $identifiers));
+
+            return [];
+        }
+
+        $fileInfo = json_decode($fileInfoData);
+
+        if (!$fileInfo) {
+            $this->logger->error(sprintf(
+                'Error decoding JSON by getMediaInfo of identifiers [%s]. Json error code: %d. Json message: %s. Json: %s',
+                implode(',', $identifiers),
+                json_last_error(),
+                json_last_error_msg(),
+                $fileInfoData
+            ));
+
+            return [];
+        }
 
         $mediaInfo = [];
-        foreach (json_decode($fileInfo) as $file){
+        foreach ($fileInfo as $file) {
             $mediaInfo[$file->mediaContainerId] = [
                 'type' => $file->type,
                 'name' => $file->fileName . '_' . $file->mediaContainerId . '.' . $file->fileExtension,
@@ -233,6 +300,8 @@ class AdmiralCloudService implements SingletonInterface
             $file->setTxAdmiralCloudConnectorCrop($crop);
         }
 
+        // Get width and height with the correct ratio
+
         $fileWidth = (int)$file->getProperty('width');
         $fileHeight = (int)$file->getProperty('height');
 
@@ -240,15 +309,19 @@ class AdmiralCloudService implements SingletonInterface
             $width = min($fileWidth, ConfigurationUtility::getDefaultImageWidth());
         }
 
-        if (!$width && $height) {
-            $width = (int)round(($height / $fileHeight) * $fileWidth);
+        if ($fileWidth && $fileHeight) {
+            if (!$width && $height) {
+                $width = (int)round(($height / $fileHeight) * $fileWidth);
+            }
+
+            if (!$height) {
+                $height = (int)round(($width / $fileWidth) * $fileHeight);
+            }
         }
 
-        if (!$height) {
-            $height = (int)round(($width / $fileWidth) * $fileHeight);
-        }
-
+        // Get image public url
         if ($file->getTxAdmiralCloudConnectorCrop()) {
+            // With crop information
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/cropperjsfocus/'
@@ -259,6 +332,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true&env=dev';
         } else {
+            // Without crop information
             $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/autocrop/'
@@ -295,7 +369,7 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getLinkHashFromMediaContainer(array $mediaContainer): string
     {
-        $links = $mediaContainer['links'];
+        $links = $mediaContainer['links'] ?? [];
 
         $linkHash = '';
 

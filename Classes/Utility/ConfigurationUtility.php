@@ -78,22 +78,6 @@ class ConfigurationUtility
     }
 
     /**
-     * @return array
-     * @throws InvalidExtensionConfigurationException
-     */
-    public static function getBynderApiFactoryCredentials(): array
-    {
-        $credentials = [
-            'baseUrl' => static::getApiBaseUrl(),
-            'consumerKey' => (self::getExtensionConfiguration())['consumer_key'] ?? '',
-            'consumerSecret' => (self::getExtensionConfiguration())['consumer_secret'] ?? '',
-            'token' => (self::getExtensionConfiguration())['token_key'] ?? '',
-            'tokenSecret' => (self::getExtensionConfiguration())['token_secret'] ?? '',
-        ];
-        return $credentials;
-    }
-
-    /**
      * @return string
      * @throws InvalidExtensionConfigurationException
      */
@@ -150,14 +134,6 @@ class ConfigurationUtility
             } else {
                 ArrayUtility::mergeRecursiveWithOverrule($configuration, (array)$objectManager->get(ExtensionConfiguration::class)->get('admiral_cloud_connector'));
             }
-
-            /*
-            if (empty($configuration['url']) ||
-                empty($configuration['consumer_key']) || empty($configuration['consumer_secret']) ||
-                empty($configuration['token_key']) || empty($configuration['token_secret'])
-            ) {
-                throw new InvalidExtensionConfigurationException('Make sure all Bynder oAuth settings are set in extension manager', 1519051718);
-            }*/
         }
         return $configuration;
     }

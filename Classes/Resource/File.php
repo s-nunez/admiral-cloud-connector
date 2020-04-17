@@ -119,8 +119,8 @@ class File extends \TYPO3\CMS\Core\Resource\File
             case 'video':
                 $this->properties['type'] = self::FILETYPE_VIDEO;
                 break;
+            case 'document':
             case 'application':
-
             case 'software':
                 $this->properties['type'] = self::FILETYPE_APPLICATION;
                 break;

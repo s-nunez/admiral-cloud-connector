@@ -2,13 +2,10 @@
 
 /**
  *
- * Copyright (c) Bynder. All rights reserved.
- *
  * Licensed under the MIT License. For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-// src/Bynder/Api/Impl/Oauth/Credentials.php
 namespace CPSIT\AdmiralCloudConnector\Api\Oauth;
 
 /**
