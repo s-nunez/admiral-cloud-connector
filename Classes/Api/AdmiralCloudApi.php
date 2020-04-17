@@ -286,7 +286,7 @@ class AdmiralCloudApi
         foreach ($sgs as $sgId=>$be_groups){
             $containsAllValues = !array_diff(explode(',', $be_groups), explode(',', $groups));
             if($containsAllValues){
-                return implode('',explode(',',$be_groups));
+                return (string)$sgId;
             }
         }
         return '';
