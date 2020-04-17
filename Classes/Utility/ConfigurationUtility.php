@@ -191,8 +191,12 @@ class ConfigurationUtility
         return $url;
     }
 
-    public static function isProduction(): bool {
-        if(getenv('ADMIRALCLOUD_IS_PRODUCTION')){
+    /**
+     * @return bool
+     */
+    public static function isProduction(): bool
+    {
+        if (getenv('ADMIRALCLOUD_IS_PRODUCTION')) {
             return true;
         }
         return false;
@@ -201,9 +205,10 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getApiUrl(): string {
+    public static function getApiUrl(): string
+    {
         $add = '';
-        if(!self::isProduction()){
+        if (!self::isProduction()) {
             $add = 'dev';
         }
         return 'https://api' . $add . '.admiralcloud.com/';
@@ -212,7 +217,8 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getAuthUrl(): string {
+    public static function getAuthUrl(): string
+    {
         $add = '';
         if (!self::isProduction()) {
             $add = 'dev';
@@ -223,7 +229,8 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getSmartcropUrl(): string {
+    public static function getSmartcropUrl(): string
+    {
         $add = '';
         if (!self::isProduction()) {
             $add = 'dev';
@@ -234,7 +241,8 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getImageUrl(): string {
+    public static function getImageUrl(): string
+    {
         $add = '';
         if (!self::isProduction()) {
             $add = '';
@@ -245,7 +253,8 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getThumbnailUrl(): string {
+    public static function getThumbnailUrl(): string
+    {
         $add = '';
         if (!self::isProduction()) {
             $add = 'dev';
@@ -256,7 +265,8 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getIframeUrl(): string {
+    public static function getIframeUrl(): string
+    {
         $add = '';
         if (!self::isProduction()) {
             $add = '';
@@ -267,28 +277,53 @@ class ConfigurationUtility
     /**
      * @return string
      */
-    public static function getImageConfigId(): string {
+    public static function getDirectFileUrl(): string
+    {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = 'dev';
+        }
+
+        return 'https://filehub' . $add . '.admiralcloud.com/v5/deliverFile/';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getImagePlayerConfigId(): string
+    {
         return getenv('ADMIRALCLOUD_IMAGE_CONFIG_ID') ?: 3;
     }
 
     /**
      * @return string
      */
-    public static function getVideoConfigId(): string {
+    public static function getVideoPlayerConfigId(): string
+    {
         return getenv('ADMIRALCLOUD_VIDEO_CONFIG_ID') ?: 2;
     }
 
     /**
      * @return string
      */
-    public static function getDocumentConfigId(): string {
+    public static function getDocumentPlayerConfigId(): string
+    {
         return getenv('ADMIRALCLOUD_DOCUMENT_CONFIG_ID') ?: 5;
     }
 
     /**
      * @return string
      */
-    public static function getAudioConfigId(): string {
+    public static function getAudioPlayerConfigId(): string
+    {
         return getenv('ADMIRALCLOUD_AUDIO_CONFIG_ID') ?: 4;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getFlagPlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_FLAG_CONFIG_ID') ?: 0;
     }
 }

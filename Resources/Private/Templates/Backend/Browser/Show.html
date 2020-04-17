@@ -23,6 +23,9 @@
     var iframeURL_HOST = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeHost');
     var readyCallbacks = [];
     var elAdmiralCloud = document.querySelector('.acModalParent');
+    var admiralCloudAction = document.getElementById('admiral_cloud-browser').getAttribute('data-modus');
+    var irreObjectTarget = document.getElementById('admiral_cloud-browser').getAttribute('data-irreObject');
+
     async function loadIframeWithAuthCode(device) {
 
         const resp = await fetch(document.getElementById('admiral_cloud-browser').getAttribute('data-typo3-ajax-url'), {
@@ -132,9 +135,9 @@
             if (mediaContainerId && embedLink) {
                 editImage(mediaContainerId, embedLink);
             }
-            setTimeout(function () {
-                executeReadyCallbacks();
-            }, 3000);
+
+            executeReadyCallbacks();
+
             return;
         }
 
@@ -152,13 +155,11 @@
             }
 
             // Dispatch internal interaction for TYPO3/CMS/AdmiralCloudConnector/Browser
-            var modus = document.getElementById('admiral_cloud-browser').getAttribute('data-modus');
-            var target = document.getElementById('admiral_cloud-browser').getAttribute('data-irreObject');
             var event, parameters = {
                 detail: {
-                    target: target,
+                    target: irreObjectTarget,
                     media: data,
-                    modus: modus
+                    modus: admiralCloudAction
                 }
             };
 

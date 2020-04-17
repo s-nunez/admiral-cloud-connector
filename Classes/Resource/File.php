@@ -70,32 +70,6 @@ class File extends \TYPO3\CMS\Core\Resource\File
     }
 
     /**
-     * @param array $mediaContainer
-     * @return string
-     */
-    public function setTxAdmiralCloudConnectorLinkhashFromMediaContainer(array $mediaContainer): string
-    {
-        $links = $mediaContainer['links'];
-
-        $linkhash = '';
-
-        foreach ($links as $link) {
-            // TODO make this numbers from configuration
-            if (isset($link['playerConfigurationId']) && isset($link['flag'])
-                && $link['playerConfigurationId'] == ConfigurationUtility::getImageConfigId() && $link['flag'] == 0) {
-                $linkhash = $link['link'];
-                break;
-            }
-        }
-
-        if ($linkhash) {
-            $this->setTxAdmiralCloudConnectorLinkhash($linkhash);
-        }
-
-        return $linkhash;
-    }
-
-    /**
      * @return string
      */
     public function getTxAdmiralCloudConnectorCrop(): string

@@ -1,25 +1,21 @@
 <?php
 
 namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
+
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\Index\Indexer;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
@@ -89,16 +85,25 @@ class BrowserController extends AbstractBackendController
     protected $defaultViewObjectName = BackendTemplateView::class;
 
     /**
+     * AdmiralCloud service
+     *
+     * @var AdmiralCloudService
+     */
+    protected $admiralCloudService = null;
+
+    /**
      * CompactViewController constructor.
      */
     public function __construct()
     {
+        parent::__construct();
+
         $this->view = GeneralUtility::makeInstance(StandaloneView::class);
         $this->view->setPartialRootPaths($this->partialRootPaths);
         $this->view->setTemplateRootPaths($this->templateRootPaths);
         $this->view->setLayoutRootPaths($this->layoutRootPaths);
+        $this->admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
     }
-
 
     /**
      * Set up the doc header properly here
@@ -111,14 +116,6 @@ class BrowserController extends AbstractBackendController
             parent::initializeView($view);
         }
     }
-
-    /**
-     * locationRepository
-     *
-     * @var \CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService
-     * @TYPO3\CMS\Extbase\Annotation\Inject
-     */
-    protected $admiralCloudService = null;
 
     /**
      * @param ServerRequestInterface|null $request
@@ -190,9 +187,6 @@ class BrowserController extends AbstractBackendController
 
     public function apiAction()
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
-
         $data = $this->admiralCloudService->getMetaData([33512]);
         #$data = $this->admiralCloudService->getMetaData([33512]);
         #header('Content-type: application/json');
@@ -214,8 +208,6 @@ class BrowserController extends AbstractBackendController
      */
     public function authAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
         $bodyParams = json_decode($request->getBody()->getContents());
         $settings = [
             'callbackUrl' => $bodyParams->callbackUrl,
@@ -251,9 +243,12 @@ class BrowserController extends AbstractBackendController
             $indexer = $this->getIndexer($storage);
             $mediaContainer = $media['mediaContainer'];
 
+            // First of all check that the file contain a valid hash in other case an exception would be thrown
+            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
+
             $file = $storage->getFile($mediaContainer['id']);
             if ($file instanceof File) {
-                $file->setTxAdmiralCloudConnectorLinkhashFromMediaContainer($mediaContainer);
+                $file->setTxAdmiralCloudConnectorLinkhash($linkHash);
                 $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
 
                 $this->getFileIndexRepository()->add($file);
@@ -302,10 +297,7 @@ class BrowserController extends AbstractBackendController
             $storage = $this->getAdmiralCloudStorage();
             $mediaContainer = $media['mediaContainer'];
             $file = $storage->getFile($mediaContainer['id']);
-            $file->setTxAdmiralCloudConnectorLinkhashFromMediaContainer($mediaContainer);
             $file->setTxAdmiralCloudConnectorCrop($cropperData);
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->admiralCloudService = $objectManager->get(AdmiralCloudService::class);
             $link = $this->admiralCloudService->getImagePublicUrl($file,226,150);
 
             return $this->createJsonResponse($response, ['target' => $target,'cropperData' => $cropperData,'link' => $link], 201);
