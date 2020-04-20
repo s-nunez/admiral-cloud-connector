@@ -20,4 +20,8 @@ return [
         'path' => '/admiral_cloud/browser/cropfile',
         'target' => BrowserController::class . '::cropFileAction'
     ],
+    'admiral_cloud_browser_get_media_public_url' => [
+        'path' => '/admiral_cloud/browser/getmediapublicurl',
+        'target' => BrowserController::class . '::getMediaPublicUrlAction'
+    ],
 ];

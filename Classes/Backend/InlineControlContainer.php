@@ -12,9 +12,11 @@ namespace CPSIT\AdmiralCloudConnector\Backend;
 
 use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class InlineControlContainer
@@ -95,7 +97,9 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
         $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
-        $compactViewUrl = BackendUtility::getModuleUrl('admiral_cloud_browser_show', [
+
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_show', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
             'assetTypes' => implode(',', $allowedAssetTypes)
@@ -140,7 +144,9 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
         $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
-        $compactViewUrl = BackendUtility::getModuleUrl('admiral_cloud_browser_upload', [
+
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+        $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_upload', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
             'assetTypes' => implode(',', $allowedAssetTypes)

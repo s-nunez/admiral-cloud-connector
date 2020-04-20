@@ -161,6 +161,17 @@ class BrowserController extends AbstractBackendController
     }
 
     /**
+     * @param ServerRequestInterface|null $request
+     * @param ResponseInterface|null $response
+     * @return ResponseInterface
+     */
+    public function rteLinkAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    {
+        $this->view->assign('modus', 'rte-link');
+        return $this->prepareIframe($request, $response,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+    }
+
+    /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param string $callbackUrl
@@ -274,6 +285,41 @@ class BrowserController extends AbstractBackendController
             }
 
             return $this->createJsonResponse($response, ['files' => $files], 201);
+        } catch (Exception $e) {
+            $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
+            return $this->createJsonResponse($response, [
+                'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
+                'exception' => [
+                    'code' => $e->getCode(),
+                    'message' => $e->getMessage()
+                ],
+            ], 404);
+        }
+    }
+
+    /**
+     * Action: Retrieve file from storage
+     *
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function getMediaPublicUrlAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $media = $request->getParsedBody()['media'];
+
+        try {
+            $mediaContainer = $media['mediaContainer'];
+
+            // Get link hash for media container
+            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
+
+            /** @var AdmiralCloudService $admiralCloudService */
+            $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
+
+            return $this->createJsonResponse($response, [
+                'publicUrl' => $admiralCloudService->getDirectPublicUrlForHash($linkHash)
+            ], 200);
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
             return $this->createJsonResponse($response, [

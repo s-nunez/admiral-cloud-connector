@@ -419,6 +419,17 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * Get direct public url for given hash
+     *
+     * @param string $hash
+     * @return string
+     */
+    public function getDirectPublicUrlForHash(string $hash): string
+    {
+        return ConfigurationUtility::getDirectFileUrl() . $hash;
+    }
+
+    /**
      * Get direct public url for given file
      *
      * @param FileInterface $file

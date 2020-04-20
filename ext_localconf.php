@@ -4,6 +4,11 @@ use CPSIT\AdmiralCloudConnector\Backend\InlineControlContainer;
 
 defined('TYPO3_MODE') || die('Access denied.');
 
+// Adding pageTS
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.ts">'
+);
+
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1433198160] = [
     'nodeName' => 'inline',
     'priority' => 50,

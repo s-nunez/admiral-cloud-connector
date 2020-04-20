@@ -36,6 +36,9 @@
             <trans-unit id="be_users.security_group">
                 <source>AC Security Group</source>
             </trans-unit>
+            <trans-unit id="linkHandler.label">
+                <source>AdmiralCloud</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

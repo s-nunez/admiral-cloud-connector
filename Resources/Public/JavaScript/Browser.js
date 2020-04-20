@@ -4,8 +4,9 @@
 define(['jquery',
     'nprogress',
     'TYPO3/CMS/Backend/Modal',
-    'TYPO3/CMS/Backend/Notification'
-], function ($, NProgress, Modal, Notification) {
+    'TYPO3/CMS/Backend/Notification',
+    'TYPO3/CMS/Recordlist/LinkBrowser'
+], function ($, NProgress, Modal, Notification, LinkBrowser) {
     'use strict';
     /**
      * The main CompactView object for AdmiralCloud
@@ -17,6 +18,7 @@ define(['jquery',
         overviewButton: '.t3js-admiral_cloud-browser-btn.overview',
         uploadButton: '.t3js-admiral_cloud-browser-btn.upload',
         cropButton: '.t3js-admiral_cloud-browser-btn.crop',
+        rteLinkButton: '.t3js-admiral_cloud-browser-btn.rte-link',
         browserUrl: '',
         title: 'AdmiralCloud'
     };
@@ -27,11 +29,6 @@ define(['jquery',
      * @private
      */
     Browser.initialize = function () {
-        var $button = $(Browser.overviewButton);
-
-        var $uploadButton = $(Browser.uploadButton);
-
-        var $cropButton = $(Browser.cropButton);
         $('#iframeContainer').append($('#elAdmiralCloud'))
 
         // Add all listeners based on inline button
@@ -47,12 +44,22 @@ define(['jquery',
             Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
             Browser.open();
         });
+        $(document).on("click", Browser.rteLinkButton, function () {
+            Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
+            Browser.open();
+        });
 
         $(document).on('AdmiralCloudBrowserAddMedia', function (event) {
             //console.log('received', event.detail.media);
             var target = event.detail.target;
             var media = event.detail.media;
             var modus = event.detail.modus;
+
+            if (modus === 'rte-link') {
+                Browser.getMediaPublicUrl(media);
+                return true;
+            }
+
             if (target && media && !modus) {
                 Browser.addMedia(target, media);
             }
@@ -156,6 +163,50 @@ define(['jquery',
                     console.info(data);
                     $('#' + data.target).val(data.cropperData);
                     $('#' + data.target + '_image').attr('src',data.link);
+                }
+
+                if (data.message) {
+                    Notification.success('', data.message, Notification.duration);
+                }
+            },
+            error: function (xhr, type) {
+                var data = xhr.responseJSON || {};
+                if (data.error) {
+                    Notification.error('', data.error, Notification.duration);
+                } else {
+                    Notification.error('', 'Unknown ' + type + ' occured.', Notification.duration);
+                }
+            },
+            complete: function () {
+                NProgress.done();
+            }
+        });
+    };
+
+    /**
+     * Get public url from media
+     *
+     * @param {Array} media
+     *
+     * @private
+     */
+    Browser.getMediaPublicUrl = function (media) {
+        return $.ajax({
+            type: 'POST',
+            url: TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url'],
+            dataType: 'json',
+            data: {
+                media: media
+            },
+            beforeSend: function () {
+                Modal.dismiss();
+                NProgress.start();
+            },
+            success: function (data) {
+                if (data.publicUrl) {
+                    LinkBrowser.finalizeFunction(data.publicUrl);
+                } else {
+                    Notification.error('', 'It was not possible to get the file public url.', Notification.duration);
                 }
 
                 if (data.message) {

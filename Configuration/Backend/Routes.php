@@ -24,4 +24,8 @@ return [
         'path' => '/admiral_cloud/browser/api',
         'target' => BrowserController::class . '::apiAction'
     ],
+    'admiral_cloud_browser_rte_link' => [
+        'path' => '/admiral_cloud/browser/rte-link',
+        'target' => BrowserController::class . '::rteLinkAction'
+    ],
 ];
