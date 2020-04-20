@@ -33,6 +33,9 @@
             <trans-unit id="be_users.last_name">
                 <source>Lastname</source>
             </trans-unit>
+            <trans-unit id="be_users.security_group">
+                <source>AC Security Group</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

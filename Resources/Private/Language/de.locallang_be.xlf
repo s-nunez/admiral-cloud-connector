@@ -43,6 +43,10 @@
                 <source>Lastname</source>
                 <target>Nachname</target>
             </trans-unit>
+            <trans-unit id="be_users.security_group">
+                <source>AC Security Group</source>
+                <target>AC Security Group</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

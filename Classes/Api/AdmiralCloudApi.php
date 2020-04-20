@@ -330,6 +330,9 @@ class AdmiralCloudApi
     }
 
     public static function getSecurityGroup(){
+        if(isset($GLOBALS['BE_USER']->user['security_group']) && $GLOBALS['BE_USER']->user['security_group']){
+            return $GLOBALS['BE_USER']->user['security_group'];
+        }
         $groups = $GLOBALS['BE_USER']->user['usergroup_cached_list'];
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_admiralcloudconnector_security_groups');

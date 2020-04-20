@@ -33,9 +33,17 @@ $newBeUsersColumns = [
             'size' => 15,
             'eval' => 'trim'
         ]
+    ],
+    'security_group' => [
+        'label' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:be_users.security_group',
+        'config' => [
+            'type' => 'input',
+            'size' => 15,
+            'eval' => 'trim'
+        ]
     ]
 ];
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('be_users', $newBeUsersColumns);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('be_users',
-    'first_name,last_name', '', 'after:realName');
+    'first_name,last_name,security_group', '', 'after:realName');
