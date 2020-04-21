@@ -206,11 +206,10 @@ class ConfigurationUtility
      */
     public static function getSmartcropUrl(): string
     {
-        $add = '';
         if (!self::isProduction()) {
-            $add = 'dev';
+            return 'https://smartcropdev.admiralcloud.com/';
         }
-        return 'https://smartcrop' . $add . '.admiralcloud.com/';
+        return 'https://images.admiralcloud.com/';
     }
 
     /**
