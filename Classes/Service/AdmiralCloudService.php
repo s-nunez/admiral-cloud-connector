@@ -8,6 +8,7 @@ use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidFileConfigurationException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
+use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -301,23 +302,12 @@ class AdmiralCloudService implements SingletonInterface
         }
 
         // Get width and height with the correct ratio
-
-        $fileWidth = (int)$file->getProperty('width');
-        $fileHeight = (int)$file->getProperty('height');
-
-        if (!$width && !$height) {
-            $width = min($fileWidth, ConfigurationUtility::getDefaultImageWidth());
-        }
-
-        if ($fileWidth && $fileHeight) {
-            if (!$width && $height) {
-                $width = (int)round(($height / $fileHeight) * $fileWidth);
-            }
-
-            if (!$height) {
-                $height = (int)round(($width / $fileWidth) * $fileHeight);
-            }
-        }
+        $dimensions = ImageUtility::calculateDimensions(
+            $file,
+            $width,
+            $height,
+            (!$width) ? ConfigurationUtility::getDefaultImageWidth() : null
+        );
 
         // Get image public url
         if ($file->getTxAdmiralCloudConnectorCrop()) {
@@ -325,9 +315,9 @@ class AdmiralCloudService implements SingletonInterface
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/cropperjsfocus/'
-                . $width
+                . $dimensions->width
                 . '/'
-                . $height
+                . $dimensions->height
                 . '/'
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true&env=dev';
@@ -336,9 +326,9 @@ class AdmiralCloudService implements SingletonInterface
             $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
                 . '/image/autocrop/'
-                . $width
+                . $dimensions->width
                 . '/'
-                . $height
+                . $dimensions->height
                 . '/0.8?poc=true';
         }
 

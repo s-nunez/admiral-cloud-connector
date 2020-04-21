@@ -26,8 +26,7 @@ class ConfigurationUtility
      */
     public static function getDefaultImageWidth(): int
     {
-        // TODO set default image width
-        return 1200;
+        return 2000;
     }
 
     /**

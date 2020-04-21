@@ -16,6 +16,7 @@ namespace CPSIT\AdmiralCloudConnector\ViewHelpers\Uri;
 
 use CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
@@ -136,42 +137,17 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
                 $image->setTxAdmiralCloudConnectorCrop($originalImage->getProperty('tx_admiralcloudconnector_crop'));
             }
 
-            $fileImageWidth = $image->_getMetaData()['width'];
-            $fileImageHeight = $image->_getMetaData()['height'];
-
-            $width = $arguments['width'];
-
-            if (!$width) {
-                $width = $arguments['maxWidth'];
-            }
-
-            if (!$width) {
-                $width = 0;
-            }
-
-            $height = $arguments['height'];
-
-            if (!$height) {
-                $height = $arguments['maxHeight'];
-            }
-
-            if (!$height) {
-                $height = 0;
-            }
-
-            if ($fileImageWidth && $fileImageHeight) {
-                if (!$height && $width) {
-                    $height = round(($width / $fileImageWidth) * $fileImageHeight);
-                }
-
-                if (!$width && $height) {
-                    $width = round(($height / $fileImageHeight) * $fileImageWidth);
-                }
-            }
+            $dimensions = ImageUtility::calculateDimensions(
+                $image,
+                $arguments['width'],
+                $arguments['height'],
+                $arguments['maxWidth'],
+                $arguments['maxHeight']
+            );
 
             /** @var AdmiralCloudService $admiralCloudService */
             $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
-            return $admiralCloudService->getImagePublicUrl($image, $width, $height);
+            return $admiralCloudService->getImagePublicUrl($image, $dimensions->width, $dimensions->height);
         }
         return parent::renderStatic($arguments, $renderChildrenClosure, $renderingContext);
     }
