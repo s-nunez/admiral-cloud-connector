@@ -167,11 +167,11 @@
                 event = new CustomEvent('AdmiralCloudBrowserAddMedia', parameters);
             } else {
                 // Add IE11 support
-                event = document.createEvent('CustomEvent');
+                event = top.document.createEvent('CustomEvent');
                 event.initCustomEvent('AdmiralCloudBrowserAddMedia', true, true, parameters);
             }
 
-            parentDocument.dispatchEvent(event);
+            top.document.dispatchEvent(event);
         }
     };
     load();

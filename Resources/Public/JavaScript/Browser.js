@@ -49,15 +49,16 @@ define(['jquery',
             Browser.open();
         });
 
-        $(document).on('AdmiralCloudBrowserAddMedia', function (event) {
+        $(top.document).on('AdmiralCloudBrowserAddMedia', function (event) {
             //console.log('received', event.detail.media);
             var target = event.detail.target;
             var media = event.detail.media;
             var modus = event.detail.modus;
 
             if (modus === 'rte-link') {
-                Browser.getMediaPublicUrl(media);
-                return true;
+                if (LinkBrowser.thisScriptUrl !== undefined) {
+                    Browser.getMediaPublicUrl(media);
+                }
             }
 
             if (target && media && !modus) {
