@@ -330,7 +330,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $height
                 . '/'
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
-                . '?poc=true&env=dev';
+                . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'');
         } else {
             // Without crop information
             $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
