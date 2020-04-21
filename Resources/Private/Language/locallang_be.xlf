@@ -39,6 +39,12 @@
             <trans-unit id="linkHandler.label">
                 <source>AdmiralCloud</source>
             </trans-unit>
+            <trans-unit id="toolbarItem.title">
+                <source>Close connection with AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="toolbarItem.success">
+                <source>AdmiralCloud connection was closed successfully.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

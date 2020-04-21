@@ -79,6 +79,7 @@
         // Create a new iframe and authenticate
         var el = document.createElement('div');
         el.setAttribute('class','acModalParent');
+        el.setAttribute('id','acModalParent');
         el.innerHTML = '<div class="acBackdrop"><iframe src="' + iframeURL + '&auth=1"></iframe><div class="close"><i class="fa fa-times"></i></div></div>';
         currentIframeURL = iframeURL;
         document.body.appendChild(el);

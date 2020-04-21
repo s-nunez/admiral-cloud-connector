@@ -70,6 +70,9 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
     'priority' => 50
 ];
 
+// Add toolbar item to close AdmiralCloud connection
+$GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][] = \CPSIT\AdmiralCloudConnector\Backend\ToolbarItems\AdmiralCloudToolbarItem::class;
+
 $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
 $iconRegistry->registerIcon(
     'actions-admiral_cloud-browser',

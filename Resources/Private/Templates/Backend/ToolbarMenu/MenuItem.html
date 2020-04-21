@@ -1,0 +1,24 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+
+	<script>
+		const acSuccessMessage = "{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.success')}";
+		function initializeAdmiralCloudAgain() {
+			$('#acModalParent').remove();
+			TYPO3.Notification.success('', acSuccessMessage, 3);
+			return false;
+		}
+	</script>
+
+	<a href="#"
+	   id="admiral-cloud-toolbar"
+	   class="toolbar-item-link"
+	   onclick="return initializeAdmiralCloudAgain();"
+	   title="{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.title')}"
+	   >
+		<core:icon identifier="actions-admiral_cloud-browser" size="default" />
+	</a>
+</html>
+
+
