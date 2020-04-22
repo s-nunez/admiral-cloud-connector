@@ -45,6 +45,18 @@
             <trans-unit id="toolbarItem.success">
                 <source>AdmiralCloud connection was closed successfully.</source>
             </trans-unit>
+            <trans-unit id="admiral_cloud_connector_title">
+                <source>AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="usersettings.first_name">
+                <source>First Name</source>
+            </trans-unit>
+            <trans-unit id="usersettings.last_name">
+                <source>Last Name</source>
+            </trans-unit>
+            <trans-unit id="usersettings.security_group">
+                <source>AC Security Group</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

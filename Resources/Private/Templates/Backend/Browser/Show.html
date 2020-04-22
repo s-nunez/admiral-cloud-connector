@@ -178,6 +178,7 @@
     load();
 
     function hideAC() {
+        elAdmiralCloud.querySelector('iframe').contentWindow.postMessage(JSON.stringify({command: 'HIDE_CROPPER_MODAL'}), iframeURL_HOST);
         elAdmiralCloud.querySelector('.acBackdrop').classList.add('hidden');
     }
 </script>
