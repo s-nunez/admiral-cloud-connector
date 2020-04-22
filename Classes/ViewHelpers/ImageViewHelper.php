@@ -48,7 +48,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
             }
 
             $dimensions = ImageUtility::calculateDimensions(
-                $image->getOriginalFile(),
+                $originalFile,
                 $this->arguments['width'],
                 $this->arguments['height'],
                 $this->arguments['maxWidth'],
