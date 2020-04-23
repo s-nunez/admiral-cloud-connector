@@ -285,6 +285,17 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * Get public url for AdmiralCloud player
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    public function getPlayerPublicUrl(FileInterface $file): string
+    {
+        return $this->getPlayerPublicUrlForFile($file);
+    }
+
+    /**
      * Get public url for admiral cloud image
      *
      * @param FileInterface $file
@@ -428,5 +439,16 @@ class AdmiralCloudService implements SingletonInterface
     protected function getDirectPublicUrlForFile(FileInterface $file): string
     {
         return ConfigurationUtility::getDirectFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
+    }
+
+    /**
+     * Get player public url for given file
+     *
+     * @param FileInterface $file
+     * @return string
+     */
+    protected function getPlayerPublicUrlForFile(FileInterface $file): string
+    {
+        return ConfigurationUtility::getPlayerFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
     }
 }

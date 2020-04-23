@@ -263,6 +263,19 @@ class ConfigurationUtility
     /**
      * @return string
      */
+    public static function getPlayerFileUrl(): string
+    {
+        $add = '';
+        if (!self::isProduction()) {
+            $add = 'dev';
+        }
+
+        return 'https://player' . $add . '.admiralcloud.com/?v=';
+    }
+
+    /**
+     * @return string
+     */
     public static function getImagePlayerConfigId(): string
     {
         return getenv('ADMIRALCLOUD_IMAGE_CONFIG_ID') ?: 3;

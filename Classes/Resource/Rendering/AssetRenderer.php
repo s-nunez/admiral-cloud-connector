@@ -95,41 +95,7 @@ class AssetRenderer implements FileRendererInterface
      */
     protected function renderVideoTag(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
     {
-        // TODO Implement me
-        $sources = [];
-        foreach ($this->getAsset($file->getIdentifier())->getStreams() as $url => $type) {
-            $sources[] = '<source src="' . $url . '" type="' . $type . '">';
-        }
-
-        if (!empty($sources)) {
-            $this->addVideoJSLibraryToPageRenderer();
-
-            // Now render tag based on given content sources
-            $tag = $this->getTagBuilder('video', $options);
-
-            $tag->addAttributes([
-                'class' => 'video-js',
-                'controls' => 'controls',
-                'preload' => 'auto',
-                'width' => '100%',
-                'poster' => $this->getWebPath(
-                    $this->getThumbnailUrl($file, $width, $height, $options),
-                    $usedPathsRelativeToCurrentScript
-                )
-            ]);
-            $tag->setContent(
-                implode(PHP_EOL, $sources)
-                . '<p class="vjs-no-js">'
-                . LocalizationUtility::translate('javascript_required', ConfigurationUtility::EXTENSION, ['video'])
-                . '</p>'
-            );
-            if ((int)$height > 0) {
-                $tag->addAttribute('height', !empty($height) ? $height : null);
-            }
-
-            return $tag->render();
-        }
-        return '<!-- Video #' . $file->getIdentifier() . ' not available for embedding -->';
+        return $this->getPlayerHtml($file, $width, $height, $options);
     }
 
     /**
@@ -144,37 +110,7 @@ class AssetRenderer implements FileRendererInterface
      */
     protected function renderAudioTag(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
     {
-        // TODO implement me
-        $sources = [];
-        foreach ($this->getAsset($file->getIdentifier())->getStreams() as $url => $type) {
-            $sources[] = '<source src="' . $url . '" type="' . $type . '">';
-        }
-
-        if (!empty($sources)) {
-            $this->addVideoJSLibraryToPageRenderer();
-
-            // Now render tag based on given content sources
-            $tag = $this->getTagBuilder('audio', $options);
-
-            $tag->addAttribute('class', 'video-js');
-            $tag->addAttributes([
-                'class' => 'video-js',
-                'controls' => 'controls',
-                'preload' => 'auto'
-            ]);
-            $tag->setContent(
-                implode(PHP_EOL, $sources)
-                . '<p class="vjs-no-js">'
-                . LocalizationUtility::translate('javascript_required', ConfigurationUtility::EXTENSION, ['audio'])
-                . '</p>'
-            );
-            if ((int)$height > 0) {
-                $tag->addAttribute('height', !empty($height) ? $height : null);
-            }
-
-            return $tag->render();
-        }
-        return '<!-- Video #' . $file->getIdentifier() . ' not available for embedding -->';
+        return $this->getPlayerHtml($file, $width, $height, $options);
     }
 
     /**
@@ -187,12 +123,11 @@ class AssetRenderer implements FileRendererInterface
      */
     protected function renderImageTag(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
     {
-        /** @var AdmiralCloudService $admiralCloudService */
-        $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
-
         $tag = $this->getTagBuilder('img', $options);
 
-        $tag->addAttribute('src', $admiralCloudService->getImagePublicUrl($file, (int)$width, (int)$height),
+        $tag->addAttribute(
+            'src',
+            $this->getAdmiralCloudService()->getImagePublicUrl($file, (int)$width, (int)$height),
             $usedPathsRelativeToCurrentScript
         );
 
@@ -213,96 +148,40 @@ class AssetRenderer implements FileRendererInterface
         return $tag->render();
     }
 
-
     /**
+     * Get iframe with AdmiralCloud player
+     *
      * @param FileInterface $file
      * @param int|string $width
      * @param int|string $height
      * @param array $options
      * @return string
      */
-    protected function getThumbnailUrl($file, $width, $height, $options): string
+    protected function getPlayerHtml(FileInterface $file, $width, $height, array $options = []): string
     {
-        // TODO is it needed?
-
-        try {
-            // Define all required image processing variables
-            $cropVariant = $options['cropVariant'] ?: 'default';
-            $cropString = $file instanceof FileReference ? $file->getProperty('crop') : '';
-            $cropVariantCollection = CropVariantCollection::create((string)$cropString);
-            $cropArea = $cropVariantCollection->getCropArea($cropVariant);
-            $processingInstructions = [
-                'width' => $width,
-                'height' => $height,
-                'crop' => $cropArea->isEmpty() ? null : $cropArea->makeAbsoluteBasedOnFile($file),
-            ];
-
-            // Process and generate/retrieve image from AdmiralCloud API
-            $imageService = $this->getImageService();
-            $processedImage = $imageService->applyProcessingInstructions($file, $processingInstructions);
-            $url = $imageService->getImageUri($processedImage);
-
-            // Return if path exists on local storage
-            if (is_file(PATH_site . ltrim($url, '/'))) {
-                return $url;
-            }
-
-            // Return if its an external unmodified file
-            if (preg_match('/^(?:http)s?:/', $url)) {
-                return $url;
-            }
-        } catch (InvalidThumbnailException $e) {
-            // Never throw exception if not available for some reason.
+        if (is_callable([$file, 'getOriginalFile'])) {
+            $originalFile = $file->getOriginalFile();
+        } else {
+            $originalFile = $file;
         }
 
-        return ConfigurationUtility::getUnavailableImage();
-    }
+        $tag = $this->getTagBuilder('iframe', $options);
 
+        $tag->addAttribute('src', $this->getAdmiralCloudService()->getPlayerPublicUrl($originalFile));
+        $tag->addAttribute('allowfullscreen', true);
 
-    /**
-     * Fetches the URL to the the avatar image
-     *
-     * @param string $url
-     * @param bool $relativeToCurrentScript Determines whether the URL returned should be relative to the current script, in case it is relative at all.
-     * @return string
-     */
-    protected function getWebPath(string $url, bool $relativeToCurrentScript = false): string
-    {
-        // TODO is it needed?
-
-        if ($relativeToCurrentScript && !GeneralUtility::isValidUrl($url)) {
-            $url = PathUtility::getAbsoluteWebPath(PATH_site . $url);
+        if ((int)$width > 0) {
+            $tag->addAttribute('width', !empty($width) ? $width : null);
         }
-        return $url;
-    }
+        if ((int)$height > 0) {
+            $tag->addAttribute('height', !empty($height) ? $height : null);
+        }
 
-    /**
-     * Include Video.JS javascript libraries and configuration
-     *
-     * @return void
-     */
-    protected function addVideoJSLibraryToPageRenderer(): void
-    {
-        // TODO is it needed?
+        if ($tag->hasAttribute('title') === false) {
+            $tag->addAttribute('title', $file->getProperty('title'));
+        }
 
-        $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
-        $pageRenderer->addCssFile('EXT:bynder/Resources/Public/Styles/video-js.min.css');
-        $pageRenderer->addJsInlineCode('video-js', 'window.VIDEOJS_NO_DYNAMIC_STYLE = true;');
-        $pageRenderer->addJsFooterFile('EXT:bynder/Resources/Public/JavaScript/video-js.min.js');
-    }
-
-
-    /**
-     * Return an instance of ImageService
-     *
-     * @return ImageService
-     */
-    protected function getImageService(): ImageService
-    {
-        // TODO is it needed?
-
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        return $objectManager->get(ImageService::class);
+        return $tag->render();
     }
 
     /**
@@ -318,5 +197,13 @@ class AssetRenderer implements FileRendererInterface
         $tag = $tagBuilderService->getTagBuilder($type);
         $tagBuilderService->initializeAbstractTagBasedAttributes($tag, $options);
         return $tag;
+    }
+
+    /**
+     * @return AdmiralCloudService
+     */
+    protected function getAdmiralCloudService(): AdmiralCloudService
+    {
+        return GeneralUtility::makeInstance(AdmiralCloudService::class);
     }
 }
