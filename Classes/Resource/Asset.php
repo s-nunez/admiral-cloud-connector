@@ -221,8 +221,6 @@ class Asset
      */
     public function extractProperties($propertiesToExtract = []): array
     {
-        // TODO implement me
-
         if (empty($propertiesToExtract)) {
             $propertiesToExtract = [
                 'size',
