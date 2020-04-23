@@ -78,7 +78,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
             $this->txAdmiralCloudConnectorCrop = $this->properties['tx_admiralcloudconnector_crop'];
         }
 
-        return $this->txAdmiralCloudConnectorCrop;
+        return $this->txAdmiralCloudConnectorCrop ?? '';
     }
 
     public function getTxAdmiralCloudConnectorCropUrlPath(): string
@@ -95,7 +95,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
     /**
      * @param string $txAdmiralCloudconnectorLinkhashCrop
      */
-    public function setTxAdmiralCloudConnectorCrop(string $txAdmiralCloudconnectorLinkhashCrop): void
+    public function setTxAdmiralCloudConnectorCrop(?string $txAdmiralCloudconnectorLinkhashCrop): void
     {
         $this->txAdmiralCloudConnectorCrop = $txAdmiralCloudconnectorLinkhashCrop;
     }

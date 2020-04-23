@@ -76,16 +76,14 @@ class ImageUtility
      */
     protected static function getFileWidthWithCropInformation(FileInterface $file): int
     {
-        if (is_callable([$file, 'getTxAdmiralCloudConnectorCrop'])) {
-            $crop = json_decode($file->getTxAdmiralCloudConnectorCrop());
-        }
+        $crop = static::getCropInformation($file);
 
         if (!empty($crop)) {
             $fileWidth = (int) $crop->cropData->width;
         }
 
         if (empty($fileWidth)) {
-            $fileWidth = (int)$file->_getMetaData()['width'];
+            $fileWidth = (int)$file->getProperty('width');
         }
 
         return $fileWidth;
@@ -97,16 +95,14 @@ class ImageUtility
      */
     protected static function getFileHeightWithCropInformation(FileInterface $file): int
     {
-        if (is_callable([$file, 'getTxAdmiralCloudConnectorCrop'])) {
-            $crop = json_decode($file->getTxAdmiralCloudConnectorCrop());
-        }
+        $crop = static::getCropInformation($file);
 
         if (!empty($crop)) {
             $fileHeight = (int) $crop->cropData->height;
         }
 
         if (empty($fileHeight)) {
-            $fileHeight = (int)$file->_getMetaData()['height'];
+            $fileHeight = (int)$file->getProperty('height');
         }
 
         return $fileHeight;
@@ -150,5 +146,22 @@ class ImageUtility
         }
 
         return $dimensions;
+    }
+
+    /**
+     * @param FileInterface $file
+     * @return \stdClass|null
+     */
+    protected static function getCropInformation(FileInterface $file): ?\stdClass
+    {
+        if (is_callable([$file, 'getTxAdmiralCloudConnectorCrop'])) {
+            $crop = $file->getTxAdmiralCloudConnectorCrop();
+        } else {
+            $crop = $file->getProperty('tx_admiralcloudconnector_crop');
+        }
+
+        $crop = json_decode($crop) ?: null;
+
+        return $crop;
     }
 }

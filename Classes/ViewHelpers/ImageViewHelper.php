@@ -7,8 +7,6 @@ use CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
 use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\Index\Indexer;
-use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -44,11 +42,11 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
         if ($originalFile->getStorage()->getUid() === $this->getAdmiralCloudStorage()->getUid()) {
             if ($this->arguments['txAdmiralCloudCrop']) {
-                $image->getOriginalFile()->setTxAdmiralCloudConnectorCrop($this->arguments['txAdmiralCloudCrop']);
+                $originalFile->setTxAdmiralCloudConnectorCrop($this->arguments['txAdmiralCloudCrop']);
             }
 
             $dimensions = ImageUtility::calculateDimensions(
-                $originalFile,
+                $image,
                 $this->arguments['width'],
                 $this->arguments['height'],
                 $this->arguments['maxWidth'],

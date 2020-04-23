@@ -109,32 +109,28 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
         $src = $arguments['src'];
-        $image = $arguments['image'];
+        $imageArgument = $arguments['image'];
         $treatIdAsReference = $arguments['treatIdAsReference'];
 
-        if (($src === null && $image === null) || ($src !== null && $image !== null)) {
+        if (($src === null && $imageArgument === null) || ($src !== null && $imageArgument !== null)) {
             throw new Exception('You must either specify a string src or a File object.', 1460976233);
         }
 
         $imageService = self::getImageService();
-        $originalImage = $imageService->getImage($src, $image, $treatIdAsReference);
+        $image = $imageService->getImage($src, $imageArgument, $treatIdAsReference);
 
-        if (!($originalImage instanceof File) && is_callable([$originalImage, 'getOriginalFile'])) {
-            $image = $originalImage->getOriginalFile();
+        if (!($image instanceof File) && is_callable([$image, 'getOriginalFile'])) {
+            $originalFile = $image->getOriginalFile();
         } else {
-            $image = $originalImage;
+            $originalFile = $image;
         }
 
-        if ($image->getType() === File::FILETYPE_IMAGE
-            && GeneralUtility::isFirstPartOfStr($image->getMimeType(), 'admiralCloud/')) {
+        if ($originalFile->getType() === File::FILETYPE_IMAGE
+            && GeneralUtility::isFirstPartOfStr($originalFile->getMimeType(), 'admiralCloud/')) {
             $crop = $arguments['txAdmiralCloudCrop'];
 
             if ($crop) {
-                $image->setTxAdmiralCloudConnectorCrop($arguments['txAdmiralCloudCrop']);
-            }
-
-            if (!$crop && $originalImage->getProperty('tx_admiralcloudconnector_crop')) {
-                $image->setTxAdmiralCloudConnectorCrop($originalImage->getProperty('tx_admiralcloudconnector_crop'));
+                $originalFile->setTxAdmiralCloudConnectorCrop($arguments['txAdmiralCloudCrop']);
             }
 
             $dimensions = ImageUtility::calculateDimensions(

@@ -22,3 +22,9 @@ $additionalFields = [
     'imageoverlayPalette',
     '--linebreak--,tx_admiralcloudconnector_crop'
 );
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes(
+    'sys_file_reference',
+    'tx_admiralcloudconnector_crop',
+    2
+);
