@@ -342,6 +342,7 @@ class AdmiralCloudApi
             ->where(
                 $queryBuilder->expr()->eq('sg.deleted', $queryBuilder->createNamedParameter(0, \PDO::PARAM_INT))
             )
+            ->addOrderBy('ac_security_group_id', 'DESC')
             ->execute();
         $sgs = [];
         while ($row = $res->fetch()) {
