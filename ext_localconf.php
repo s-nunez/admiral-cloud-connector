@@ -70,6 +70,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][] = [
     'priority' => 50
 ];
 
+// Add task to update metadata of AdmiralCloud files
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataTask::class] = [
+    'extension' => 'admiral_cloud_connector',
+    'title' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.update_admiral_cloud_metadata.name',
+    'description' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.update_admiral_cloud_metadata.description',
+    'additionalFields' => \CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataAdditionalFieldProvider::class
+];
+
 // Add toolbar item to close AdmiralCloud connection
 $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][] = \CPSIT\AdmiralCloudConnector\Backend\ToolbarItems\AdmiralCloudToolbarItem::class;
 
@@ -85,5 +93,14 @@ $iconRegistry->registerIcon(
     ['source' => 'EXT:admiral_cloud_connector/Resources/Public/Icons/permissions-admiral_cloud-browser.svg']
 );
 unset($iconRegistry);
+
+/**
+ * register cache for extension
+ */
+if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'])) {
+    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = array();
+    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['frontend'] = \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class;
+    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
+}
 
 
