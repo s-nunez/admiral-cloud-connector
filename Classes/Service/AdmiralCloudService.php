@@ -57,6 +57,18 @@ class AdmiralCloudService implements SingletonInterface
     protected $logger;
 
     /**
+     * Metadata fields in AdmiralCloud
+     *
+     * @var array
+     */
+    protected $metaDataFields = [
+        'container_name',
+        'container_description',
+        'meta_copyright',
+        'meta_alttag',
+    ];
+
+    /**
      * AdmiralCloudService constructor.
      */
     public function __construct()
@@ -108,12 +120,7 @@ class AdmiralCloudService implements SingletonInterface
                     },
                     $identifiers
                 ),
-                'title' => [
-                    'container_name',
-                    'container_description',
-                    'meta_copyright',
-                    'meta_altTag',
-                ],
+                'title' => $this->metaDataFields,
             ]
         ];
 
@@ -249,6 +256,120 @@ class AdmiralCloudService implements SingletonInterface
             ]
         ];
         return json_decode($this->callAdmiralCloudApi($settings)->getData()) ?? [];
+    }
+
+    /**
+     * Get metadata for AdmiralCloud files which were updated after given date
+     *
+     * @param \DateTime $lastUpdated
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
+    public function getUpdatedMetaData(\DateTime $lastUpdated, int $offset = 0, int $limit = 100): array
+    {
+        // Prepare payload for AdmiralCloud API
+        $payload = [];
+
+        $payload['from'] = $offset;
+        $payload['size'] = $limit;
+        $payload['noAggregation'] = true;
+        $payload['sourceFields'] = $this->metaDataFields;
+
+        $payload['sort'] = [];
+        $sort = new \stdClass();
+        $sort->updatedAt = 'desc';
+        $payload['sort'][] = $sort;
+
+        $payload['query'] = new \stdClass();
+        $payload['query']->bool = new \stdClass();
+        $payload['query']->bool->filter = [];
+        $filter = new \stdClass();
+        $filter->range = new \stdClass();
+        $filter->range->updatedAt = new \stdClass();
+        $filter->range->updatedAt->gte = $lastUpdated->format('Y-m-d');
+        $payload['query']->bool->filter[] = $filter;
+
+        $settings = [
+            'route' => 'search',
+            'controller' => 'search',
+            'action' => 'search',
+            'payload' => $payload
+        ];
+
+        // Make AdmiralCloud API call
+        $result = json_decode($this->callAdmiralCloudApi($settings)->getData(), true) ?? [];
+
+        // Get metadata information from result
+        $metaDataArray = [];
+
+        if (!empty($result['hits']['hits'])) {
+            foreach ($result['hits']['hits'] as $item) {
+                $metaDataArray[$item['_id']] = $item['_source'];
+            }
+        }
+
+        return $metaDataArray;
+    }
+
+    /**
+     * Make search call to AdmiralCloud to get all metadata for given identifiers
+     *
+     * @param array $identifiers
+     * @return array
+     */
+    public function searchMetaDataForIdentifiers(array $identifiers): array
+    {
+        // Prepare payload for AdmiralCloud API
+        $payload = [];
+        $payload['noAggregation'] = true;
+        $payload['sourceFields'] = $this->metaDataFields;
+
+        $payload['query'] = new \stdClass();
+        $payload['query']->bool = new \stdClass();
+        $payload['query']->bool->filter = [];
+        $filter = new \stdClass();
+        $filter->terms = new \stdClass();
+        $filter->terms->id = $identifiers;
+        $payload['query']->bool->filter[] = $filter;
+
+        $settings = [
+            'route' => 'search',
+            'controller' => 'search',
+            'action' => 'search',
+            'payload' => $payload
+        ];
+
+        // Make AdmiralCloud API call
+        $result = json_decode($this->callAdmiralCloudApi($settings)->getData(), true) ?? [];
+
+        // Get metadata information from result
+        $metaDataArray = [];
+
+        if (!empty($result['hits']['hits'])) {
+            foreach ($result['hits']['hits'] as $item) {
+                $metaDataArray[$item['_id']] = $item['_source'];
+            }
+        }
+
+        if (count($identifiers) !== count($metaDataArray)) {
+            $notFound = $identifiers;
+
+            foreach (array_keys($metaDataArray) as $id) {
+                $index = array_search($id, $identifiers, false);
+
+                if ($index !== false) {
+                    unset($notFound[$index]);
+                }
+            }
+
+            $this->logger->error(sprintf(
+                'Error searching for metadata. Some identifiers were not found in AdmiralCloud. Identifiers: [%s]',
+                implode(',', $notFound)
+            ));
+        }
+
+        return $metaDataArray;
     }
 
     /**

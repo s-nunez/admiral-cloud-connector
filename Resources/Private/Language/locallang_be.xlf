@@ -57,6 +57,25 @@
             <trans-unit id="usersettings.security_group">
                 <source>AC Security Group</source>
             </trans-unit>
+
+            <trans-unit id="task.update_admiral_cloud_metadata.name">
+                <source>Update metadata for AdmiralCloud files</source>
+            </trans-unit>
+            <trans-unit id="task.update_admiral_cloud_metadata.description">
+                <source>Update metadata for AdmiralCloud files</source>
+            </trans-unit>
+            <trans-unit id="task.update_admiral_cloud_metadata.actionType">
+                <source>Action type</source>
+            </trans-unit>
+            <trans-unit id="task.update_admiral_cloud_metadata.actionType.update_all">
+                <source>Update metadata for all files from AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="task.update_admiral_cloud_metadata.actionType.update_last_changed">
+                <source>Update metadata for last changed files from AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="task.update_admiral_cloud_metadata.additionalInformation">
+                <source>Action: %s</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
