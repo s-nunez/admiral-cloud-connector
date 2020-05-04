@@ -3,6 +3,7 @@
 
 namespace CPSIT\AdmiralCloudConnector\Backend\ToolbarItems;
 
+use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use TYPO3\CMS\Backend\Toolbar\ToolbarItemInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,6 +38,7 @@ class AdmiralCloudToolbarItem implements ToolbarItemInterface
 
         $request = $standaloneView->getRequest();
         $request->setControllerExtensionName($extensionName);
+        $standaloneView->assign('ACGroup',AdmiralCloudApi::getSecurityGroup());
 
         return $standaloneView->render();
     }
