@@ -63,21 +63,21 @@ class BrowserController extends AbstractBackendController
      *
      * @var string[]
      */
-    protected $templateRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Templates/Backend/Browser'];
+    protected $templateRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Templates/Browser'];
 
     /**
      * PartialRootPath
      *
      * @var string[]
      */
-    protected $partialRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Partials/Backend/Browser'];
+    protected $partialRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Partials/Browser'];
 
     /**
      * LayoutRootPath
      *
      * @var string[]
      */
-    protected $layoutRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Layouts/Backend/Browser'];
+    protected $layoutRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Layouts/Browser'];
 
     /**
      * BackendTemplateView Container

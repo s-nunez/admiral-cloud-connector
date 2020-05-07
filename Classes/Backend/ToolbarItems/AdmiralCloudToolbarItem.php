@@ -33,7 +33,7 @@ class AdmiralCloudToolbarItem implements ToolbarItemInterface
 
         $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
         $standaloneView->setTemplatePathAndFilename(
-            ExtensionManagementUtility::extPath($extensionName) . 'Resources/Private/Templates/Backend/ToolbarMenu/MenuItem.html'
+            ExtensionManagementUtility::extPath($extensionName) . 'Resources/Private/Templates/ToolbarMenu/MenuItem.html'
         );
 
         $request = $standaloneView->getRequest();

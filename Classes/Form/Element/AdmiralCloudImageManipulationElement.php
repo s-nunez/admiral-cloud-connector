@@ -85,9 +85,9 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         parent::__construct($nodeFactory, $data);
         // Would be great, if we could inject the view here, but since the constructor is in the interface, we can't
         $this->templateView = GeneralUtility::makeInstance(StandaloneView::class);
-        $this->templateView->setLayoutRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Layouts/')]);
-        $this->templateView->setPartialRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Partials/ImageManipulation/')]);
-        $this->templateView->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Backend/Templates/ImageManipulation/ImageManipulationElement.html'));
+        $this->templateView->setLayoutRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Layouts/ImageManipulation/')]);
+        $this->templateView->setPartialRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Partials/ImageManipulation/')]);
+        $this->templateView->setTemplatePathAndFilename(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Templates/ImageManipulation/ImageManipulationElement.html'));
         $this->uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
     }
 
