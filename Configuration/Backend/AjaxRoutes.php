@@ -6,6 +6,7 @@
  */
 
 use CPSIT\AdmiralCloudConnector\Controller\Backend\BrowserController;
+use CPSIT\AdmiralCloudConnector\Controller\Backend\ToolbarController;
 
 return [
     'admiral_cloud_browser_auth' => [
@@ -23,5 +24,9 @@ return [
     'admiral_cloud_browser_get_media_public_url' => [
         'path' => '/admiral_cloud/browser/getmediapublicurl',
         'target' => BrowserController::class . '::getMediaPublicUrlAction'
+    ],
+    'admiral_cloud_toolbar_update_changed_metadata' => [
+        'path' => '/admiral_cloud/toolvar/updateChangedMetadata',
+        'target' => ToolbarController::class . '::updateChangedMetadataAction'
     ],
 ];

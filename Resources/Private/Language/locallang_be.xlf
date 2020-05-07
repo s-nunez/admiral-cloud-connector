@@ -39,12 +39,29 @@
             <trans-unit id="linkHandler.label">
                 <source>AdmiralCloud</source>
             </trans-unit>
+
             <trans-unit id="toolbarItem.title">
+                <source>AdmiralCloud</source>
+            </trans-unit>
+            <trans-unit id="toolbarItem.closeConnection.title">
                 <source>Close connection with AdmiralCloud</source>
             </trans-unit>
-            <trans-unit id="toolbarItem.success">
+            <trans-unit id="toolbarItem.closeConnection.success">
                 <source>AdmiralCloud connection was closed successfully.</source>
             </trans-unit>
+            <trans-unit id="toolbarItem.updateChangedMetadata.title">
+                <source>Update metadata for recently changed files.</source>
+            </trans-unit>
+            <trans-unit id="toolbarItem.updateChangedMetadata.info">
+                <source>Start updating metadata for AdmiralCloud files. This action could take a moment.</source>
+            </trans-unit>
+            <trans-unit id="toolbarItem.updateChangedMetadata.success">
+                <source>Metadata for AdmiralCloud files were updated successfully.</source>
+            </trans-unit>
+            <trans-unit id="toolbarItem.updateChangedMetadata.error">
+                <source>An error happened updating metadata for AdmiralCloud files. Please inform to your administrator.</source>
+            </trans-unit>
+
             <trans-unit id="admiral_cloud_connector_title">
                 <source>AdmiralCloud</source>
             </trans-unit>

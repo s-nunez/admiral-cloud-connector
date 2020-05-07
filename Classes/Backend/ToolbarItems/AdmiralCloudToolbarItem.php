@@ -48,7 +48,7 @@ class AdmiralCloudToolbarItem implements ToolbarItemInterface
      */
     public function hasDropDown()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -56,7 +56,17 @@ class AdmiralCloudToolbarItem implements ToolbarItemInterface
      */
     public function getDropDown()
     {
-        return '';
+        $extensionName = 'admiral_cloud_connector';
+
+        $standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
+        $standaloneView->setTemplatePathAndFilename(
+            ExtensionManagementUtility::extPath($extensionName) . 'Resources/Private/Templates/ToolbarMenu/DropDown.html'
+        );
+
+        $request = $standaloneView->getRequest();
+        $request->setControllerExtensionName($extensionName);
+
+        return $standaloneView->render();
     }
 
     /**
