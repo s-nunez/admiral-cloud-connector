@@ -42,7 +42,7 @@ class UpdateAdmiralCloudMetadataAdditionalFieldProvider extends AbstractAddition
                 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.update_admiral_cloud_metadata.actionType.update_all'
             ]
         ];
-        $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '" class="from-control">';
+        $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '">';
 
         foreach ($fieldOptions as $fieldOption) {
             $selected = ($fieldOption[0] === $task->actionType) ? ' selected' : '';

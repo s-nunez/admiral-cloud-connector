@@ -78,6 +78,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCl
     'additionalFields' => \CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataAdditionalFieldProvider::class
 ];
 
+// Add task to export sys_file with metadata for AdmiralCloud
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCloudConnector\Task\ExportSysFileWithMetadataTask::class] = [
+    'extension' => 'admiral_cloud_connector',
+    'title' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.export_sys_file_with_metadata.name',
+    'description' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.export_sys_file_with_metadata.description',
+    'additionalFields' => \CPSIT\AdmiralCloudConnector\Task\ExportSysFileWithMetadataTaskAdditionalFieldProvider::class
+];
+
 // Add toolbar item to close AdmiralCloud connection
 $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][] = \CPSIT\AdmiralCloudConnector\Backend\ToolbarItems\AdmiralCloudToolbarItem::class;
 
