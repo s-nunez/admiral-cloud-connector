@@ -17,6 +17,7 @@ class ExportSysFileMetadataService
 {
     public const MAXIMUM_ITERATION = 50000;
     protected const EXPORT_SYS_FILE_ITERATION_LIMIT = 1000;
+    protected const JSON_ENTRIES_PER_FILE = 10000;
 
     protected const IMAGE_POOL_STORAGE_NAME = 'Bilderpool';
     protected const IMAGE_POOL_STORAGE_PATH = 'storages/Bilderpool';
@@ -31,7 +32,17 @@ class ExportSysFileMetadataService
     /**
      * @var string
      */
+    protected $absoluteExportFilePath = '';
+
+    /**
+     * @var string
+     */
     protected $logFilePath = '';
+
+    /**
+     * @var int
+     */
+    protected $currentFileNumber = 0;
 
     /**
      * @param string $exportFilePath
@@ -47,24 +58,20 @@ class ExportSysFileMetadataService
             throw new InvalidArgumentException('Export file path cannot be empty.');
         }
 
-        // Get absolute export file path
-        $absoluteExportFilePath = Environment::getProjectPath() . '/' .  $exportFilePath;
+        // Set export and log file absolute paths
+        $this->setAbsoluteFilesPath($exportFilePath);
 
-        // Get absolute log path
-        $this->logFilePath = $absoluteExportFilePath . '.log';
-
-        // Empty export file
-        if (file_put_contents($absoluteExportFilePath, '') === false) {
-            throw new RuntimeException('It was not possible to write in the export file: ' . $absoluteExportFilePath);
+        // Start JSON array
+        if ($this->writeToExportFile('[', true) === false) {
+            throw new RuntimeException(
+                'It was not possible to write in the export file: ' . sprintf($this->absoluteExportFilePath, $this->currentFileNumber)
+            );
         }
 
         // Empty log file
         if ($this->writeToLogFile('uid, storage, identifier', false) === false) {
             throw new RuntimeException('It was not possible to write in the log file: ' . $this->logFilePath);
         }
-
-        // Start JSON array
-        file_put_contents($absoluteExportFilePath, '[', FILE_APPEND);
 
         $iteration = 0;
         $exportedFiles = 0;
@@ -93,7 +100,7 @@ class ExportSysFileMetadataService
                 ->setMaxResults(static::EXPORT_SYS_FILE_ITERATION_LIMIT);
 
             $continue = true;
-            $first = true;
+            $insertCommaBefore = false;
 
             while ($continue && $iteration < static::MAXIMUM_ITERATION) {
                 // Execute the query with current offset
@@ -111,10 +118,10 @@ class ExportSysFileMetadataService
                         // If security group was found, export file
                         if ($securityGroup) {
                             // Add coma for JSON array
-                            if (!$first) {
-                                file_put_contents($absoluteExportFilePath, ',', FILE_APPEND);
+                            if ($insertCommaBefore) {
+                                $this->writeToExportFile(',');
                             } else {
-                                $first = false;
+                                $insertCommaBefore = true;
                             }
 
                             $parentFolder = $row['storage'] == $this->getImagePoolStorageUid()
@@ -137,7 +144,14 @@ class ExportSysFileMetadataService
                             ];
 
                             $exportedFiles++;
-                            file_put_contents($absoluteExportFilePath, json_encode($file), FILE_APPEND);
+                            $this->writeToExportFile(json_encode($file));
+
+                            // If JSON file is completed, start a new one
+                            if ($exportedFiles % self::JSON_ENTRIES_PER_FILE === 0) {
+                                $this->writeToExportFile(']');
+                                $this->writeToExportFile('[', true);
+                                $insertCommaBefore = false;
+                            }
                         } else {
                             // If security group was not found, write current file to log
                             $this->writeToLogFile(sprintf(
@@ -163,7 +177,7 @@ class ExportSysFileMetadataService
             throw $exception;
         } finally {
             // Finish JSON array
-            file_put_contents($absoluteExportFilePath, ']', FILE_APPEND);
+            $this->writeToExportFile(']');
 
             // If exception was triggered write it to log file
             if (isset($exception)) {
@@ -181,7 +195,8 @@ class ExportSysFileMetadataService
             $this->writeToLogFile(
                 '############################' . PHP_EOL
                 . 'Export finish' . PHP_EOL
-                . 'Exported files: ' . $exportedFiles . PHP_EOL
+                . 'Exported sys_file entries: ' . $exportedFiles . PHP_EOL
+                . 'Count of exported files: ' . $this->currentFileNumber . PHP_EOL
                 . 'Time: ' . $duration . PHP_EOL
                 . '############################'
             );
@@ -241,6 +256,51 @@ class ExportSysFileMetadataService
         }
 
         return $this->imagePoolStorageUid;
+    }
+
+    /**
+     * @param string $relativePath
+     */
+    protected function setAbsoluteFilesPath(string $relativePath): void
+    {
+        // Get absolute export file path
+        $preparedAbsoluteExportFilePath = Environment::getProjectPath() . '/' .  $relativePath;
+
+        // Get absolute log path
+        $this->logFilePath = $preparedAbsoluteExportFilePath . '.log';
+
+        // Prepare absoluteExportFilePath for several files
+        $index = strrpos($preparedAbsoluteExportFilePath, '.');
+
+        if ($index !== false) {
+            $extension = substr($preparedAbsoluteExportFilePath, $index);
+            $pathWithoutExtension = substr($preparedAbsoluteExportFilePath, 0, $index);
+        } else {
+            $extension = '';
+            $pathWithoutExtension = $preparedAbsoluteExportFilePath;
+        }
+
+        $this->absoluteExportFilePath = $pathWithoutExtension . '.%d' . $extension;
+    }
+
+    /**
+     * Write to export file
+     *
+     * @param string $text
+     * @param bool $newFile
+     * @return false|int
+     */
+    protected function writeToExportFile(string $text, bool $newFile = false)
+    {
+        if ($newFile) {
+            $this->currentFileNumber++;
+        }
+
+        return file_put_contents(
+            sprintf($this->absoluteExportFilePath, $this->currentFileNumber),
+            $text,
+            $newFile ? 0 : FILE_APPEND
+        );
     }
 
     /**
