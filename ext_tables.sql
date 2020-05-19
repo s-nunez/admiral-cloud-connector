@@ -2,7 +2,8 @@
 # Table structure for table 'sys_file'
 #
 CREATE TABLE sys_file (
-	tx_admiralcloudconnector_linkhash varchar(255) DEFAULT '' NOT NULL
+	tx_admiralcloudconnector_linkhash varchar(255) DEFAULT '' NOT NULL,
+	tx_admiralcloudconnector_identifier_before_migration TEXT
 );
 
 #
