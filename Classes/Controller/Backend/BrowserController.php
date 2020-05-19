@@ -196,7 +196,6 @@ class BrowserController extends AbstractBackendController
             'parameters' => [
                 'element' => $parameters['element'],
                 'irreObject' => $parameters['irreObject'],
-                'assetTypes' => $parameters['assetTypes']
             ]
         ]);
         $response->getBody()->write($this->view->render());

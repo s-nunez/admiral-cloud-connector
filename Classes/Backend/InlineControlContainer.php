@@ -90,10 +90,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             return LF . implode(LF, $errorTextHtml);
         }
 
-        $groupFieldConfiguration = $inlineConfiguration['selectorOrUniqueConfiguration']['config'];
-
         $foreign_table = $inlineConfiguration['foreign_table'];
-        $allowedAssetTypes = ConfigurationUtility::getAssetTypesByAllowedElements($groupFieldConfiguration['appearance']['elementBrowserAllowed']);
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
         $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
@@ -102,7 +99,6 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_show', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
-            'assetTypes' => implode(',', $allowedAssetTypes)
         ]);
 
         $this->requireJsModules[] = 'TYPO3/CMS/AdmiralCloudConnector/Browser';
@@ -137,10 +133,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             return LF . implode(LF, $errorTextHtml);
         }
 
-        $groupFieldConfiguration = $inlineConfiguration['selectorOrUniqueConfiguration']['config'];
-
         $foreign_table = $inlineConfiguration['foreign_table'];
-        $allowedAssetTypes = ConfigurationUtility::getAssetTypesByAllowedElements($groupFieldConfiguration['appearance']['elementBrowserAllowed']);
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
         $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
@@ -149,7 +142,6 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_upload', [
             'element' => $element,
             'irreObject' => $currentStructureDomObjectIdPrefix . '-' . $foreign_table,
-            'assetTypes' => implode(',', $allowedAssetTypes)
         ]);
 
         $this->requireJsModules[] = 'TYPO3/CMS/AdmiralCloudConnector/Browser';
