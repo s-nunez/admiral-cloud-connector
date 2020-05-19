@@ -3,6 +3,7 @@
 namespace CPSIT\AdmiralCloudConnector\Slot;
 
 use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,7 +25,7 @@ class InstallSlot
      */
     public function createAdmiralCloudFileStorage(string $extensionKey, InstallUtility $installUtility)
     {
-        if ($extensionKey !== 'admiral_cloud_connector') {
+        if ($extensionKey !== ConfigurationUtility::EXTENSION) {
             return;
         }
 

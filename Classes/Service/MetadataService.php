@@ -4,6 +4,7 @@ namespace CPSIT\AdmiralCloudConnector\Service;
 
 use CPSIT\AdmiralCloudConnector\Exception\RuntimeException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
@@ -118,7 +119,7 @@ class MetadataService
         /** @var FrontendInterface $cache */
         $cache = GeneralUtility::makeInstance(ObjectManager::class)
             ->get(CacheManager::class)
-            ->getCache('admiral_cloud_connector');
+            ->getCache(ConfigurationUtility::EXTENSION);
 
         if ($cache->has($cacheKey)) {
             $lastUpdatedMetaDataDate = $cache->get($cacheKey);

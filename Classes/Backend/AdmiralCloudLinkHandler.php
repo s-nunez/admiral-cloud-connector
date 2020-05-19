@@ -3,6 +3,7 @@
 namespace CPSIT\AdmiralCloudConnector\Backend;
 
 use CPSIT\AdmiralCloudConnector\Exception\NotImplementedException;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -55,7 +56,7 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
         $this->linkBrowser = $linkBrowser;
         $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         $this->view = GeneralUtility::makeInstance(\TYPO3\CMS\Fluid\View\StandaloneView::class);
-        $this->view->getRequest()->setControllerExtensionName('admiral_cloud_connector');
+        $this->view->getRequest()->setControllerExtensionName(ConfigurationUtility::EXTENSION);
         $this->view->setPartialRootPaths($this->partialRootPaths);
         $this->view->setTemplateRootPaths($this->templateRootPaths);
         $this->view->setLayoutRootPaths($this->layoutRootPaths);
