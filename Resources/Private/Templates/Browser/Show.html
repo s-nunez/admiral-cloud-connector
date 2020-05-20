@@ -39,8 +39,22 @@
                 device,
             }),
         });
+
         const data = await resp.json();
         console.info(data);
+
+        if (data.error !== undefined) {
+            hideAC();
+
+            // Remove iframe to close all connections and the next time try the authentication again
+            $('#acModalParent').remove();
+
+            // Show error message
+            TYPO3.Notification.error('The authentication to AdmiralCloud was not possible.', data.error, 30);
+
+            return;
+        }
+
         applyAuthCode(data.code);
     }
 

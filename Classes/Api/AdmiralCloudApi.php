@@ -3,6 +3,7 @@
 namespace CPSIT\AdmiralCloudConnector\Api;
 
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
+use CPSIT\AdmiralCloudConnector\Exception\InvalidPropertyException;
 use CPSIT\AdmiralCloudConnector\Exception\RuntimeException;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use InvalidArgumentException;
@@ -149,14 +150,9 @@ class AdmiralCloudApi
     public static function auth(array $settings): string
     {
         $credentials = new Credentials();
-        $device = md5($GLOBALS['BE_USER']->user['id']);
-        if(isset($settings['device'])){
-            $device = $settings['device'];
-        }
+        $device = $settings['device'] ?? md5($GLOBALS['BE_USER']->user['id']);
 
-        if (!self::validateSettings($credentials)) {
-            throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
-        }
+        static::validateAuthData($credentials);
 
         $curl = curl_init();
 
@@ -422,6 +418,59 @@ class AdmiralCloudApi
         $this->data = $data;
     }
 
+    /**
+     * Validate data before authentication
+     *
+     * @param Credentials $credentials
+     */
+    protected static function validateAuthData(Credentials $credentials): void
+    {
+        if (!self::validateSettings($credentials)) {
+            throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
+        }
+
+        /** @var LoggerInterface $logger */
+        $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $errors = [];
+
+        if (empty($GLOBALS['BE_USER']->user['email'])) {
+            $errors[] = 'The field "email" cannot be empty.';
+        }
+
+        if (empty($GLOBALS['BE_USER']->user['first_name'])) {
+            $logger->warning(sprintf(
+                'Field "first_name" is empty for the BE user with username "%s".',
+                $GLOBALS['BE_USER']->user['username']
+            ));
+        }
+
+        if (empty($GLOBALS['BE_USER']->user['last_name'])) {
+            $logger->warning(sprintf(
+                'Field "last_name" is empty for the BE user with username "%s".',
+                $GLOBALS['BE_USER']->user['username']
+            ));
+        }
+
+        if (empty($GLOBALS['BE_USER']->user['first_name'])
+            && empty($GLOBALS['BE_USER']->user['last_name'])
+            && empty($GLOBALS['BE_USER']->user['realName'])) {
+            $errors[] = 'First name and last name information is empty.';
+        }
+
+        if (!self::getSecurityGroup()) {
+            $errors[] = 'The current user has not an associated security group.';
+        }
+
+        if ($errors) {
+            throw new InvalidPropertyException(
+                sprintf(
+                    'AdmiralCloud authentication for user "%s" was not possible because: * ',
+                    $GLOBALS['BE_USER']->user['username']
+                )
+                . implode("\n* ", $errors)
+            );
+        }
+    }
 
 
     /**

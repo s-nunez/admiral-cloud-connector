@@ -233,14 +233,26 @@ class BrowserController extends AbstractBackendController
             'action' => 'app',
             'device' => $bodyParams->device
         ];
-        $admiralCloudAuthCode = $this->admiralCloudService->getAdmiralCloudAuthCode($settings);
 
-        header('Content-type: application/json');
-        $data = [
-            'code' => $admiralCloudAuthCode
-        ];
-        echo json_encode($data);
-        die();
+        try {
+            $admiralCloudAuthCode = $this->admiralCloudService->getAdmiralCloudAuthCode($settings);
+            return $this->createJsonResponse(
+                $response,
+                [
+                    'code' => $admiralCloudAuthCode
+                ],
+                200
+            );
+        } catch (\Throwable $exception) {
+            $this->logger->error('The authentication to AdmiralCloud was not possible.', ['exception' => $exception]);
+            return $this->createJsonResponse($response, [
+                'error' => 'Error information: ' . $exception->getMessage(),
+                'exception' => [
+                    'code' => $exception->getCode(),
+                    'message' => $exception->getMessage()
+                ],
+            ], 500);
+        }
     }
 
     /**
