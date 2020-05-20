@@ -17,7 +17,7 @@ class ExportSysFileMetadataService
 {
     public const MAXIMUM_ITERATION = 50000;
     protected const EXPORT_SYS_FILE_ITERATION_LIMIT = 1000;
-    protected const JSON_ENTRIES_PER_FILE = 10000;
+    protected const JSON_ENTRIES_PER_FILE = 20000;
 
     protected const IMAGE_POOL_STORAGE_NAME = 'Bilderpool';
     protected const IMAGE_POOL_STORAGE_PATH = 'storages/Bilderpool';
@@ -153,13 +153,17 @@ class ExportSysFileMetadataService
                                 $insertCommaBefore = false;
                             }
                         } else {
-                            // If security group was not found, write current file to log
-                            $this->writeToLogFile(sprintf(
-                                '%s, %s, %s',
-                                $row['uid'],
-                                $row['storage'],
-                                $row['identifier']
-                            ));
+                            // If security group was not found
+                            // and storage is not the default one and is not the deleted "AHK-Sandbox"
+                            // write current sys_file entry to log
+                            if ($row['storage'] != 0 && $row['storage'] !== 2) {
+                                $this->writeToLogFile(sprintf(
+                                    '%s, %s, %s',
+                                    $row['uid'],
+                                    $row['storage'],
+                                    $row['identifier']
+                                ));
+                            }
                         }
                     }
                 } else {
