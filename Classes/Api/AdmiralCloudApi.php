@@ -83,61 +83,62 @@ class AdmiralCloudApi
     public static function create(array $settings)
     {
         $credentials = new Credentials();
-        if (self::validateSettings($credentials)) {
-            $curl = curl_init();
 
-            $params = [
-                "accessSecret" => $credentials->getAccessSecret(),
-                "controller" => $settings['controller'],
-                "action" => $settings['action'],
-                "payload" => $settings['payload']
-            ];
-
-            $signedValues = self::acSignatureSign($params,'v5');
-
-            $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $routeUrl,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_POST => 1,
-                CURLOPT_POSTFIELDS => json_encode($params['payload']),
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json',
-                    "x-admiralcloud-accesskey: " . $credentials->getAccessKey(),
-                    "x-admiralcloud-rts: " . $signedValues['timestamp'],
-                    "x-admiralcloud-hash: " . $signedValues['hash']
-                ),
-            ));
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-            // Log error
-            if (!$httpCode || $httpCode >= 400) {
-                /** @var LoggerInterface $logger */
-                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-                $logger->error(sprintf(
-                    'Error in AdmiralCloud route process. URL: %s. HTTP code: %d. Error message: %s',
-                    $routeUrl,
-                    $httpCode,
-                    $response ?: $err
-                ));
-
-                throw new RuntimeException('Error in AdmiralCloud route process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
-            }
-
-            curl_close($curl);
-
-            return new AdmiralCloudApi($response);
-        } else {
+        if (!self::validateSettings($credentials)) {
             throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
         }
+
+        $curl = curl_init();
+
+        $params = [
+            "accessSecret" => $credentials->getAccessSecret(),
+            "controller" => $settings['controller'],
+            "action" => $settings['action'],
+            "payload" => $settings['payload']
+        ];
+
+        $signedValues = self::acSignatureSign($params,'v5');
+
+        $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $routeUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => json_encode($params['payload']),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                "x-admiralcloud-accesskey: " . $credentials->getAccessKey(),
+                "x-admiralcloud-rts: " . $signedValues['timestamp'],
+                "x-admiralcloud-hash: " . $signedValues['hash']
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Log error
+        if (!$httpCode || $httpCode >= 400) {
+            /** @var LoggerInterface $logger */
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->error(sprintf(
+                'Error in AdmiralCloud route process. URL: %s. HTTP code: %d. Error message: %s',
+                $routeUrl,
+                $httpCode,
+                $response ?: $err
+            ));
+
+            throw new RuntimeException('Error in AdmiralCloud route process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+        }
+
+        curl_close($curl);
+
+        return new AdmiralCloudApi($response);
     }
 
     /**
