@@ -153,129 +153,130 @@ class AdmiralCloudApi
         if(isset($settings['device'])){
             $device = $settings['device'];
         }
-        if (self::validateSettings($credentials)) {
-            $curl = curl_init();
 
-            $state = '0.' . base_convert(self::random() . '00', 10, 36);
-            $params = [
-                "accessSecret" => $credentials->getAccessSecret(),
-                "controller" => $settings['controller'],
-                "action" => $settings['action'],
-                "payload" => [
-                    "email" => $GLOBALS['BE_USER']->user['email'],
-                    "firstname" => $GLOBALS['BE_USER']->user['first_name'] ?: $GLOBALS['BE_USER']->user['realName'],
-                    "lastname" => $GLOBALS['BE_USER']->user['last_name'] ?: $GLOBALS['BE_USER']->user['realName'],
-                    "state" => $state,
-                    "client_id" => $credentials->getClientId(),
-                    "callbackUrl" => base64_encode($settings['callbackUrl']),
-                    "settings" => [
-                        "typo3group" => self::getSecurityGroup()
-                    ]
-                ]
-            ];
-            $signedValues = self::acSignatureSign($params);
-
-            $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true";
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $loginUrl,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_POST => 1,
-                CURLOPT_POSTFIELDS => json_encode($params['payload']),
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json',
-                    "x-admiralcloud-accesskey: " . $credentials->getAccessKey(),
-                    "x-admiralcloud-rts: " . $signedValues['timestamp'],
-                    "x-admiralcloud-hash: " . $signedValues['hash'],
-                    "x-admiralcloud-debugsignature: 1",
-                    "x-admiralcloud-clientid: " . $credentials->getClientId(),
-                    "x-admiralcloud-device: " . $device
-                ),
-            ));
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-            // Log error
-            if (!$httpCode || $httpCode >= 400) {
-                /** @var LoggerInterface $logger */
-                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-                $logger->error(sprintf(
-                    'Error in AdmiralCloud login process. URL: %s. HTTP Code: %d. Error message: %s',
-                    $loginUrl,
-                    $httpCode,
-                    $response ?: $err
-                ));
-
-                throw new RuntimeException('Error in AdmiralCloud login process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
-            }
-
-            curl_close($curl);
-
-            $codeParams = [
-                'state' => $params['payload']['state'],
-                'device' => $device,
-                'client_id' => $credentials->getClientId()
-
-            ];
-
-            $authUrl = ConfigurationUtility::getAuthUrl() . "v4/requestCode?" . http_build_query($codeParams);
-
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => $authUrl,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-            ));
-
-            $response = curl_exec($curl);
-            $err = curl_error($curl);
-            $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-            // Log error
-            if (!$httpCode || $httpCode >= 400) {
-                /** @var LoggerInterface $logger */
-                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-                $logger->error(sprintf(
-                    'Error in AdmiralCloud auth process. URL: %s. HTTP Code: %d. Error message: %s',
-                    $authUrl,
-                    $httpCode,
-                    $response ?: $err
-                ));
-
-                throw new RuntimeException('Error in AdmiralCloud auth process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
-            }
-
-            curl_close($curl);
-
-            $code = json_decode($response);
-
-            if ($response && !$code) {
-                $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-                $logger->error('Error decoding JSON from auth response. JSON: ' . $response);
-
-                throw new RuntimeException('Error decoding JSON from auth response.');
-            }
-
-            if (empty($code->code)) {
-                throw new RuntimeException('There is not any code in the response of the AUTH process');
-            }
-
-            return $code->code;
-        } else {
+        if (!self::validateSettings($credentials)) {
             throw new InvalidArgumentException("Settings passed for AdmiralCloudApi service creation are not valid.");
         }
+
+        $curl = curl_init();
+
+        $state = '0.' . base_convert(self::random() . '00', 10, 36);
+        $params = [
+            "accessSecret" => $credentials->getAccessSecret(),
+            "controller" => $settings['controller'],
+            "action" => $settings['action'],
+            "payload" => [
+                "email" => $GLOBALS['BE_USER']->user['email'],
+                "firstname" => $GLOBALS['BE_USER']->user['first_name'] ?: $GLOBALS['BE_USER']->user['realName'],
+                "lastname" => $GLOBALS['BE_USER']->user['last_name'] ?: $GLOBALS['BE_USER']->user['realName'],
+                "state" => $state,
+                "client_id" => $credentials->getClientId(),
+                "callbackUrl" => base64_encode($settings['callbackUrl']),
+                "settings" => [
+                    "typo3group" => self::getSecurityGroup()
+                ]
+            ]
+        ];
+        $signedValues = self::acSignatureSign($params);
+
+        $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true";
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $loginUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => json_encode($params['payload']),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                "x-admiralcloud-accesskey: " . $credentials->getAccessKey(),
+                "x-admiralcloud-rts: " . $signedValues['timestamp'],
+                "x-admiralcloud-hash: " . $signedValues['hash'],
+                "x-admiralcloud-debugsignature: 1",
+                "x-admiralcloud-clientid: " . $credentials->getClientId(),
+                "x-admiralcloud-device: " . $device
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Log error
+        if (!$httpCode || $httpCode >= 400) {
+            /** @var LoggerInterface $logger */
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->error(sprintf(
+                'Error in AdmiralCloud login process. URL: %s. HTTP Code: %d. Error message: %s',
+                $loginUrl,
+                $httpCode,
+                $response ?: $err
+            ));
+
+            throw new RuntimeException('Error in AdmiralCloud login process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+        }
+
+        curl_close($curl);
+
+        $codeParams = [
+            'state' => $params['payload']['state'],
+            'device' => $device,
+            'client_id' => $credentials->getClientId()
+
+        ];
+
+        $authUrl = ConfigurationUtility::getAuthUrl() . "v4/requestCode?" . http_build_query($codeParams);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $authUrl,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+        // Log error
+        if (!$httpCode || $httpCode >= 400) {
+            /** @var LoggerInterface $logger */
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->error(sprintf(
+                'Error in AdmiralCloud auth process. URL: %s. HTTP Code: %d. Error message: %s',
+                $authUrl,
+                $httpCode,
+                $response ?: $err
+            ));
+
+            throw new RuntimeException('Error in AdmiralCloud auth process. HTTP Code: ' . curl_getinfo($curl, CURLINFO_HTTP_CODE));
+        }
+
+        curl_close($curl);
+
+        $code = json_decode($response);
+
+        if ($response && !$code) {
+            $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+            $logger->error('Error decoding JSON from auth response. JSON: ' . $response);
+
+            throw new RuntimeException('Error decoding JSON from auth response.');
+        }
+
+        if (empty($code->code)) {
+            throw new RuntimeException('There is not any code in the response of the AUTH process');
+        }
+
+        return $code->code;
     }
 
     public static function acSignatureSign($params, $version='v4')
