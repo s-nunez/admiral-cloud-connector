@@ -12,6 +12,7 @@ namespace CPSIT\AdmiralCloudConnector\Backend;
 
 use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
+use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
@@ -44,7 +45,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
                 }
             }
         }
-        if ($this->displayAdmiralCloudButton()) {
+        if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
             $button = $this->renderAdmiralCloudOverviewButton($inlineConfiguration);
 
             // Inject button before help-block
@@ -175,21 +176,5 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             }
         }
         return false;
-    }
-
-    /**
-     * Check if the BE user has access to the AdmiralCloud browser
-     *
-     * Admin has access when there is a resource storage with driver type AdmiralCloud
-     * Editors need to have access to a mount of that storage
-     *
-     * @return bool
-     */
-    protected function displayAdmiralCloudButton(): bool
-    {
-        $backendUser = $this->getBackendUserAuthentication();
-        $filePermissions = $backendUser->getFilePermissions();
-
-        return $backendUser->isAdmin() || (bool)$filePermissions['addFileViaAdmiralCloud'];
     }
 }

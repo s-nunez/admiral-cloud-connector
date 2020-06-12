@@ -4,10 +4,12 @@
 .t3js-drag-uploader-trigger {
     display: none;
 }
-a[title='Upload Files'] {
-    display: none;
-}
 
 .dropzone {
     display: none
+}
+
+/* Disable TYPO3 FAL selector */
+a.inlineNewRelationButton[onclick*="sys_file_reference"] {
+    display: none;
 }
