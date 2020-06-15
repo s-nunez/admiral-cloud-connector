@@ -55,7 +55,7 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\ImageViewHelper
 
             /** @var AssetRenderer $assetRenderer */
             $assetRenderer = GeneralUtility::makeInstance(AssetRenderer::class);
-            return $assetRenderer->render($image, $dimensions->width, $dimensions->height);
+            return $assetRenderer->render($image, $dimensions->width, $dimensions->height, [], false, $this->tag);
         }
 
         return parent::render();

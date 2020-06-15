@@ -183,7 +183,8 @@ class BrowserController extends AbstractBackendController
         $parameters = $request->getQueryParams();
 
         $protocol = 'http';
-        if(isset($_SERVER['HTTP_HTTPS']) && $_SERVER['HTTP_HTTPS'] === 'on'){
+        if ((isset($_SERVER['HTTP_HTTPS']) && $_SERVER['HTTP_HTTPS'] === 'on')
+            || (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')) {
             $protocol = 'https';
         }
         /** @var \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder */

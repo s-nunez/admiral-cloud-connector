@@ -58,10 +58,17 @@ class AssetRenderer implements FileRendererInterface
      * @param int|string $height TYPO3 known format; examples: 220, 200m or 200c
      * @param array $options
      * @param bool $usedPathsRelativeToCurrentScript See $file->getPublicUrl()
+     * @param TagBuilder|null $tag
      * @return string
      */
-    public function render(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
-    {
+    public function render(
+        FileInterface $file,
+        $width,
+        $height,
+        array $options = [],
+        $usedPathsRelativeToCurrentScript = false,
+        ?TagBuilder $tag = null
+    ): string {
         if (!($file instanceof File) && is_callable([$file, 'getOriginalFile'])) {
             $originalFile = $file->getOriginalFile();
         } else {
@@ -72,7 +79,7 @@ class AssetRenderer implements FileRendererInterface
         switch (true) {
             case $asset->isImage($originalFile->getStorage()->getUid()):
             case $asset->isDocument():
-                return $this->renderImageTag($file, $width, $height, $options, $usedPathsRelativeToCurrentScript);
+                return $this->renderImageTag($file, $width, $height, $options, $usedPathsRelativeToCurrentScript, $tag);
 
             case $asset->isVideo():
                 return $this->renderVideoTag($file, $width, $height, $options, $usedPathsRelativeToCurrentScript);
@@ -119,11 +126,18 @@ class AssetRenderer implements FileRendererInterface
      * @param int|string $height
      * @param array $options
      * @param bool $usedPathsRelativeToCurrentScript
+     * @param TagBuilder|null $imageTag
      * @return string
      */
-    protected function renderImageTag(FileInterface $file, $width, $height, array $options = [], $usedPathsRelativeToCurrentScript = false): string
-    {
-        $tag = $this->getTagBuilder('img', $options);
+    protected function renderImageTag(
+        FileInterface $file,
+        $width,
+        $height,
+        array $options = [],
+        $usedPathsRelativeToCurrentScript = false,
+        ?TagBuilder $imageTag = null
+    ): string {
+        $tag = $imageTag ?: $this->getTagBuilder('img', $options);
 
         $tag->addAttribute(
             'src',
