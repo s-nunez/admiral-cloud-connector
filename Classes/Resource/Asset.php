@@ -31,6 +31,13 @@ class Asset
     const TYPE_DOCUMENT = 'document';
     const TYPE_AUDIO = 'audio';
 
+    protected const ASSET_TYPE_MIME_TYPE = [
+        self::TYPE_VIDEO => ['video'],
+        self::TYPE_IMAGE => ['image'],
+        self::TYPE_DOCUMENT => ['document', 'application', 'text'],
+        self::TYPE_AUDIO => ['audio'],
+    ];
+
     /**
      * @var int
      */
@@ -147,7 +154,13 @@ class Asset
         if ($file) {
             $mimeType = str_replace('admiralCloud/', '', $file['mime_type']);
             [$fileType, $subType] = explode('/', $mimeType);
-            $this->type = $fileType ?? '';
+
+            // Map mime type with asset type
+            foreach (static::ASSET_TYPE_MIME_TYPE as $assetType => $mimeTypes) {
+                if (in_array($fileType, $mimeTypes, true)) {
+                    $this->type = $assetType;
+                }
+            }
         }
 
         return $this->type;
