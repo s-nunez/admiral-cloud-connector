@@ -461,7 +461,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $dimensions->width
                 . '/'
                 . $dimensions->height
-                . '/0.8?poc=true';
+                . '/1?poc=true';
         }
 
         return $link;
