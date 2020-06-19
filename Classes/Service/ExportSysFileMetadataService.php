@@ -131,6 +131,7 @@ class ExportSysFileMetadataService
                                 'uid' => $row['uid'],
                                 'identifier' => $parentFolder . $row['identifier'],
                                 'name' => $row['name'],
+                                'security_group' => $securityGroup,
                                 'metadata' => [
                                     'title' => $row['title'] ?? '',
                                     'description' => $row['description'] ?? '',
