@@ -1,3 +1,8 @@
+2020-06-26         [RELEASE] Release of admiral_cloud_connector 1.0.1 (Steffen Mevius)
+2020-06-26 cb9a37f [BUGFIX] check if be user exists before using (Steffen Mevius)
+
+
+
 2020-06-26         [RELEASE] Release of admiral_cloud_connector 1.0.0 (Steffen Mevius)
 2020-06-26 7800213 [TASK] Add Changelog Text first commit (Steffen Mevius)
 2020-06-26 456bbe6 [TASK] Add ChangeLog (Steffen Mevius)
