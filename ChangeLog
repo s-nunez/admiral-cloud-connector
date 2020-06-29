@@ -1,3 +1,6 @@
+2020-06-29         [RELEASE] Release of admiral_cloud_connector 1.0.2 (Santiago Nunez Negrillo)
+2020-06-29 57e4aa8 [BUGFIX] Upload button visible again when AdmiralCloud is not active (Santiago Nunez Negrillo)
+
 2020-06-26         [RELEASE] Release of admiral_cloud_connector 1.0.1 (Steffen Mevius)
 2020-06-26 cb9a37f [BUGFIX] check if be user exists before using (Steffen Mevius)
 2020-06-26         [RELEASE] Release of admiral_cloud_connector 1.0.0 (Steffen Mevius)
