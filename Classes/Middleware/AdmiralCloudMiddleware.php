@@ -23,13 +23,16 @@ class AdmiralCloudMiddleware implements MiddlewareInterface
         // It is not possible to implement this in ext_localconf.php because it is necessary to know the current user
         // and that happens in the middleware before
         if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
-            // Register as a skin
-            $GLOBALS['TBE_STYLES']['skins'][ConfigurationUtility::EXTENSION] = [
-                'name' => ConfigurationUtility::EXTENSION,
-                'stylesheetDirectories' => [
-                    'css' => 'EXT:admiral_cloud_connector/Resources/Public/Backend/Css/'
-                ]
-            ];
+            // Don't use CSS adjustment for admins
+            if (!($this->getBackendUser() && $this->getBackendUser()->isAdmin())) {
+                // Register as a skin
+                $GLOBALS['TBE_STYLES']['skins'][ConfigurationUtility::EXTENSION] = [
+                    'name' => ConfigurationUtility::EXTENSION,
+                    'stylesheetDirectories' => [
+                        'css' => 'EXT:admiral_cloud_connector/Resources/Public/Backend/Css/'
+                    ]
+                ];
+            }
 
             // Add toolbar item to close AdmiralCloud connection
             $GLOBALS['TYPO3_CONF_VARS']['BE']['toolbarItems'][] = AdmiralCloudToolbarItem::class;
@@ -41,8 +44,8 @@ class AdmiralCloudMiddleware implements MiddlewareInterface
     /**
      * @return BackendUserAuthentication
      */
-    protected function getBackendUser(): BackendUserAuthentication
+    protected function getBackendUser(): ?BackendUserAuthentication
     {
-        return $GLOBALS['BE_USER'];
+        return $GLOBALS['BE_USER'] ?? null;
     }
 }

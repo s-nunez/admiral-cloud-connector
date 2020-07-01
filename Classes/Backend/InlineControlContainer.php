@@ -36,7 +36,8 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $selector = parent::renderPossibleRecordsSelectorTypeGroupDB($inlineConfiguration);
 
         if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
-            if (getenv('ADMIRALCLOUD_DISABLE_FILEUPLOAD') == 1) {
+            if (!$this->getBackendUserAuthentication()->isAdmin()
+                && getenv('ADMIRALCLOUD_DISABLE_FILEUPLOAD') == 1) {
                 foreach ($this->requireJsModules as $key => $module) {
                     if (isset($module['TYPO3/CMS/Backend/DragUploader'])) {
                         unset($this->requireJsModules[$key]);
