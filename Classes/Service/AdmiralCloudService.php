@@ -454,14 +454,20 @@ class AdmiralCloudService implements SingletonInterface
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'');
         } else {
-            // Without crop information
-            $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
-                . $file->getTxAdmiralCloudConnectorLinkhash()
-                . '/image/autocrop/'
-                . $dimensions->width
-                . '/'
-                . $dimensions->height
-                . '/1?poc=true';
+            if ($file->getMimeType() == ConfigurationUtility::getSvgMimeType()) {
+                $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
+                    . $file->getTxAdmiralCloudConnectorLinkhash()
+                    . '/image/';
+            } else {
+                // Without crop information
+                $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
+                    . $file->getTxAdmiralCloudConnectorLinkhash()
+                    . '/image/autocrop/'
+                    . $dimensions->width
+                    . '/'
+                    . $dimensions->height
+                    . '/1?poc=true';
+            }
         }
 
         return $link;
