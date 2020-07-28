@@ -164,4 +164,12 @@ class ConfigurationUtility
     {
         return getenv('ADMIRALCLOUD_FLAG_CONFIG_ID') ?: 0;
     }
+
+    /**
+     * @return string
+     */
+    public static function getSvgMimeType(): string
+    {
+        return 'admiralCloud/image/svg+xml';
+    }
 }
