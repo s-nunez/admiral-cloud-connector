@@ -121,9 +121,9 @@ class AdmiralCloudApi
         $response = curl_exec($curl);
         $err = curl_error($curl);
         $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
+        $isFailedSearch = isset($settings['action']) && $settings['action'] == 'search' && $response == '{"message":"error_search_search_failed"}';
         // Log error
-        if (!$httpCode || $httpCode >= 400) {
+        if (!$httpCode || ($httpCode >= 400 && !$isFailedSearch)) {
             /** @var LoggerInterface $logger */
             $logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
             $logger->error(sprintf(

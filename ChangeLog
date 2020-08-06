@@ -1,3 +1,6 @@
+2020-08-06         [RELEASE] Release of admiral_cloud_connector 1.0.5 (Steffen Mevius)
+2020-08-06 f56d53b [BUGFIX][#39976] Fix metadata search (Steffen Mevius)
+
 2020-07-28         [RELEASE] Release of admiral_cloud_connector 1.0.4 (Steffen Mevius)
 2020-07-28 9e010a0 [TASK] Add Mimetypecheck for svgs (Steffen Mevius)
 
