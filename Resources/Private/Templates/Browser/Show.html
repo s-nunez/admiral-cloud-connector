@@ -21,10 +21,15 @@
 
 <script>
     var iframeURL_HOST = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeHost');
+    // overview => iframeURL_HOST + '/overview?cmsOrigin=' + btoa(location.protocol + '//' + location.host);
+    // upload => iframeURL_HOST + '/upload/files?cmsOrigin=' + btoa(location.protocol + '//' + location.host);
+    // The url will be set in variable iframeUrl in \CPSIT\AdmiralCloudConnector\Controller\Backend\BrowserController
+    var iframeURL_overview = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl');
     var readyCallbacks = [];
     var elAdmiralCloud = document.querySelector('.acModalParent');
     var admiralCloudAction = document.getElementById('admiral_cloud-browser').getAttribute('data-modus');
     var irreObjectTarget = document.getElementById('admiral_cloud-browser').getAttribute('data-irreObject');
+    var currentIframeURL;
 
     async function loadIframeWithAuthCode(device) {
 
@@ -59,17 +64,15 @@
     }
 
     function applyAuthCode(code) {
-        var currentIframeURL = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl');
-        load();
-        const iframe = elAdmiralCloud.querySelector('iframe');
-        iframe.src = currentIframeURL + '&code=' + code;
+        const iframeURL = currentIframeURL;
+        load(currentIframeURL + '&code=' + code);
+        currentIframeURL = iframeURL;
     }
 
-    function load(){
+    function load(iframeURL){
         mediaContainerId = document.getElementById('admiral_cloud-browser').getAttribute('data-mediaContainerId');
         embedLink = document.getElementById('admiral_cloud-browser').getAttribute('data-embedLink');
 
-        var iframeURL = document.getElementById('admiral_cloud-browser').getAttribute('data-iframeurl');
         if (elAdmiralCloud) {
             if (mediaContainerId && embedLink) {
                 editImage(mediaContainerId, embedLink);
@@ -190,7 +193,7 @@
             hideAC();
         }
     };
-    load();
+    load(iframeURL_overview);
 
     function hideAC() {
         elAdmiralCloud.querySelector('iframe').contentWindow.postMessage(JSON.stringify({command: 'HIDE_CROPPER_MODAL'}), iframeURL_HOST);
