@@ -45,6 +45,8 @@ define(['jquery',
             Browser.open();
         });
         $(document).on("click", Browser.rteLinkButton, function () {
+            // Store if rte link should set to be downloaded
+            window.rteLinkDownload = !document.getElementById('rteLinkDownload').checked;
             Browser.browserUrl = $(this).data('admiral_cloudBrowserUrl');
             Browser.open();
         });
@@ -197,7 +199,8 @@ define(['jquery',
             url: TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url'],
             dataType: 'json',
             data: {
-                media: media
+                media: media,
+                rteLinkDownload: window.rteLinkDownload
             },
             beforeSend: function () {
                 Modal.dismiss();

@@ -550,22 +550,26 @@ class AdmiralCloudService implements SingletonInterface
      * Get direct public url for given hash
      *
      * @param string $hash
+     * @param bool $download
      * @return string
      */
-    public function getDirectPublicUrlForHash(string $hash): string
+    public function getDirectPublicUrlForHash(string $hash, bool $download = false): string
     {
-        return ConfigurationUtility::getDirectFileUrl() . $hash;
+        return ConfigurationUtility::getDirectFileUrl() . $hash . ($download ? '?download=true' : '');
     }
 
     /**
      * Get direct public url for given file
      *
      * @param FileInterface $file
+     * @param bool $download
      * @return string
      */
-    protected function getDirectPublicUrlForFile(FileInterface $file): string
+    protected function getDirectPublicUrlForFile(FileInterface $file, bool $download = false): string
     {
-        return ConfigurationUtility::getDirectFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
+        return ConfigurationUtility::getDirectFileUrl()
+            . $file->getTxAdmiralCloudConnectorLinkhash()
+            . ($download ? '?download=true' : '');
     }
 
     /**
