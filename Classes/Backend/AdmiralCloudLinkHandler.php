@@ -92,11 +92,14 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_rte_link');
 
+        $rteLinkDownloadLabel = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:linkHandler.rteLinkDownload'));
         $buttonText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.button'));
         $titleText = htmlspecialchars($languageService->sL('LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:browser.header'));
 
         $buttonHtml = [];
-        $buttonHtml[] = '<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn rte-link"'
+        $buttonHtml[] = '<div style="text-align: center;margin-top: 1rem;">'
+            . '<input id="rteLinkDownload" type="checkbox" style="margin-right: 0.5rem; position: relative; top: 2px;"/>' . $rteLinkDownloadLabel . '</div>'
+            . '<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn rte-link"'
             . ' style="margin: 2rem auto;"'
             . ' data-admiral_cloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
             . ' data-title="' . htmlspecialchars($titleText) . '">';

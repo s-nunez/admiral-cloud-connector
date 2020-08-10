@@ -319,6 +319,11 @@ class BrowserController extends AbstractBackendController
     public function getMediaPublicUrlAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $media = $request->getParsedBody()['media'];
+        $rteLinkDownload = $request->getParsedBody()['rteLinkDownload'];
+
+        if (!is_bool($rteLinkDownload)) {
+            $rteLinkDownload = $rteLinkDownload === 'true';
+        }
 
         try {
             $mediaContainer = $media['mediaContainer'];
@@ -330,7 +335,7 @@ class BrowserController extends AbstractBackendController
             $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
 
             return $this->createJsonResponse($response, [
-                'publicUrl' => $admiralCloudService->getDirectPublicUrlForHash($linkHash)
+                'publicUrl' => $admiralCloudService->getDirectPublicUrlForHash($linkHash, $rteLinkDownload)
             ], 200);
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
