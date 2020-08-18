@@ -23,8 +23,13 @@ class AdmiralCloudMiddleware implements MiddlewareInterface
         // It is not possible to implement this in ext_localconf.php because it is necessary to know the current user
         // and that happens in the middleware before
         if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
+            $enableCss = false;
+            if($this->getBackendUser() && isset($this->getBackendUser()->getTSConfig()['admiralcloud.']['enableCss']) &&
+                $this->getBackendUser()->getTSConfig()['admiralcloud.']['enableCss'] == 1){
+                $enableCss = true;
+            }
             // Don't use CSS adjustment for admins
-            if (!($this->getBackendUser() && $this->getBackendUser()->isAdmin())) {
+            if (!($this->getBackendUser() && ($this->getBackendUser()->isAdmin() || $enableCss))) {
                 // Register as a skin
                 $GLOBALS['TBE_STYLES']['skins'][ConfigurationUtility::EXTENSION] = [
                     'name' => ConfigurationUtility::EXTENSION,
