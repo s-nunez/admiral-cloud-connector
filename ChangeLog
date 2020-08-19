@@ -1,3 +1,7 @@
+2020-08-19         [RELEASE] Release of admiral_cloud_connector 1.0.7 (Oliver Noth)
+2020-08-19 4360a13 [BUGFIX][#40102] Fix determining svg mime type (Oliver Noth)
+2020-08-18 b25c212 [TASK] Add possibility to activate css via tsconfig (Steffen Mevius)
+
 2020-08-10         [RELEASE] Release of admiral_cloud_connector 1.0.6 (Santiago Nunez Negrillo)
 2020-08-10 32ff1ea #39938 Add the possibility to select if a AdmiralCloud file should be downloaded or just showed (Santiago Nunez Negrillo)
 2020-08-10 d0a5828 #39222 Adjust AdmiralCloud show template to insert Iframe in TYPO3 (Santiago Nunez Negrillo)
