@@ -166,10 +166,13 @@ class ConfigurationUtility
     }
 
     /**
-     * @return string
+     * Checks, if a given mime type is an AdmiralCloud svg mime type.
+     *
+     * @param string $mimeType The mime type to check for
+     * @return bool            Whether it's an AdmiralCloud svg mime type or not
      */
-    public static function getSvgMimeType(): string
+    public static function isSvgMimeType(string $mimeType): bool
     {
-        return 'admiralCloud/image/svg+xml';
+        return (bool) preg_match('/^admiralCloud\/image\/svg(\+xml)?$/', $mimeType);
     }
 }
