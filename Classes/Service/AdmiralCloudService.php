@@ -441,8 +441,11 @@ class AdmiralCloudService implements SingletonInterface
             (!$width) ? ConfigurationUtility::getDefaultImageWidth() : null
         );
 
+        // Determine, if current file is of AdmiralCloud svg mime type
+        $isSvgMimeType = ConfigurationUtility::isSvgMimeType($file->getMimeType());
+
         // Get image public url
-        if ($file->getTxAdmiralCloudConnectorCrop()) {
+        if (!$isSvgMimeType && $file->getTxAdmiralCloudConnectorCrop()) {
             // With crop information
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
@@ -454,7 +457,7 @@ class AdmiralCloudService implements SingletonInterface
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
                 . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'');
         } else {
-            if ($file->getMimeType() == ConfigurationUtility::getSvgMimeType()) {
+            if ($isSvgMimeType) {
                 $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
                     . $file->getTxAdmiralCloudConnectorLinkhash()
                     . '/image/';
