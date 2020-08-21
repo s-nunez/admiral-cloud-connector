@@ -183,7 +183,7 @@ class AssetRenderer implements FileRendererInterface
 
         $tag->addAttribute('src', $this->getAdmiralCloudService()->getPlayerPublicUrl($originalFile));
         $tag->addAttribute('allowfullscreen', true);
-
+        $tag->forceClosingTag(true);
         if ((int)$width > 0) {
             $tag->addAttribute('width', !empty($width) ? $width : null);
         }
