@@ -206,15 +206,17 @@ class BrowserController extends AbstractBackendController
 
     public function apiAction()
     {
-        $data = $this->admiralCloudService->getMetaData([33512]);
+        $data = $this->admiralCloudService->getEmbedLinks(952336);
         #$data = $this->admiralCloudService->getMetaData([33512]);
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
+        $id = 952336;
+        $this->admiralCloudService->addMediaById([$id]);
 
-        $data = $this->admiralCloudService->getSearch('716821 ');
         #header('Content-type: application/json');
         DebuggerUtility::var_dump($data);
-        #var_dump($data);
+
+
         die();
     }
 
@@ -401,25 +403,6 @@ class BrowserController extends AbstractBackendController
             $sessionData['cropInformation'][$file->getUid()] = $cropperData;
             $this->getBackendUser()->setAndSaveSessionData('admiralCloud', $sessionData);
         }
-    }
-
-    /**
-     * Gets the Indexer.
-     *
-     * @param ResourceStorage $storage
-     * @return Indexer
-     */
-    protected function getIndexer(ResourceStorage $storage): Indexer
-    {
-        return GeneralUtility::makeInstance(Indexer::class, $storage);
-    }
-
-    /**
-     * @return FileIndexRepository
-     */
-    protected function getFileIndexRepository()
-    {
-        return FileIndexRepository::getInstance();
     }
 
     /**

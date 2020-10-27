@@ -133,6 +133,17 @@ class File extends \TYPO3\CMS\Core\Resource\File
     }
 
     /**
+     * @param string $type
+     * @return int
+     */
+    public function setType(string $type)
+    {
+        $this->properties['type'] = $type;
+        $this->updatedProperties[] = 'type';
+        return (int)$this->properties['type'];
+    }
+
+    /**
      * Returns a modified version of the file.
      *
      * @param string $taskType The task type of this processing

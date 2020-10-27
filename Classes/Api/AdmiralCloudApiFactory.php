@@ -21,13 +21,14 @@ class AdmiralCloudApiFactory
      * Creates an instance of AdmiralCloudApi using the given settings.
      *
      * @param array $settings
+     * @param string $method
      * @return AdmiralCloudApi instance.
      * @throws InvalidArgumentException Oauth settings not valid, consumer key or secret not in array.
      * @throws RuntimeException
      */
-    public static function create(array $settings): AdmiralCloudApi
+    public static function create(array $settings,string $method = 'post'): AdmiralCloudApi
     {
-        return AdmiralCloudApi::create($settings);
+        return AdmiralCloudApi::create($settings,$method);
     }
 
     /**

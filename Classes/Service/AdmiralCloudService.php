@@ -12,11 +12,13 @@ use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use Exception;
 
 /***************************************************************
  *
@@ -66,6 +68,7 @@ class AdmiralCloudService implements SingletonInterface
         'container_description',
         'meta_copyright',
         'meta_alttag',
+        'type'
     ];
 
     /**
@@ -91,12 +94,13 @@ class AdmiralCloudService implements SingletonInterface
 
     /**
      * @param array $settings
+     * @param string $method
      * @return AdmiralCloudApi
      */
-    public function callAdmiralCloudApi(array $settings): AdmiralCloudApi
+    public function callAdmiralCloudApi(array $settings,string $method = 'post'): AdmiralCloudApi
     {
         try {
-            $this->admiralCloudApi = AdmiralCloudApiFactory::create($settings);
+            $this->admiralCloudApi = AdmiralCloudApiFactory::create($settings,$method);
             return $this->admiralCloudApi;
         } catch (InvalidArgumentException $e) {
             throw new InvalidArgumentException('AdmiralCloud API cannot be created', 1559128418168, $e);
@@ -256,6 +260,23 @@ class AdmiralCloudService implements SingletonInterface
             ]
         ];
         return json_decode($this->callAdmiralCloudApi($settings)->getData()) ?? [];
+    }
+
+    /**
+     * @param int $id
+     * @return string
+     */
+    public function getEmbedLinks(int $id): array
+    {
+        $settings = [
+            'route' => 'embedlink/' . $id,
+            'controller' => 'embedlink',
+            'action' => 'find',
+            'payload' => [
+                'mediaContainerId' => $id
+            ]
+        ];
+        return json_decode($this->callAdmiralCloudApi($settings,'get')->getData()) ?? [];
     }
 
     /**
@@ -584,5 +605,48 @@ class AdmiralCloudService implements SingletonInterface
     protected function getPlayerPublicUrlForFile(FileInterface $file): string
     {
         return ConfigurationUtility::getPlayerFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
+    }
+
+    public function addMediaById(array $identifiers)
+    {
+        $return = [];
+        $metaData = $this->searchMetaDataForIdentifiers($identifiers);
+        foreach($metaData as $id => $data) {
+            $return[$id] = false;
+            if (isset($data['type'])) {
+                $embedDatas = $this->getEmbedLinks($id);
+                $playerConfigurationId = ConfigurationUtility::getPlayerConfigurationIdByType($data['type']);
+                foreach ($embedDatas as $embedData) {
+                    if ($embedData->playerConfigurationId == $playerConfigurationId) {
+                        $fileId = $this->addMediaByIdHashAndType($id,$embedData->link,$embedData->type);
+                        $return[$id] = $fileId;
+                    }
+                }
+            }
+        }
+        return $return;
+    }
+
+    public function addMediaByIdHashAndType(string $mediaContainerId,string $linkHash,string $type){
+        $return = false;
+        try {
+            $storage = $this->getAdmiralCloudStorage();
+            $indexer = $this->getIndexer($storage);
+            // First of all check that the file contain a valid hash in other case an exception would be thrown
+
+            $file = $storage->getFile($mediaContainerId);
+            if ($file instanceof File) {
+                $file->setTxAdmiralCloudConnectorLinkhash($linkHash);
+                $file->setType($type );
+                $this->getFileIndexRepository()->add($file);
+                // (Re)Fetch metadata
+                $indexer->extractMetaData($file);
+            }
+            $return = $file->getUid();
+
+        } catch (Exception $e) {
+            $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
+        }
+        return $return;
     }
 }
