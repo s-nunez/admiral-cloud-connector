@@ -609,21 +609,26 @@ class AdmiralCloudService implements SingletonInterface
 
     public function addMediaById(array $identifiers)
     {
+        $return = [];
         $metaData = $this->searchMetaDataForIdentifiers($identifiers);
         foreach($metaData as $id => $data) {
+            $return[$id] = false;
             if (isset($data['type'])) {
                 $embedDatas = $this->getEmbedLinks($id);
                 $playerConfigurationId = ConfigurationUtility::getPlayerConfigurationIdByType($data['type']);
                 foreach ($embedDatas as $embedData) {
                     if ($embedData->playerConfigurationId == $playerConfigurationId) {
-                        $this->addMediaByIdHashAndType($id,$embedData->link,$embedData->type);
+                        $fileId = $this->addMediaByIdHashAndType($id,$embedData->link,$embedData->type);
+                        $return[$id] = $fileId;
                     }
                 }
             }
         }
+        return $return;
     }
 
     public function addMediaByIdHashAndType(string $mediaContainerId,string $linkHash,string $type){
+        $return = false;
         try {
             $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
@@ -637,9 +642,11 @@ class AdmiralCloudService implements SingletonInterface
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
             }
+            $return = $file->getUid();
 
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
         }
+        return $return;
     }
 }
