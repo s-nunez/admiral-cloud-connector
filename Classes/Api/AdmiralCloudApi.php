@@ -76,11 +76,12 @@ class AdmiralCloudApi
      * Creates an instance of AdmiralCloudApi
      *
      * @param array $settings
+     * @param string $method
      * @return AdmiralCloudApi instance.
      * @throws RuntimeException
      * @throws InvalidArgumentException
      */
-    public static function create(array $settings)
+    public static function create(array $settings,string $method = 'post')
     {
         $credentials = new Credentials();
 
@@ -101,7 +102,7 @@ class AdmiralCloudApi
 
         $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
 
-        curl_setopt_array($curl, array(
+        $curlOptArray = array(
             CURLOPT_URL => $routeUrl,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
@@ -116,7 +117,12 @@ class AdmiralCloudApi
                 "x-admiralcloud-rts: " . $signedValues['timestamp'],
                 "x-admiralcloud-hash: " . $signedValues['hash']
             ),
-        ));
+        );
+        if($method == 'get'){
+            unset($curlOptArray[CURLOPT_POST]);
+            unset($curlOptArray[CURLOPT_POSTFIELDS]);
+        }
+        curl_setopt_array($curl,$curlOptArray );
 
         $response = curl_exec($curl);
         $err = curl_error($curl);

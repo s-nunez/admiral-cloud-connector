@@ -175,4 +175,25 @@ class ConfigurationUtility
     {
         return (bool) preg_match('/^admiralCloud\/image\/svg(\+xml)?$/', $mimeType);
     }
+
+    /**
+     * @param string $type
+     * @return string
+     */
+    public static function getPlayerConfigurationIdByType(string $type): string
+    {
+        $pCId = self::getImagePlayerConfigId();
+        switch ($type) {
+            case 'audio':
+                $pCId = self::getAudioPlayerConfigId();
+                break;
+            case 'video':
+                $pCId = self::getVideoPlayerConfigId();
+                break;
+            case 'document':
+                $pCId = self::getDocumentPlayerConfigId();
+                break;
+        }
+        return $pCId;
+    }
 }
