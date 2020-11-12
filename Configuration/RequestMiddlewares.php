@@ -8,4 +8,12 @@ return [
             ],
         ],
     ],
+    'frontend' => [
+        'cpsit/admiralcloudconnector/readablelinkresolver' => [
+            'target' => \CPSIT\AdmiralCloudConnector\Http\Middleware\ReadableLinkResolver::class,
+            'before' => [
+                'typo3/cms-redirects/redirecthandler',
+            ],
+        ],
+    ],
 ];
