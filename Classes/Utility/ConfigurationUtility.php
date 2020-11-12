@@ -196,4 +196,8 @@ class ConfigurationUtility
         }
         return $pCId;
     }
+
+    public static  function getLocalFileUrl(){
+        return '/filehub/deliverFile/';
+    }
 }

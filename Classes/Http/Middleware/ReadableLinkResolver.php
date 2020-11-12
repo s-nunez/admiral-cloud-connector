@@ -9,6 +9,7 @@ namespace CPSIT\AdmiralCloudConnector\Http\Middleware;
  */
 
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -33,14 +34,14 @@ class ReadableLinkResolver extends \TYPO3\CMS\Redirects\Http\Middleware\Redirect
     {
         $path = $request->getUri()->getPath();
 
-        if (0 === strpos($path, '/filehub/deliverFile')) {
-            preg_match('/filehub\/deliverFile\/([a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12})\/.*/',$path,$matches);
+        if (0 === strpos($path, ConfigurationUtility::getLocalFileUrl())) {
+            preg_match('/.*?\/.*?\/([a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12})\/.*/',$path,$matches);
             if(isset($matches[1])){
                 /** @var AdmiralCloudService $admiralCloudService */
                 $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
                 $url = $admiralCloudService->getDirectPublicUrlForHash($matches[1], (bool) GeneralUtility::_GP('download'));
                 header("Location: " . $url);
-
+                die();
             }
         }
 

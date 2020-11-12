@@ -17,7 +17,6 @@ use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use Exception;
 
 /***************************************************************
@@ -580,45 +579,26 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getDirectPublicUrlForHash(string $hash, $mediaContainer = []): string
     {
-        $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if(isset($GLOBALS['BE_USER']) && isset($GLOBALS['BE_USER']->getTSConfig()['admiralcloud.']['enableAcReadableLinks']) &&
-            $GLOBALS['BE_USER']->getTSConfig()['admiralcloud.']['enableAcReadableLinks'] == 1){
-            $enableAcReadableLinks = true;
-        }
-        if($enableAcReadableLinks){
-            return '/filehub/deliverFile/' .
-                $hash . '/' .
-                $mediaContainer['id'] . '/' .
-                urlencode($mediaContainer['fileName']) . '.' . $mediaContainer['fileExtension'];
-        } else {
-            return ConfigurationUtility::getDirectFileUrl() . $hash;
-        }
+        return ConfigurationUtility::getDirectFileUrl() . $hash;
     }
 
     /**
      * Get direct public url for given file
      *
      * @param FileInterface $file
-     * @param bool $download
      * @return string
      */
-    public function getDirectPublicUrlForFile(FileInterface $file, bool $download = false): string
+    public function getDirectPublicUrlForFile(FileInterface $file): string
     {
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if(isset($GLOBALS['BE_USER']) && isset($GLOBALS['BE_USER']->getTSConfig()['admiralcloud.']['enableAcReadableLinks']) &&
-            $GLOBALS['BE_USER']->getTSConfig()['admiralcloud.']['enableAcReadableLinks'] == 1){
-            $enableAcReadableLinks = true;
-        }
         if($enableAcReadableLinks){
-            return '/filehub/deliverFile/' .
+            return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
                 $file->getIdentifier() . '/' .
-                $file->getName()
-                . ($download ? '?download=true' : '');
+                $file->getName();
         } else {
             return ConfigurationUtility::getDirectFileUrl()
-                . $file->getTxAdmiralCloudConnectorLinkhash()
-                . ($download ? '?download=true' : '');
+                . $file->getTxAdmiralCloudConnectorLinkhash();
         }
     }
 
