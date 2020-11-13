@@ -335,9 +335,11 @@ class BrowserController extends AbstractBackendController
 
             /** @var AdmiralCloudService $admiralCloudService */
             $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
+            $admiralCloudService->addMediaByIdHashAndType($mediaContainer['id'],$linkHash,$mediaContainer['type']);
+            $file = $this->getAdmiralCloudStorage()->getFile($mediaContainer['id']);
 
             return $this->createJsonResponse($response, [
-                'publicUrl' => $admiralCloudService->getDirectPublicUrlForHash($linkHash, $rteLinkDownload)
+                'publicUrl' => 't3://file?uid=' . $file->getUid()
             ], 200);
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
