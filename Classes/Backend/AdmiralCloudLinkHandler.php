@@ -11,6 +11,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Recordlist\Controller\AbstractLinkBrowserController;
 use TYPO3\CMS\Recordlist\LinkHandler\AbstractLinkHandler;
@@ -22,6 +23,13 @@ use TYPO3\CMS\Recordlist\LinkHandler\LinkHandlerInterface;
  */
 class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandlerInterface
 {
+    /**
+     * Parts of the current link
+     *
+     * @var array
+     */
+    protected $linkParts = [];
+
     /**
      * TemplateRootPath
      *
@@ -42,6 +50,16 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
      * @var string[]
      */
     protected $layoutRootPaths = ['EXT:admiral_cloud_connector/Resources/Private/Layouts/Backend/Browser'];
+
+    /**
+     * @var string
+     */
+    protected $expectedClass = File::class;
+
+    /**
+     * @var string
+     */
+    protected $mode = 'file';
 
     /**
      * Initialize the handler
@@ -67,8 +85,15 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
      */
     public function canHandleLink(array $linkParts)
     {
-        // It is always false because render return a public url
-        // It is not possible to come back to admiralCloud tab
+        if (!$linkParts['url']) {
+            return false;
+        }
+        if (isset($linkParts['url'][$this->mode]) && $linkParts['url'][$this->mode] instanceof $this->expectedClass) {
+            if(GeneralUtility::isFirstPartOfStr($linkParts['url'][$this->mode]->getMimeType(), 'admiralCloud/')){
+                $this->linkParts = $linkParts;
+                return true;
+            }
+        }
         return false;
     }
 
@@ -77,7 +102,7 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
      */
     public function formatCurrentUrl()
     {
-        throw new NotImplementedException('This function is not need it. If you need it. Please implement it.');
+        return $this->linkParts['url'][$this->mode]->getName();
     }
 
     /**
@@ -98,7 +123,7 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
 
         $buttonHtml = [];
         $buttonHtml[] = '<div style="text-align: center;margin-top: 1rem;">'
-            . '<input id="rteLinkDownload" type="checkbox" style="margin-right: 0.5rem; position: relative; top: 2px;"/>' . $rteLinkDownloadLabel . '</div>'
+            . '<span style="display:none"><input id="rteLinkDownload" type="checkbox" style="margin-right: 0.5rem; position: relative; top: 2px;"/>' . $rteLinkDownloadLabel . '</span></div>'
             . '<a href="#" class="btn btn-default t3js-admiral_cloud-browser-btn rte-link"'
             . ' style="margin: 2rem auto;"'
             . ' data-admiral_cloud-browser-url="' . htmlspecialchars($compactViewUrl) . '" '
@@ -110,10 +135,12 @@ class AdmiralCloudLinkHandler extends AbstractLinkHandler implements LinkHandler
     }
 
     /**
-     * @inheritDoc
+     * @return string[] Array of body-tag attributes
      */
     public function getBodyTagAttributes()
     {
-        return [];
+        return [
+            'data-current-link' => GeneralUtility::makeInstance(LinkService::class)->asString(['type' => LinkService::TYPE_FILE, 'file' => $this->linkParts['url']['file']])
+        ];
     }
 }

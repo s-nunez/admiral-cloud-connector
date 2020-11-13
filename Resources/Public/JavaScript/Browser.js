@@ -8,6 +8,34 @@ define(['jquery',
     'TYPO3/CMS/Recordlist/LinkBrowser'
 ], function ($, NProgress, Modal, Notification, LinkBrowser) {
     'use strict';
+
+    /**
+     * @type {{currentLink: string, identifier: string, linkRecord: function, linkCurrent: function}}
+     */
+    var RecordLinkHandler = {
+        currentLink: '',
+        identifier: '',
+
+        /**
+         * @param {Event} event
+         */
+        linkRecord: function(event) {
+            event.preventDefault();
+
+            var data = $(this).parents('span').data();
+            LinkBrowser.finalizeFunction(RecordLinkHandler.identifier + data.uid);
+        },
+
+        /**
+         * @param {Event} event
+         */
+        linkCurrent: function(event) {
+            event.preventDefault();
+
+            LinkBrowser.finalizeFunction(RecordLinkHandler.currentLink);
+        }
+    };
+
     /**
      * The main CompactView object for AdmiralCloud
      *
@@ -20,7 +48,16 @@ define(['jquery',
         cropButton: '.t3js-admiral_cloud-browser-btn.crop',
         rteLinkButton: '.t3js-admiral_cloud-browser-btn.rte-link',
         browserUrl: '',
-        title: 'AdmiralCloud'
+        title: 'AdmiralCloud',
+        currentLink: '',
+        /**
+         * @param {Event} event
+         */
+        linkCurrent: function(event) {
+            event.preventDefault();
+
+            LinkBrowser.finalizeFunction(RecordLinkHandler.currentLink);
+        }
     };
 
     /**
@@ -71,6 +108,9 @@ define(['jquery',
                 Browser.cropMedia(target, media);
             }
         });
+        var body = $('body');
+        Browser.currentLink = body.data('currentLink');
+        $('input.t3js-linkCurrent').on('click', Browser.linkCurrent);
     };
 
     /**

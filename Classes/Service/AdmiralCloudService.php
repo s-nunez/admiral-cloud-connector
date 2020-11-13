@@ -17,7 +17,6 @@ use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use Exception;
 
 /***************************************************************
@@ -575,25 +574,32 @@ class AdmiralCloudService implements SingletonInterface
      *
      * @param string $hash
      * @param bool $download
+     * @param array $mediaContainer
      * @return string
      */
-    public function getDirectPublicUrlForHash(string $hash, bool $download = false): string
+    public function getDirectPublicUrlForHash(string $hash, $mediaContainer = []): string
     {
-        return ConfigurationUtility::getDirectFileUrl() . $hash . ($download ? '?download=true' : '');
+        return ConfigurationUtility::getDirectFileUrl() . $hash;
     }
 
     /**
      * Get direct public url for given file
      *
      * @param FileInterface $file
-     * @param bool $download
      * @return string
      */
-    protected function getDirectPublicUrlForFile(FileInterface $file, bool $download = false): string
+    public function getDirectPublicUrlForFile(FileInterface $file): string
     {
-        return ConfigurationUtility::getDirectFileUrl()
-            . $file->getTxAdmiralCloudConnectorLinkhash()
-            . ($download ? '?download=true' : '');
+        $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
+        if($enableAcReadableLinks){
+            return ConfigurationUtility::getLocalFileUrl() .
+                $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
+                $file->getIdentifier() . '/' .
+                $file->getName();
+        } else {
+            return ConfigurationUtility::getDirectFileUrl()
+                . $file->getTxAdmiralCloudConnectorLinkhash();
+        }
     }
 
     /**

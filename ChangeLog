@@ -1,3 +1,7 @@
+2020-11-13         [RELEASE] Release of admiral_cloud_connector 1.0.10 (smevius)
+2020-11-12 f8f225d [BUGFIX][17364] fix middleware redirect, refactor code (smevius)
+2020-11-12 6f270c0 [TASK][17364] Add readable link resolver, add possibility to use it instead of external link, better usability for link handler (smevius)
+
 2020-10-27         [RELEASE] Release of admiral_cloud_connector 1.0.9 (Steffen Mevius)
 2020-10-27 5486d23 [BUGFIX][40341] refactor addMediaById method to return sys_file uid (smevius)
 2020-10-15 c0b2fb1 [TASK][40341] add media by id function in admiralcloudService (Steffen Mevius)
