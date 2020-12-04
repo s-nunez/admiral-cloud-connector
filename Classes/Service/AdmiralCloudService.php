@@ -621,7 +621,7 @@ class AdmiralCloudService implements SingletonInterface
             [
                 "from" => 0,
                 "size" => 1,
-                "searchTerm" => "017ddbd2-e8c6-4404-af2d-860fe6e8a261 ",
+                "searchTerm" => $hash,
                 "field" => "links",
                 "noAggregation" => true
 
