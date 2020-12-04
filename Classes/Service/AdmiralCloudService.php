@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Exception;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /***************************************************************
  *
@@ -245,20 +246,18 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
-     * @param string $search
+     * @param array $search
      * @return string
      */
-    public function getSearch(string $search): array
+    public function getSearch(array $search): array
     {
         $settings = [
             'route' => 'search',
             'controller' => 'search',
             'action' => 'search',
-            'payload' => [
-                'searchTerm' => $search
-            ]
+            'payload' => $search
         ];
-        return json_decode($this->callAdmiralCloudApi($settings)->getData()) ?? [];
+        return json_decode($this->callAdmiralCloudApi($settings)->getData())->hits->hits ?? [];
     }
 
     /**
@@ -611,6 +610,31 @@ class AdmiralCloudService implements SingletonInterface
     protected function getPlayerPublicUrlForFile(FileInterface $file): string
     {
         return ConfigurationUtility::getPlayerFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
+    }
+
+    /**
+     * @param string $hash
+     * @return false|int
+     */
+    public function addMediaByHash(string $hash){
+        $searchData = $this->getSearch(
+            [
+                "from" => 0,
+                "size" => 1,
+                "searchTerm" => "017ddbd2-e8c6-4404-af2d-860fe6e8a261 ",
+                "field" => "links",
+                "noAggregation" => true
+
+            ]
+        );
+        if($searchData){
+            foreach ($searchData as $item) {
+                $mediaContainerID = $item->_id;
+                $type = $item->_source->type;
+                return $this->addMediaByIdHashAndType($mediaContainerID, $hash, $type);
+            }
+        }
+        return false;
     }
 
     public function addMediaById(array $identifiers)
