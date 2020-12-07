@@ -206,6 +206,12 @@ class BrowserController extends AbstractBackendController
 
     public function apiAction()
     {
+        $data = $this->admiralCloudService->addMediaByHash(
+            "017ddbd2-e8c6-4404-af2d-860fe6e8a261"        );
+        #header('Content-type: application/json');
+        DebuggerUtility::var_dump($data);
+        #var_dump($data);
+        die();
         $data = $this->admiralCloudService->getEmbedLinks(952336);
         #$data = $this->admiralCloudService->getMetaData([33512]);
         #header('Content-type: application/json');
