@@ -1,3 +1,7 @@
+2020-12-07         [RELEASE] Release of admiral_cloud_connector 1.0.11 (smevius)
+2020-12-04 fa2e193 [BUGFIX][17553] use variable instead of fix string (smevius)
+2020-12-04 f4900cf [TASK][17553] add media by hash (smevius)
+
 2020-11-13         [RELEASE] Release of admiral_cloud_connector 1.0.10 (smevius)
 2020-11-12 f8f225d [BUGFIX][17364] fix middleware redirect, refactor code (smevius)
 2020-11-12 6f270c0 [TASK][17364] Add readable link resolver, add possibility to use it instead of external link, better usability for link handler (smevius)
