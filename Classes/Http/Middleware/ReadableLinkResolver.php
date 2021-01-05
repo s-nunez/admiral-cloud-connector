@@ -40,7 +40,20 @@ class ReadableLinkResolver extends \TYPO3\CMS\Redirects\Http\Middleware\Redirect
                 /** @var AdmiralCloudService $admiralCloudService */
                 $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
                 $url = $admiralCloudService->getDirectPublicUrlForHash($matches[1], (bool) GeneralUtility::_GP('download'));
-                header("Location: " . $url);
+                #header("Location: " . $url);
+                $str = '
+                <!-- meta tags -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="' . $request->getUri() . '" /> 
+<!-- .... -->
+<body>
+    <script>
+                // imaginary real download url url
+                //window.location = \'' . $url . '\';
+    </script>
+</body>
+                ';
+                echo $str;
                 die();
             }
         }
