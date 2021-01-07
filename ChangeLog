@@ -1,3 +1,6 @@
+2021-01-07         [RELEASE] Release of admiral_cloud_connector 1.0.12 (smevius)
+2021-01-05 1d85293 [TASK][17945] add possibility to override UploadIframeUrl (smevius)
+
 2020-12-07         [RELEASE] Release of admiral_cloud_connector 1.0.11 (smevius)
 2020-12-04 fa2e193 [BUGFIX][17553] use variable instead of fix string (smevius)
 2020-12-04 f4900cf [TASK][17553] add media by hash (smevius)
