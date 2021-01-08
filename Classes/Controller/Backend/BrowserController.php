@@ -6,6 +6,7 @@ use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
+use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -142,7 +143,13 @@ class BrowserController extends AbstractBackendController
      */
     public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
     {
-        return $this->prepareIframe($request, $response, ConfigurationUtility::getIframeUrl() . 'upload/files?cmsOrigin=');
+        $iframeUrl = ConfigurationUtility::getIframeUrl() . 'upload/files?cmsOrigin=';
+        if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
+            if ($this->getBackendUser() && isset($this->getBackendUser()->getTSConfig()['admiralcloud.']['overrideUploadIframeUrl'])) {
+                $iframeUrl = $this->getBackendUser()->getTSConfig()['admiralcloud.']['overrideUploadIframeUrl'];
+            }
+        }
+        return $this->prepareIframe($request, $response, $iframeUrl);
     }
 
     /**
