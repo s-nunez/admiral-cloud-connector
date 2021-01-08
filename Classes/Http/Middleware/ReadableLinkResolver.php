@@ -14,6 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Hooks into the frontend request, and checks if a redirect should apply,
@@ -35,29 +36,50 @@ class ReadableLinkResolver extends \TYPO3\CMS\Redirects\Http\Middleware\Redirect
         $path = $request->getUri()->getPath();
 
         if (0 === strpos($path, ConfigurationUtility::getLocalFileUrl())) {
-            preg_match('/.*?\/.*?\/([a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12})\/.*/',$path,$matches);
-            if(isset($matches[1])){
+            preg_match('/.*?\/.*?\/([a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12})\/(\d+).*/',$path,$matches);
+            if(isset($matches[1]) && isset($matches[2])){
                 /** @var AdmiralCloudService $admiralCloudService */
                 $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
-                $url = $admiralCloudService->getDirectPublicUrlForHash($matches[1], (bool) GeneralUtility::_GP('download'));
-                #header("Location: " . $url);
-                $str = '
-                <!-- meta tags -->
-<meta property="og:type" content="website" />
-<meta property="og:url" content="' . $request->getUri() . '" /> 
-<!-- .... -->
-<body>
-    <script>
-                // imaginary real download url url
-                //window.location = \'' . $url . '\';
-    </script>
-</body>
-                ';
-                echo $str;
-                die();
+                $url = $admiralCloudService->getDirectPublicUrlForHash(
+                    $matches[1],
+                    (bool) GeneralUtility::_GP('download')
+                );
+                $file = $admiralCloudService->getStorage()->getFile($matches[2]);
+                if ($file) {
+                    $this->renderTemplateToFile('Middleware/DownloadFile', [
+                            'file' => $file,
+                            'requestUri' => $request->getUri(),
+                            'url' => $url,
+                            'image' => ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/' . $matches[1] . '/image/'
+                        ]
+                    );
+                } else {
+                    header("Location: " . $url);
+                }
             }
         }
 
         return $handler->handle($request);
+    }
+
+    /**
+     * Render template to file.
+     *
+     * @param string $templateName
+     * @param array  $variables
+     * @param string $htaccessFile
+     */
+    protected function renderTemplateToFile(string $templateName, array $variables)
+    {
+        /** @var StandaloneView $renderer */
+        $renderer = GeneralUtility::makeInstance(StandaloneView::class);
+        $renderer->setLayoutRootPaths(array(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Layouts')));
+        $renderer->setPartialRootPaths(array(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Partials')));
+        $renderer->setTemplateRootPaths(array(GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Templates')));
+        $renderer->setTemplate($templateName);
+        $renderer->assignMultiple($variables);
+        $content = \trim((string)$renderer->render());
+        echo $content;
+        die();
     }
 }
