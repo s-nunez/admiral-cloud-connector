@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <!-- Primary Meta Tags -->
+    <title>{file.name}</title>
+    <meta name="title" content="{file.name}">
+    <meta name="description" content="{file.name}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{requestUri}" />
+    <meta property="og:title" content="{file.name}" />
+    <meta property="og:image" content="{image}" />
+
+</head>
+<body>
+    <h1>{file.name}</h1>
+    <p>
+        Redirecting to ... {url}.<br/>
+        If redirecting is not working, please click <a href="{url}">here</a>.
+    </p>
+    <script>
+        window.location = "{url}";
+    </script>
+</body>
+</html>

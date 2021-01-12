@@ -513,6 +513,13 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * @return \TYPO3\CMS\Core\Resource\ResourceStorage|\TYPO3\CMS\Core\Resource\ResourceStorageInterface
+     */
+    public function getStorage(){
+        return $this->getAdmiralCloudStorage();
+    }
+
+    /**
      * @param array $mediaContainer
      * @return string
      * @throws InvalidFileConfigurationException
