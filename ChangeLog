@@ -1,3 +1,6 @@
+2021-01-14         [RELEASE] Release of admiral_cloud_connector 1.0.14 (smevius)
+2021-01-14 85ed92d [BUGFIX] fix directpublickurl for media files (audio/video) (smevius)
+
 2021-01-12         [RELEASE] Release of admiral_cloud_connector 1.0.13 (smevius)
 2021-01-12 e573235 [TASK][18067] add more information to redirect page, if javascript redirect is not working (smevius)
 2021-01-08 ea6881a [TASK][18067] Add meta tags with template to admiralcloud file redirect (smevius)
