@@ -399,7 +399,7 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getVideoPublicUrl(FileInterface $file): string
     {
-        return $this->getDirectPublicUrlForFile($file);
+        return $this->getDirectPublicUrlForMedia($file);
     }
 
     /**
@@ -410,7 +410,7 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getAudioPublicUrl(FileInterface $file): string
     {
-        return $this->getDirectPublicUrlForFile($file);
+        return $this->getDirectPublicUrlForMedia($file);
     }
 
     /**
@@ -606,6 +606,20 @@ class AdmiralCloudService implements SingletonInterface
             return ConfigurationUtility::getDirectFileUrl()
                 . $file->getTxAdmiralCloudConnectorLinkhash();
         }
+    }
+
+    /**
+     * Get direct public url for given media file
+     *
+     * @param FileInterface $file
+     * @param bool $download
+     * @return string
+     */
+    protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
+    {
+        return ConfigurationUtility::getDirectFileUrl()
+            . $file->getTxAdmiralCloudConnectorLinkhash()
+            . ($download ? '?download=true' : '');
     }
 
     /**
