@@ -178,7 +178,7 @@ class MetadataService
                         'alternative' => $metadata['meta_alttag'] ?? '',
                         'title' => $metadata['container_name'] ?? '',
                         'description' => $metadata['container_description'] ?? '',
-                        'copyright' => $metadata['meta_copyright'] ?? '',
+                        'copyright' => $metadata['meta_iptc_copyrightNotice'] ?? '',
                     ],
                     ['file' => $sysFileUid]
                 );

@@ -236,7 +236,7 @@ class AdmiralCloudService implements SingletonInterface
                 'description' => $fileMetaData[$file->mediaContainerId]['container_description'] ?? '',
                 'width' => $file->width,
                 'height' => $file->height,
-                'copyright' => $fileMetaData[$file->mediaContainerId]['meta_copyright'] ?? '',
+                'copyright' => $fileMetaData[$file->mediaContainerId]['meta_iptc_copyrightNotice'] ?? '',
                 'keywords' => '',
             ];
         }
