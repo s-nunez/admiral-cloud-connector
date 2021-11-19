@@ -66,8 +66,7 @@ class AdmiralCloudService implements SingletonInterface
     protected $metaDataFields = [
         'container_name',
         'container_description',
-        'meta_copyright',
-        'meta_alttag',
+        'meta*',
         'type'
     ];
 
