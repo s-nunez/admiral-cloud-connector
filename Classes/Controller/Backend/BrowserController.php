@@ -245,8 +245,8 @@ class BrowserController extends AbstractBackendController
         $bodyParams = json_decode($request->getBody()->getContents());
         $settings = [
             'callbackUrl' => $bodyParams->callbackUrl,
-            'controller' => 'login',
-            'action' => 'app',
+            'controller' => 'loginapp',
+            'action' => 'login',
             'device' => $bodyParams->device
         ];
 

@@ -182,7 +182,7 @@ class AdmiralCloudApi
         ];
         $signedValues = self::acSignatureSign($params);
 
-        $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true";
+        $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/loginapp/login?poc=true";
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => $loginUrl,
