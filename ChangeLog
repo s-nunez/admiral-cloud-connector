@@ -1,3 +1,7 @@
+2022-01-26         [RELEASE] Release of admiral_cloud_connector 1.0.17 (Oliver Noth)
+2022-01-26 6816140 [TASK][27722] Readjust login route in AdmiralCloudApi (Oliver Noth)
+2022-01-25 d028148 [TASK][27722] change login route (smevius)
+
 2021-11-19         [RELEASE] Release of admiral_cloud_connector 1.0.16 (smevius)
 2021-11-19 2a75e50 [BUGFIX] fix fields for updating meta information (smevius)
 
