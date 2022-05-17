@@ -1,0 +1,45 @@
+.acModalParent {
+    z-index: 99999;
+    position: relative;
+}
+.acBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+
+}
+
+.acBackdrop iframe {
+    position: absolute;
+    top: 10px;
+    left: 40px;
+    width: calc(100% - 80px);
+    height: calc(100% - 20px);
+    border: 0;
+    background: white;
+}
+
+.acBackdrop .close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: white;
+    font-size: 25px;
+    line-height: 25px;
+    cursor: pointer;
+    z-index: 999;
+    opacity: 1;
+}
+
+.acBackdrop.hidden {
+    position: absolute;
+    left: -5000%;
+    top: -5000%;
+    right: auto;
+    left: auto;
+    width: 100%;
+    height: 100%;
+}

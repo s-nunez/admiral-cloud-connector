@@ -55,15 +55,15 @@ class UpdateAdmiralCloudMetadataTask extends AbstractTask
     }
 
     /**
-     * @return LanguageService
+     * @return LanguageService|null
      */
-    protected function getLanguageService()
+    protected function getLanguageService(): ?LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
     /**
-     * @return MetadataService
+     * @return MetadataServic
      */
     protected function getMetadataService(): MetadataService
     {
