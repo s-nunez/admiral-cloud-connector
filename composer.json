@@ -9,7 +9,7 @@
   "license": "GPL-3.0+",
   "require": {
     "php": ">= 7.2",
-    "guzzlehttp/guzzle": "~6.0",
+    "guzzlehttp/guzzle": "~7.0",
     "guzzlehttp/oauth-subscriber": "0.3.*",
     "typo3/cms-core": ">=9.5.0 || ^10.4 || ^11.5",
     "typo3/cms-fluid": "^9.5 || ^10.4 || ^11.5"
