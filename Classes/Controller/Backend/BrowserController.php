@@ -8,6 +8,7 @@ use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
@@ -19,10 +20,14 @@ use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Core\Http\HtmlResponse;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Extbase\Mvc\Response;
 
 /***************************************************************
  *
@@ -100,18 +105,27 @@ class BrowserController extends AbstractBackendController
     protected $logger;
 
     /**
+     * ModuleTemplate object
+     *
+     * @var ModuleTemplate
+     */
+    protected $moduleTemplate;
+    
+
+    /**
      * CompactViewController constructor.
      */
     public function __construct()
     {
-        parent::__construct();
 
-        $this->view = GeneralUtility::makeInstance(StandaloneView::class);
-        $this->view->setPartialRootPaths($this->partialRootPaths);
-        $this->view->setTemplateRootPaths($this->templateRootPaths);
-        $this->view->setLayoutRootPaths($this->layoutRootPaths);
+        #$this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        #$this->view->setPartialRootPaths($this->partialRootPaths);
+        #$this->view->setTemplateRootPaths($this->templateRootPaths);
+        #$this->view->setLayoutRootPaths($this->layoutRootPaths);
         $this->admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+        $this->moduleTemplate = GeneralUtility::makeInstance(ModuleTemplate::class);
+        $this->view = $this->getFluidTemplateObject('Show.html');
     }
 
     /**
@@ -128,12 +142,11 @@ class BrowserController extends AbstractBackendController
 
     /**
      * @param ServerRequestInterface|null $request
-     * @param ResponseInterface|null $response
      * @return ResponseInterface
      */
-    public function showAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    public function showAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
-        return $this->prepareIframe($request, $response,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
     }
 
     /**
@@ -141,7 +154,7 @@ class BrowserController extends AbstractBackendController
      * @param ResponseInterface|null $response
      * @return ResponseInterface
      */
-    public function uploadAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    public function uploadAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
         $iframeUrl = ConfigurationUtility::getIframeUrl() . 'upload/files?cmsOrigin=';
         if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
@@ -149,7 +162,7 @@ class BrowserController extends AbstractBackendController
                 $iframeUrl = $this->getBackendUser()->getTSConfig()['admiralcloud.']['overrideUploadIframeUrl'];
             }
         }
-        return $this->prepareIframe($request, $response, $iframeUrl);
+        return $this->prepareIframe($request,$iframeUrl);
     }
 
     /**
@@ -157,14 +170,14 @@ class BrowserController extends AbstractBackendController
      * @param ResponseInterface|null $response
      * @return ResponseInterface
      */
-    public function cropAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    public function cropAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
         $this->view->assignMultiple([
             'mediaContainerId' => $request->getQueryParams()['mediaContainerId'],
             'embedLink' => $request->getQueryParams()['embedLink'],
             'modus' => 'crop'
-        ]);
-        return $this->prepareIframe($request, $response, ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        ]);        
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
     }
 
     /**
@@ -172,21 +185,19 @@ class BrowserController extends AbstractBackendController
      * @param ResponseInterface|null $response
      * @return ResponseInterface
      */
-    public function rteLinkAction(ServerRequestInterface $request = NULL, ResponseInterface $response = NULL): ResponseInterface
+    public function rteLinkAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
         $this->view->assign('modus', 'rte-link');
-        return $this->prepareIframe($request, $response,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
     }
 
     /**
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @param string $callbackUrl
      * @return ResponseInterface
      * @throws \TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException
      */
-    public function prepareIframe(ServerRequestInterface $request, ResponseInterface $response, string $callbackUrl){
-        $this->view->setTemplate('Show');
+    public function prepareIframe(ServerRequestInterface $request,string $callbackUrl){
         $parameters = $request->getQueryParams();
 
         $protocol = 'http';
@@ -206,8 +217,10 @@ class BrowserController extends AbstractBackendController
                 'irreObject' => $parameters['irreObject'],
             ]
         ]);
-        $response->getBody()->write($this->view->render());
-        return $response;
+        $this->view->assign('iframeHost',rtrim(ConfigurationUtility::getIframeUrl(),'/'));
+        echo $this->view->render();die();
+        $this->moduleTemplate->setContent($this->view->render());
+        return new HtmlResponse($this->moduleTemplate->renderContent());
     }
 
 
@@ -240,7 +253,7 @@ class BrowserController extends AbstractBackendController
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function authAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function authAction(ServerRequestInterface $request): ResponseInterface
     {
         $bodyParams = json_decode($request->getBody()->getContents());
         $settings = [
@@ -253,7 +266,6 @@ class BrowserController extends AbstractBackendController
         try {
             $admiralCloudAuthCode = $this->admiralCloudService->getAdmiralCloudAuthCode($settings);
             return $this->createJsonResponse(
-                $response,
                 [
                     'code' => $admiralCloudAuthCode
                 ],
@@ -261,7 +273,7 @@ class BrowserController extends AbstractBackendController
             );
         } catch (\Throwable $exception) {
             $this->logger->error('The authentication to AdmiralCloud was not possible.', ['exception' => $exception]);
-            return $this->createJsonResponse($response, [
+            return $this->createJsonResponse( [
                 'error' => 'Error information: ' . $exception->getMessage(),
                 'exception' => [
                     'code' => $exception->getCode(),
@@ -275,10 +287,9 @@ class BrowserController extends AbstractBackendController
      * Action: Retrieve file from storage
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function getFilesAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getFilesAction(ServerRequestInterface $request): ResponseInterface
     {
         $media = $request->getParsedBody()['media'];
         $target = $request->getParsedBody()['target'];
@@ -288,16 +299,18 @@ class BrowserController extends AbstractBackendController
             $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
             $mediaContainer = $media['mediaContainer'];
-
+            $mediaContainer['id'] = 1661721;
             // First of all check that the file contain a valid hash in other case an exception would be thrown
             $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
 
-            $file = $storage->getFile($mediaContainer['id']);
+            $file = $storage->getFile((string)$mediaContainer['id']);
             if ($file instanceof File) {
                 $file->setTxAdmiralCloudConnectorLinkhash($linkHash);
                 $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
-
-                $this->getFileIndexRepository()->add($file);
+                #$this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+                #DebuggerUtility::var_dump($storage);die();
+                $this->getFileIndexRepository($storage)->add($file);
+                #$indexer->updateIndexEntry($file);
 
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
@@ -308,13 +321,13 @@ class BrowserController extends AbstractBackendController
             }
 
             if ($files === []) {
-                return $this->createJsonResponse($response, ['error' => 'No files given/found'], 406);
+                return $this->createJsonResponse( ['error' => 'No files given/found'], 406);
             }
 
-            return $this->createJsonResponse($response, ['files' => $files], 201);
+            return $this->createJsonResponse( ['files' => $files], 201);
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
-            return $this->createJsonResponse($response, [
+            return $this->createJsonResponse( [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [
                     'code' => $e->getCode(),
@@ -328,10 +341,9 @@ class BrowserController extends AbstractBackendController
      * Action: Retrieve file from storage
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function getMediaPublicUrlAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getMediaPublicUrlAction(ServerRequestInterface $request): ResponseInterface
     {
         $media = $request->getParsedBody()['media'];
         $rteLinkDownload = $request->getParsedBody()['rteLinkDownload'];
@@ -351,12 +363,12 @@ class BrowserController extends AbstractBackendController
             $admiralCloudService->addMediaByIdHashAndType($mediaContainer['id'],$linkHash,$mediaContainer['type']);
             $file = $this->getAdmiralCloudStorage()->getFile($mediaContainer['id']);
 
-            return $this->createJsonResponse($response, [
+            return $this->createJsonResponse( [
                 'publicUrl' => 't3://file?uid=' . $file->getUid()
             ], 200);
         } catch (Exception $e) {
             $this->logger->error('Error adding file from AdmiralCloud.', ['exception' => $e]);
-            return $this->createJsonResponse($response, [
+            return $this->createJsonResponse( [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [
                     'code' => $e->getCode(),
@@ -370,10 +382,9 @@ class BrowserController extends AbstractBackendController
      * Action: Retrieve file from storage
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function cropFileAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function cropFileAction(ServerRequestInterface $request): ResponseInterface
     {
         $media = $request->getParsedBody()['media'];
         $target = $request->getParsedBody()['target'];
@@ -389,10 +400,10 @@ class BrowserController extends AbstractBackendController
             $file->setTxAdmiralCloudConnectorCrop($cropperData);
             $link = $this->admiralCloudService->getImagePublicUrl($file,226,150);
 
-            return $this->createJsonResponse($response, ['target' => $target,'cropperData' => $cropperData,'link' => $link], 201);
+            return $this->createJsonResponse( ['target' => $target,'cropperData' => $cropperData,'link' => $link], 201);
         } catch (Exception $e) {
             $this->logger->error('Error cropping file from AdmiralCloud.', ['exception' => $e]);
-            return $this->createJsonResponse($response, [
+            return $this->createJsonResponse( [
                 'error' => 'The interaction with AdmiralCloud contained conflicts. Please contact the webmasters.',
                 'exception' => [
                     'code' => $e->getCode(),
@@ -421,24 +432,20 @@ class BrowserController extends AbstractBackendController
     }
 
     /**
-     * @param ResponseInterface $response
      * @param array|null $data
      * @param int $statusCode
      * @return ResponseInterface
      */
-    protected function createJsonResponse(ResponseInterface $response, $data, int $statusCode): ResponseInterface
+    protected function createJsonResponse( $data, int $statusCode): ResponseInterface
     {
-        $response = $response
-            ->withStatus($statusCode)
-            ->withHeader('Content-Type', 'application/json; charset=utf-8');
+        
+        $jsonArray = [];
 
         if (!empty($data)) {
             $options = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES;
-            $response->getBody()->write(json_encode($data ?: null, $options));
-            $response->getBody()->rewind();
+            $jsonArray = $data;
         }
-
-        return $response;
+        return new JsonResponse($jsonArray,$statusCode);
     }
 
     /**
@@ -449,5 +456,28 @@ class BrowserController extends AbstractBackendController
     protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * Returns a new standalone view, shorthand function
+     *
+     * @param string $filename Which templateFile should be used.
+     * @return StandaloneView
+     */
+    protected function getFluidTemplateObject(string $filename): StandaloneView
+    {
+        $view = GeneralUtility::makeInstance(StandaloneView::class);
+        $view->setLayoutRootPaths($this->layoutRootPaths);
+        $view->setPartialRootPaths($this->partialRootPaths);
+        $view->setTemplateRootPaths($this->templateRootPaths);
+        #$this->view = GeneralUtility::makeInstance(StandaloneView::class);
+        #$this->view->setPartialRootPaths($this->partialRootPaths);
+        #$this->view->setTemplateRootPaths($this->templateRootPaths);
+        #$this->view->setLayoutRootPaths($this->layoutRootPaths);
+
+        $view->setTemplate($filename);
+
+        $view->getRequest()->setControllerExtensionName('Backend');
+        return $view;
     }
 }

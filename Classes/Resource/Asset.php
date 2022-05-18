@@ -11,6 +11,7 @@ use CPSIT\AdmiralCloudConnector\Exception\NotImplementedException;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -58,6 +59,16 @@ class Asset
      * @var File
      */
     protected $file;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    public function injectEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
     /**
      * Asset constructor.
@@ -409,6 +420,12 @@ class Asset
      */
     protected function getFileIndexRepository()
     {
-        return GeneralUtility::makeInstance(FileIndexRepository::class);
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.4.0', '<')){
+            return GeneralUtility::makeInstance(FileIndexRepository::class);
+        } else {
+            $this->eventDispatcher = $eventDispatcher ?? GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+            return GeneralUtility::makeInstance(FileIndexRepository::class, $this->eventDispatcher);
+        }
+        
     }
 }
