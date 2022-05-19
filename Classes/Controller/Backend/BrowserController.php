@@ -298,7 +298,6 @@ class BrowserController extends AbstractBackendController
             $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
             $mediaContainer = $media['mediaContainer'];
-            $mediaContainer['id'] = 1661721;
             // First of all check that the file contain a valid hash in other case an exception would be thrown
             $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
 
