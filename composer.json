@@ -1,0 +1,34 @@
+{
+  "name": "cpsit/admiral-cloud-connector",
+  "type": "typo3-cms-extension",
+  "description": "AdmiralCloud connector",
+  "keywords": [
+    "TYPO3"
+  ],
+  "homepage": "https://www.cps-it.de/",
+  "license": "GPL-3.0+",
+  "require": {
+    "php": ">= 7.2",
+    "guzzlehttp/guzzle": "*",
+    "guzzlehttp/oauth-subscriber": "*",
+    "typo3/cms-core": ">=9.5.0 || ^10.4 || ^11.5",
+    "typo3/cms-fluid": "^9.5 || ^10.4 || ^11.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "CPSIT\\AdmiralCloudConnector\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+    }
+  },
+  "replace": {
+    "cpsit/admiral-cloud-connector": "self.version"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "admiral_cloud_connector"
+    }
+  }
+}

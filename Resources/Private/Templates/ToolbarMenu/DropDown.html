@@ -1,0 +1,70 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+
+<h3 class="dropdown-headline">
+	<f:translate key="LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.title" />
+</h3>
+
+<ul class="dropdown-list" style="width:300px;">
+	<li class="divider"></li>
+	<li>
+		<script>
+			const acUpdateChangedMetadataInfoMessage = "{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.updateChangedMetadata.info')}";
+			const acUpdateChangedMetadataSuccessMessage = "{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.updateChangedMetadata.success')}";
+			const acUpdateChangedMetadataErrorMessage = "{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.updateChangedMetadata.error')}";
+
+			function acUpdateChangedMetadata() {
+				TYPO3.Notification.info('', acUpdateChangedMetadataInfoMessage, 5);
+
+				$.ajax({
+					type: 'POST',
+					url: TYPO3.settings.ajaxUrls['admiral_cloud_toolbar_update_changed_metadata'],
+					dataType: 'json',
+					success: function (data) {
+						TYPO3.Notification.success('', acUpdateChangedMetadataSuccessMessage, 5);
+					},
+					error: function (xhr, type) {
+						TYPO3.Notification.error('', acUpdateChangedMetadataErrorMessage, 5);
+
+						var data = xhr.responseJSON || {};
+						if (data.message) {
+							console.error(data.message);
+						}
+					}
+				});
+
+				return false;
+			}
+		</script>
+		<a href="#"
+		   class="toolbar-item-link"
+		   onclick="return acUpdateChangedMetadata();"
+		>
+			<f:translate key="LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.updateChangedMetadata.title" />
+		</a>
+	</li>
+	<li class="divider"></li>
+	<li>
+		<script>
+			const acSuccessMessage = "{f:translate(key:'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.closeConnection.success')}";
+			function closeConnectionAdmiralCloud() {
+				$('#acModalParent').remove();
+				TYPO3.Notification.success('', acSuccessMessage, 5);
+				return false;
+			}
+		</script>
+
+		<a href="#"
+		   class="toolbar-item-link"
+		   onclick="return closeConnectionAdmiralCloud();"
+		   title="(AC Group: {ACGroup})"
+		>
+			<f:translate key="LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:toolbarItem.closeConnection.title" />
+		</a>
+	</li>
+</ul>
+
+</html>
+
+

@@ -1,0 +1,11 @@
+[userFunc = CPSIT\AdmiralCloudConnector\Utility\PermissionUtility::userHasPermissionForAdmiralCloud()]
+TCEMAIN.linkHandler.admiralCloud {
+    handler = CPSIT\AdmiralCloudConnector\Backend\AdmiralCloudConnectorLinkHandler
+    label = LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:linkHandler.label
+    displayAfter = page
+    scanAfter = page
+    configuration {
+        customConfig = passed to the handler
+    }
+}
+[GLOBAL]
