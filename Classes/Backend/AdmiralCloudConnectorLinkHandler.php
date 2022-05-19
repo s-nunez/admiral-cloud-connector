@@ -22,7 +22,7 @@ use TYPO3\CMS\Recordlist\LinkHandler\LinkHandlerInterface;
  * Class AdmiralCloudLinkHandler
  * @package CPSIT\AdmiralCloudConnector\Backend
  */
-class AdmiralCloudConnectorLinkHandler extends AbstractLinkHandler implements LinkHandlerInterface
+class AdmiralCloudConnectorLinkHandler implements LinkHandlerInterface
 {
    protected $linkAttributes = ['target', 'title', 'class', 'params', 'rel'];
    protected $view;
@@ -92,7 +92,7 @@ class AdmiralCloudConnectorLinkHandler extends AbstractLinkHandler implements Li
       GeneralUtility::makeInstance(PageRenderer::class)
          ->loadRequireJsModule('TYPO3/CMS/AdmiralCloudConnector/Browser');
 
-      $languageService = $this->getLanguageService();
+      $languageService = $GLOBALS['LANG'];
 
       $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
       $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_rte_link');
