@@ -70,6 +70,10 @@ trait AdmiralCloudStorage
      */
     protected function getFileIndexRepository()
     {
-        return GeneralUtility::makeInstance(FileIndexRepository::class, $this->eventDispatcher);
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.4.0', '<')){
+            return GeneralUtility::makeInstance(FileIndexRepository::class);
+        } else {
+            return GeneralUtility::makeInstance(FileIndexRepository::class, GeneralUtility::makeInstance(EventDispatcherInterface::class));
+        }
     }
 }

@@ -156,11 +156,19 @@ class Asset
 
         $this->type = '';
 
-        /** @var File $file */
-        $file = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
-            ($storageUid ? $storageUid : $this->getAdmiralCloudStorage()->getUid()),
-            $this->identifier
-        );
+        
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.5.0', '<')){
+            /** @var File $file */
+            $file = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
+                ($storageUid ? $storageUid : $this->getAdmiralCloudStorage()->getUid()),
+                $this->identifier
+            );
+        } else {
+            $file = $this->getFileIndexRepository()->findOneByStorageAndIdentifier(
+                $this->getAdmiralCloudStorage(),
+                $this->identifier
+            );
+        }
 
         if ($file) {
             $mimeType = str_replace('admiralCloud/', '', $file['mime_type']);
@@ -376,10 +384,19 @@ class Asset
             return $this->file;
         }
 
-        $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
-            ($storageUid ?: $this->getAdmiralCloudStorage()->getUid()),
-            $this->identifier
-        );
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.5.0', '<')){
+            $fileData = $this->getFileIndexRepository()->findOneByStorageUidAndIdentifier(
+                ($storageUid ?: $this->getAdmiralCloudStorage()->getUid()),
+                $this->identifier
+            );
+        } else {
+            $fileData = $this->getFileIndexRepository()->findOneByStorageAndIdentifier(
+                $this->getAdmiralCloudStorage(),
+                $this->identifier
+            );
+        }
+
+        
 
         if ($fileData) {
             $this->file = GeneralUtility::makeInstance(File::class, $fileData, $this->getAdmiralCloudStorage($storageUid));

@@ -218,7 +218,6 @@ class BrowserController extends AbstractBackendController
             ]
         ]);
         $this->view->assign('iframeHost',rtrim(ConfigurationUtility::getIframeUrl(),'/'));
-        echo $this->view->render();die();
         $this->moduleTemplate->setContent($this->view->render());
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
@@ -477,7 +476,7 @@ class BrowserController extends AbstractBackendController
 
         $view->setTemplate($filename);
 
-        $view->getRequest()->setControllerExtensionName('Backend');
+        $view->getRequest()->setControllerExtensionName(ConfigurationUtility::EXTENSION);
         return $view;
     }
 }
