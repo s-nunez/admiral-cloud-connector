@@ -222,29 +222,6 @@ class BrowserController extends AbstractBackendController
         return new HtmlResponse($this->moduleTemplate->renderContent());
     }
 
-
-    public function apiAction()
-    {
-        $data = $this->admiralCloudService->addMediaByHash(
-            "017ddbd2-e8c6-4404-af2d-860fe6e8a261"        );
-        #header('Content-type: application/json');
-        DebuggerUtility::var_dump($data);
-        #var_dump($data);
-        die();
-        $data = $this->admiralCloudService->getEmbedLinks(952336);
-        #$data = $this->admiralCloudService->getMetaData([33512]);
-        #header('Content-type: application/json');
-        DebuggerUtility::var_dump($data);
-        $id = 952336;
-        $this->admiralCloudService->addMediaById([$id]);
-
-        #header('Content-type: application/json');
-        DebuggerUtility::var_dump($data);
-
-
-        die();
-    }
-
     /**
      * Makes the AJAX call to expand or collapse the foldertree.
      * Called by an AJAX Route, see AjaxRequestHandler

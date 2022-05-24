@@ -126,8 +126,14 @@ require([
             var modus = event.detail.modus;
 
             if (modus === 'rte-link') {
-                if (LinkBrowser.thisScriptUrl !== undefined) {
-                    Browser.getMediaPublicUrl(media);
+                if (typeof inline !== 'undefined') {
+                    if (LinkBrowser.thisScriptUrl !== undefined) {
+                        Browser.getMediaPublicUrl(media);
+                    }
+                } else {
+                    if (LinkBrowser.parameters !== undefined) {
+                        Browser.getMediaPublicUrl(media);
+                    }
                 }
             }
 
@@ -157,7 +163,7 @@ require([
             size: Modal.sizes.full
         });
         $(parent.document).on("click", '.acModalParent', function () {
-            Modal.dismiss();
+            //Modal.dismiss();
         });
 
     };
@@ -276,6 +282,7 @@ require([
      * @private
      */
     Browser.getMediaPublicUrl = function (media) {
+        console.info(TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url']);
         return $.ajax({
             type: 'POST',
             url: TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url'],
