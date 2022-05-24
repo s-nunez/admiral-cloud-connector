@@ -16,13 +16,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Recordlist\Controller\AbstractLinkBrowserController;
 use TYPO3\CMS\Recordlist\LinkHandler\AbstractLinkHandler;
-use TYPO3\CMS\Recordlist\LinkHandler\LinkHandlerInterface;
 
 /**
  * Class AdmiralCloudLinkHandler
  * @package CPSIT\AdmiralCloudConnector\Backend
  */
-class AdmiralCloudConnectorLinkHandler implements LinkHandlerInterface
+class AdmiralCloudConnectorLinkHandler implements \CPSIT\AdmiralCloudConnector\Backend\LinkHandlerInterface
 {
    protected $linkAttributes = ['target', 'title', 'class', 'params', 'rel'];
    protected $view;
@@ -31,11 +30,11 @@ class AdmiralCloudConnectorLinkHandler implements LinkHandlerInterface
    /**
    * Initialize the handler
    *
-   * @param AbstractLinkBrowserController $linkBrowser
+   * @param \CPSIT\AdmiralCloudConnector\Controller\Backend\AbstractLinkBrowserController $linkBrowser
    * @param string $identifier
    * @param array $configuration Page TSconfig
    */
-   public function initialize(AbstractLinkBrowserController $linkBrowser, $identifier, array $configuration)
+   public function initialize(\CPSIT\AdmiralCloudConnector\Controller\Backend\AbstractLinkBrowserController $linkBrowser, $identifier, array $configuration)
    {
       $this->linkBrowser = $linkBrowser;
       $this->iconFactory = GeneralUtility::makeInstance(IconFactory::class);

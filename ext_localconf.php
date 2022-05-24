@@ -1,13 +1,28 @@
 <?php
 
 use CPSIT\AdmiralCloudConnector\Backend\InlineControlContainer;
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 defined('TYPO3_MODE') || die('Access denied.');
 
-// Adding pageTS
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-    '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.ts">'
-);
+
+$versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
+
+    ExtensionManagementUtility::addPageTSConfig(
+        "@import 'EXT:myexample/Configuration/TSconfig/Page/Linkvalidator.tsconfig'"
+    );
+// Only include page.tsconfig if TYPO3 version is below 12 so that it is not imported twice.
+if ($versionInformation->getMajorVersion() < 10) {
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+        '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.tsconfig">'
+    );
+} else {
+    ExtensionManagementUtility::addPageTSConfig(
+        "@import 'EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.tsconfig'"
+    );
+}
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1433198160] = [
     'nodeName' => 'inline',
@@ -108,4 +123,19 @@ if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral
     $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
 }
 
+if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.5.0', '<')){
+} else {
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Recordlist\Controller\AbstractLinkBrowserController::class] = [
+        'className' => CPSIT\AdmiralCloudConnector\Controller\Backend\AbstractLinkBrowserController::class
+    ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Recordlist\LinkHandler\LinkHandlerInterface::class] = [
+        'className' => CPSIT\AdmiralCloudConnector\Backend\LinkHandlerInterface::class
+    ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\CPSIT\AdmiralCloudConnector\LinkHandler\PageLinkHandler::class] = [
+        'className' => CPSIT\AdmiralCloudConnector\LinkHandler\PageLinkHandler::class
+    ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\RteCKEditor\Controller\BrowseLinksController::class] = [
+        'className' => CPSIT\AdmiralCloudConnector\Controller\Backend\BrowseLinksController::class
+    ];
+}
 
