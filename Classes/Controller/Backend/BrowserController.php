@@ -2,6 +2,7 @@
 
 namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
 
+use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
@@ -146,7 +147,8 @@ class BrowserController extends AbstractBackendController
      */
     public function showAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
-        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        $credentials = new Credentials();
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?clientId=' . $credentials->getClientId() . '&cmsOrigin=');
     }
 
     /**

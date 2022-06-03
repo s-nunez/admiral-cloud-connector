@@ -37,6 +37,7 @@ putenv('ADMIRALCLOUD_VIDEO_CONFIG_ID=239');
 putenv('ADMIRALCLOUD_DOCUMENT_CONFIG_ID=240');
 putenv('ADMIRALCLOUD_AUDIO_CONFIG_ID=241');
 putenv('ADMIRALCLOUD_FLAG_CONFIG_ID=10');
+putenv('ADMIRALCLOUD_IFRAMEURL=https://t3intpoc.admiralcloud.com/');
 
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = [
@@ -57,5 +58,4 @@ Create Backenduser with e-mail, first-name, last-name and Security group the use
 The E-Mail must be the same the user is using in Admiralcloud. If the User is Admin, the Securitygroup is ignored but must be set to random number (e.g. 13)
 
 # known bugs
-* RTE Linkhandler for AdmiralCloud files doesnt work in V11
 * InstallSlot for Storage SQL isnt working, so the SQL need to run manually
