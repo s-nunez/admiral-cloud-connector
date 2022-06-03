@@ -96,7 +96,7 @@ class ConfigurationUtility
         if (!self::isProduction()) {
             return 'https://t3intpoc.admiralcloud.com/';
         }
-        return 'https://t3prod.admiralcloud.com/';
+        return getenv('ADMIRALCLOUD_IFRAMEURL') ?: 'https://t3prod.admiralcloud.com/';
     }
 
     /**

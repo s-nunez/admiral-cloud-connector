@@ -177,10 +177,11 @@ class AdmiralCloudApi
                 "callbackUrl" => base64_encode($settings['callbackUrl']),
                 "settings" => [
                     "typo3group" => self::getSecurityGroup()
-                ]
+                ],
+                "poc" => true
             ]
         ];
-        $signedValues = self::acSignatureSign($params);
+        $signedValues = self::acSignatureSign($params,'v5');
 
         $loginUrl = ConfigurationUtility::getAuthUrl() . "v4/login/app?poc=true";
 
