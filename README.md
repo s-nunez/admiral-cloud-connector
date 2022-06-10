@@ -12,6 +12,8 @@ INSERT INTO `sys_file_storage` (`pid`, `cruser_id`, `deleted`, `description`, `n
 (0, 0, 0, 'Automatically created during the installation of EXT:admiral_cloud_connector', 'AdmiralCloud', 'AdmiralCloud', '', 0, 1, 1, 0, 1, 1, '1:/_processed_/');
 ```
 
+and create the corresponding fileMount "AdmiralCloud" for the storage.
+
 Add following to AdditionalConfiguration.php
 ```
 if (is_file(__DIR__ . '/CustomConfiguration.php')) {
