@@ -12,6 +12,8 @@ INSERT INTO `sys_file_storage` (`pid`, `cruser_id`, `deleted`, `description`, `n
 (0, 0, 0, 'Automatically created during the installation of EXT:admiral_cloud_connector', 'AdmiralCloud', 'AdmiralCloud', '', 0, 1, 1, 0, 1, 1, '1:/_processed_/');
 ```
 
+and create the corresponding fileMount "AdmiralCloud" for the storage.
+
 Add following to AdditionalConfiguration.php
 ```
 if (is_file(__DIR__ . '/CustomConfiguration.php')) {
@@ -57,5 +59,23 @@ replace Credentials with yours
 Create Backenduser with e-mail, first-name, last-name and Security group the user has in AdmiralCloud.
 The E-Mail must be the same the user is using in Admiralcloud. If the User is Admin, the Securitygroup is ignored but must be set to random number (e.g. 13)
 
+# TYPO3 editor permissions
+
+To enable editors for AdmiralCloud functions, please add at least the following permission:
+
+## Mounts & Workspaces
+
+* Add "AdmiralCloud" to the list of accessible FileMounts
+* Fileoperation permissions / File: check permission for [addFileViaAdmiralCloud] 
+
+## optional
+
+Allow cropping tool for AdmiralCloud images: 
+check permission for (tx_admiralcloudconnector_crop) on tab „Access Lists“ / „Allowed excludefields” in “File Reference”.
+
+
 # known bugs
 * InstallSlot for Storage SQL isnt working, so the SQL need to run manually
+
+### TODO documentation
+* add information about authentification / security groups
