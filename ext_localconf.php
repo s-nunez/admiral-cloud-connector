@@ -134,6 +134,9 @@ if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\CPSIT\AdmiralCloudConnector\LinkHandler\PageLinkHandler::class] = [
         'className' => CPSIT\AdmiralCloudConnector\LinkHandler\PageLinkHandler::class
     ];
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Backend\Controller\LinkBrowserController::class] = [
+        'className' => \CPSIT\AdmiralCloudConnector\Controller\Backend\LinkBrowserController::class
+    ];
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\RteCKEditor\Controller\BrowseLinksController::class] = [
         'className' => CPSIT\AdmiralCloudConnector\Controller\Backend\BrowseLinksController::class
     ];
