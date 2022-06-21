@@ -158,7 +158,8 @@ class BrowserController extends AbstractBackendController
      */
     public function uploadAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
-        $iframeUrl = ConfigurationUtility::getIframeUrl() . 'upload/files?cmsOrigin=';
+        $credentials = new Credentials();
+        $iframeUrl = ConfigurationUtility::getIframeUrl() . 'upload/files?clientId=' . $credentials->getClientId() . '&cmsOrigin=';
         if (PermissionUtility::userHasPermissionForAdmiralCloud()) {
             if ($this->getBackendUser() && isset($this->getBackendUser()->getTSConfig()['admiralcloud.']['overrideUploadIframeUrl'])) {
                 $iframeUrl = $this->getBackendUser()->getTSConfig()['admiralcloud.']['overrideUploadIframeUrl'];
