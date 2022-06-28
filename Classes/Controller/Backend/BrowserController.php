@@ -175,12 +175,13 @@ class BrowserController extends AbstractBackendController
      */
     public function cropAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
+        $credentials = new Credentials();
         $this->view->assignMultiple([
             'mediaContainerId' => $request->getQueryParams()['mediaContainerId'],
             'embedLink' => $request->getQueryParams()['embedLink'],
             'modus' => 'crop'
         ]);        
-        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?clientId=' . $credentials->getClientId() . '&cmsOrigin=');
     }
 
     /**
@@ -190,8 +191,9 @@ class BrowserController extends AbstractBackendController
      */
     public function rteLinkAction(ServerRequestInterface $request = NULL): ResponseInterface
     {
+        $credentials = new Credentials();
         $this->view->assign('modus', 'rte-link');
-        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?cmsOrigin=');
+        return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?clientId=' . $credentials->getClientId() . '&cmsOrigin=');
     }
 
     /**
