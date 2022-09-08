@@ -137,7 +137,6 @@ class MetadataService
                 ->getUpdatedMetaData($lastUpdatedMetaDataDate, $offset, static::ITEMS_LIMIT);
 
             $offset += static::ITEMS_LIMIT;
-
             if ($result) {
                 $mappingSysFileUidAcId = $this->getMappingSysFileAdmiralCloud(array_keys($result));
 
@@ -150,7 +149,7 @@ class MetadataService
             }
         }
 
-        $cache->set($cacheKey, $now);
+        $cache->set($cacheKey, $now->format('r'));
 
         if ($iteration === static::MAXIMUM_ITERATION) {
             throw new RuntimeException(

@@ -112,8 +112,14 @@ class ImageViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Uri\ImageViewHelper
         $imageArgument = $arguments['image'];
         $treatIdAsReference = $arguments['treatIdAsReference'];
 
-        if (($src === null && $imageArgument === null) || ($src !== null && $imageArgument !== null)) {
-            throw new Exception('You must either specify a string src or a File object.', 1460976233);
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.4.0', '<')){
+            if (($src === null && $imageArgument === null) || ($src !== null && $imageArgument !== null)) {
+                throw new Exception('You must either specify a string src or a File object.', 1460976233);
+            }
+        } else {
+            if (($src === '' && $imageArgument === null) || ($src !== '' && $imageArgument !== null)) {
+                throw new Exception('You must either specify a string src or a File object.', 1460976233);
+            }
         }
 
         $imageService = self::getImageService();
