@@ -163,7 +163,7 @@ require([
             size: Modal.sizes.full
         });
         $(parent.document).on("click", '.acModalParent', function () {
-            //Modal.dismiss();
+            Modal.dismiss();
         });
 
     };
