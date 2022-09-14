@@ -166,6 +166,38 @@ class ConfigurationUtility
     }
 
     /**
+     * @return string
+     */
+    public static function getMetaTitleField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_title') ?: 'container_name';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaAlternativeField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_alternative') ?: 'meta_alttag';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaDescriptionField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_description') ?: 'container_description';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaCopyrightField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_copyright') ?: 'meta_iptc_copyrightNotice';
+    }
+
+    /**
      * Checks, if a given mime type is an AdmiralCloud svg mime type.
      *
      * @param string $mimeType The mime type to check for
