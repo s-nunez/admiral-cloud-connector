@@ -93,6 +93,14 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCl
     'additionalFields' => \CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataAdditionalFieldProvider::class
 ];
 
+// Add task to update metadata of AdmiralCloud files
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataTask::class] = [
+    'extension' => 'admiral_cloud_connector',
+    'title' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.update_admiral_cloud_metadata.name',
+    'description' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:task.update_admiral_cloud_metadata.description',
+    'additionalFields' => \CPSIT\AdmiralCloudConnector\Task\UpdateAdmiralCloudMetadataAdditionalFieldProvider::class
+];
+
 // Add task to export sys_file with metadata for AdmiralCloud
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\CPSIT\AdmiralCloudConnector\Task\ExportSysFileWithMetadataTask::class] = [
     'extension' => 'admiral_cloud_connector',
