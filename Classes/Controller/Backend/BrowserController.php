@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
 use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
+use CPSIT\AdmiralCloudConnector\Service\MetadataService;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
@@ -294,6 +295,8 @@ class BrowserController extends AbstractBackendController
 
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
+                $metadataService = GeneralUtility::makeInstance(MetadataService::class);
+                $metadataService->updateMetadataForAdmiralCloudFile($file->getUid(),$mediaContainer);
 
                 $this->storeInSessionCropInformation($file, $media);
 

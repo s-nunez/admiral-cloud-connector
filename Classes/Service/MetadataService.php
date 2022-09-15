@@ -174,15 +174,35 @@ class MetadataService
                 $this->conSysFileMetadata->update(
                     'sys_file_metadata',
                     [
-                        'alternative' => $metadata['meta_alttag'] ?? '',
-                        'title' => $metadata['container_name'] ?? '',
-                        'description' => $metadata['container_description'] ?? '',
-                        'copyright' => $metadata['meta_iptc_copyrightNotice'] ?? '',
+                        'alternative' => $metadata[ConfigurationUtility::getMetaAlternativeField()] ?? '',
+                        'title' => $metadata[ConfigurationUtility::getMetaTitleField()] ?? '',
+                        'description' => $metadata[ConfigurationUtility::getMetaDescriptionField()] ?? '',
+                        'copyright' => $metadata[ConfigurationUtility::getMetaCopyrightField()] ?? ''
                     ],
                     ['file' => $sysFileUid]
                 );
             }
         }
+    }
+
+    /**
+     * Update sys_file_metadata with AdmiralCloud information
+     *
+     * @param int $sysFileUid
+     * @param array $metadata
+     */
+    public function updateMetadataForAdmiralCloudFile(int $sysFileUid, array $metadata): void
+    {
+        $this->conSysFileMetadata->update(
+            'sys_file_metadata',
+            [
+                'alternative' => $metadata[ConfigurationUtility::getMetaAlternativeField()] ?? '',
+                'title' => $metadata[ConfigurationUtility::getMetaTitleField()] ?? '',
+                'description' => $metadata[ConfigurationUtility::getMetaDescriptionField()] ?? '',
+                'copyright' => $metadata[ConfigurationUtility::getMetaCopyrightField()] ?? ''
+            ],
+            ['file' => $sysFileUid]
+        );
     }
 
     /**
