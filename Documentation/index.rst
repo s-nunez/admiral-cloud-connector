@@ -45,3 +45,4 @@ Contents
    :maxdepth: 3
 
    Introduction/Index
+   Installation/Index
