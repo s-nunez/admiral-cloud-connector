@@ -29,6 +29,12 @@ class File extends \TYPO3\CMS\Core\Resource\File
     protected $txAdmiralCloudConnectorCrop = '';
 
     /**
+     *
+     * @var string
+     */
+    protected $contentFeGroup = '';
+
+    /**
      * @return string
      */
     public function getTxAdmiralCloudConnectorLinkhash(): string
