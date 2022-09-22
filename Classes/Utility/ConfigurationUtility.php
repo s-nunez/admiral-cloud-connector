@@ -160,6 +160,38 @@ class ConfigurationUtility
     /**
      * @return string
      */
+    public static function getAuthImagePlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_IMAGE_AUTH_CONFIG_ID');
+    }
+
+    /**
+     * @return string
+     */
+    public static function getAuthVideoPlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_VIDEO_AUTH_CONFIG_ID');
+    }
+
+    /**
+     * @return string
+     */
+    public static function getAuthDocumentPlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_DOCUMENT_AUTH_CONFIG_ID');
+    }
+
+    /**
+     * @return string
+     */
+    public static function getAuthAudioPlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_AUDIO_AUTH_CONFIG_ID');
+    }
+
+    /**
+     * @return string
+     */
     public static function getFlagPlayerConfigId(): string
     {
         return getenv('ADMIRALCLOUD_FLAG_CONFIG_ID') ?: 0;
