@@ -175,4 +175,28 @@ class File extends \TYPO3\CMS\Core\Resource\File
     {
         return GeneralUtility::makeInstance(Index\FileIndexRepository::class);
     }
+
+    /**
+     * Get the value of contentFeGroup
+     *
+     * @return  string
+     */ 
+    public function getContentFeGroup()
+    {
+        return $this->contentFeGroup;
+    }
+
+    /**
+     * Set the value of contentFeGroup
+     *
+     * @param  string  $contentFeGroup
+     *
+     * @return  self
+     */ 
+    public function setContentFeGroup(string $contentFeGroup)
+    {
+        $this->contentFeGroup = $contentFeGroup;
+
+        return $this;
+    }
 }

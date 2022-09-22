@@ -490,6 +490,8 @@ class AdmiralCloudService implements SingletonInterface
         $fe_group = PermissionUtility::getPageFeGroup();
         if($file->getProperty('tablenames') == 'tt_content' && $file->getProperty('uid_foreign') && !$fe_group){
             $fe_group = PermissionUtility::getContentFeGroupFromReference($file->getProperty('uid_foreign'));
+        } else if($file->getContentFeGroup()){
+            $fe_group = $file->getContentFeGroup();
         }
 
         $token = '';
@@ -684,12 +686,18 @@ class AdmiralCloudService implements SingletonInterface
     public function getDirectPublicUrlForFile(FileInterface $file): string
     {
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if($enableAcReadableLinks){
+        if($enableAcReadableLinks && !$file->getContentFeGroup){
+            
             return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
                 $file->getIdentifier() . '/' .
                 $file->getName();
         } else {
+            if($file->getContentFeGroup){
+                if($token = $this->getSecuredToken($file,'video','player')){
+                    return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . '&token=' . $token['token'];
+                }
+            }
             return ConfigurationUtility::getDirectFileUrl()
                 . $file->getTxAdmiralCloudConnectorLinkhash();
         }
@@ -704,6 +712,11 @@ class AdmiralCloudService implements SingletonInterface
      */
     protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
     {
+        if($file->getContentFeGroup){
+            if($token = $this->getSecuredToken($file,'video','player')){
+                return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . '&token=' . $token['token'];
+            }
+        }
         return ConfigurationUtility::getDirectFileUrl()
             . $file->getTxAdmiralCloudConnectorLinkhash()
             . ($download ? '?download=true' : '');
