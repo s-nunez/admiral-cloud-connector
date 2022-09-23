@@ -60,7 +60,7 @@ Afterwards run the following SQL statement:
 
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :titlesonly:
 
    LocalConfiguration

@@ -21,11 +21,3 @@ Now enter the ID of the AC Security Group into the field "AC Security Group Id" 
 .. image:: ../Images/ac-assign.png
 
 
-
-.. toctree::
-   :maxdepth: 5
-   :titlesonly:
-
-   LocalConfiguration
-   FileStorage
-   UserConfiguration

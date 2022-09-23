@@ -23,11 +23,3 @@ When Filemound is properly setup, you have to assign the Filemount in the "Mount
 
 .. image:: ../Images/assign-fm.png
 
-
-.. toctree::
-   :maxdepth: 5
-   :titlesonly:
-
-   LocalConfiguration
-   AcSecGroup
-   UserConfiguration

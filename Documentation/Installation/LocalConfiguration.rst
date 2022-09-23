@@ -55,10 +55,3 @@ Then create a file typo3conf/CustomConfiguration.php with following content:
 
 You have ro replace the credentials for ADMIRALCLOUD_ACCESS_SECRET, ADMIRALCLOUD_ACCESS_KEY and ADMIRALCLOUD_CLIENT_ID with your own. These will be send to you by AdmiralCloud via Mails and SMS.
 
-.. toctree::
-   :maxdepth: 5
-   :titlesonly:
-
-   AcSecGroup
-   FileStorage
-   UserConfiguration
