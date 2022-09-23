@@ -1,6 +1,6 @@
 .. include:: /Includes.txt
 
-.. _FileStorage
+.. _FileStorage:
 
 ============
 FileMount
@@ -30,5 +30,4 @@ When Filemound is properly setup, you have to assign the Filemount in the "Mount
 
    LocalConfiguration
    AcSecGroup
-   FileStorage
    UserConfiguration

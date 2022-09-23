@@ -1,6 +1,6 @@
 .. include:: /Includes.txt
 
-.. _AcSecGroup
+.. _AcSecGroup:
 
 ===============================
 Admiralcloud Security Groups
@@ -14,8 +14,18 @@ Go to page id 0 which is the same backend page where usergroups are created.
 
 Create a new record and choose "AC Security Group"
 
-.. image:: ../Images/ac-new.png
+.. image:: ../Images/new-ac.png
 
 Now enter the ID of the AC Security Group into the field "AC Security Group Id" and choose the matching usergroup.
 
 .. image:: ../Images/ac-assign.png
+
+
+
+.. toctree::
+   :maxdepth: 5
+   :titlesonly:
+
+   LocalConfiguration
+   FileStorage
+   UserConfiguration

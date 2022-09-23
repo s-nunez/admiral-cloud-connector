@@ -59,7 +59,6 @@ You have ro replace the credentials for ADMIRALCLOUD_ACCESS_SECRET, ADMIRALCLOUD
    :maxdepth: 5
    :titlesonly:
 
-   LocalConfiguration
    AcSecGroup
    FileStorage
    UserConfiguration

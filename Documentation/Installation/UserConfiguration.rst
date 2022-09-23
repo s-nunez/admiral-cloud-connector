@@ -39,5 +39,4 @@ Allow cropping tool for AdmiralCloud images: check the usergroup permission for 
    LocalConfiguration
    AcSecGroup
    FileStorage
-   UserConfiguration
 
