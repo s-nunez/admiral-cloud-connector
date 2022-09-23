@@ -1,46 +1,69 @@
-.. include:: /Includes.rst.txt
+.. include:: /Includes.txt
 
 .. _quickStart:
 
-===========
-Quick start
-===========
+==============
+Installation
+==============
 
-.. rst-class:: bignums-tip
+#. Install the extension:
 
-#. Install this extension:
+Install the extension with composer:
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-      composer require cpsit/admiral-cloud-connector
+        composer require cpsit/admiral-cloud-connector
 
-   .. rst-class:: horizbuttons-attention-m
+Afterwards run the following SQL statement:
 
-   -  :ref:`Quick installation <quickInstallation>`
+    .. code-block:: bash
 
+        INSERT INTO `sys_file_storage` (`pid`, `cruser_id`, `deleted`, `description`, `name`, `driver`, `configuration`, `is_default`, `is_browsable`, `is_public`, `is_writable`, `is_online`, `auto_extract_metadata`, `processingfolder`) VALUES
+        (0, 0, 0, 'Automatically created during the installation of EXT:admiral_cloud_connector', 'AdmiralCloud', 'AdmiralCloud', '', 0, 1, 1, 0, 1, 1, '1:/_processed_/');
 
-#. Create initial content:
+    Alternatively you can use the database analyzer in the Maintanance backend module.
 
-   -  Add the required configuration to LocalConfiguration.php
+#. LocalConfiguration.php:
 
-   .. rst-class:: horizbuttons-attention-m
+   - Once you have setup a contract with AdmiralCloud you will receive your login credential by mail and SMS
+   - Add the required configuration to LocalConfiguration.php
 
-   -  :ref:`LocalConfiguration.php Setup <LocalConfiguration>`
+    :ref:`Learn more about how configure the <LocalConfiguration>`
 
-#. Configuration:
+#. Intitial setup of user groups
+
+    - send a list of your user groups to AdmiralCloud
+    - setup AC SecurityGroups in the backend
+
+    :ref:`Learn more about how to setup the <AcSecGroup>`
+
+#. Setting up a file mount:
+
+    - You have to create fileMount "AdmiralCloud" for the storage.
+
+    :ref:`Learn more about how to setup the <FileStorage>`
+
+#. User configuration:
+
+   - No configuration needed for editors
+   - Administrators need the Security Group for confirmation
+
+   :ref:`Learn more about the user management <UserConfiguration>`
+
+#. LinkHandler Configuration:
 
    -  A LinkHandler configuration is included automatically
    -  no manual configuration steps
 
-   .. rst-class:: horizbuttons-attention-m
+   You can find the LinkHandler Configuration here: EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.ts
 
-   -  :ref:`Learn how to customize the LinkHandler <quickConfiguration>`
+
 
 .. toctree::
    :maxdepth: 5
    :titlesonly:
-   :hidden:
 
-   Installation
-   Configuration
    LocalConfiguration
+   AcSecGroup
+   FileStorage
+   UserConfiguration
