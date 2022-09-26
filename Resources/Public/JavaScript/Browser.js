@@ -1,12 +1,43 @@
-/**
- * Module: TYPO3/CMS/AdmiralCloudConnector/Browser
- */
-define(['jquery',
+define("optional", [], {
+    load : function (moduleName, parentRequire, onload, config){
+
+        var onLoadSuccess = function(moduleInstance){
+            // Module successfully loaded, call the onload callback so that
+            // requirejs can work its internal magic.
+            onload(moduleInstance);
+        }
+
+        var onLoadFailure = function(err){
+            // optional module failed to load.
+            var failedId = err.requireModules && err.requireModules[0];
+            console.warn("Could not load optional module: " + failedId);
+
+            // Undefine the module to cleanup internal stuff in requireJS
+            requirejs.undef(failedId);
+
+            // Now define the module instance as a simple empty object
+            // (NOTE: you can return any other value you want here)
+            define(failedId, [], function(){return {};});
+
+            // Now require the module make sure that requireJS thinks
+            // that is it loaded. Since we've just defined it, requirejs
+            // will not attempt to download any more script files and
+            // will just call the onLoadSuccess handler immediately
+            parentRequire([failedId], onLoadSuccess);
+        }
+
+        parentRequire([moduleName], onLoadSuccess, onLoadFailure);
+    }
+});
+
+require([
+    'jquery',
     'nprogress',
     'TYPO3/CMS/Backend/Modal',
     'TYPO3/CMS/Backend/Notification',
-    'TYPO3/CMS/Recordlist/LinkBrowser'
-], function ($, NProgress, Modal, Notification, LinkBrowser) {
+    'TYPO3/CMS/Recordlist/LinkBrowser',
+    'optional!TYPO3/CMS/Backend/Utility/MessageUtility'
+], function ($, NProgress, Modal, Notification, LinkBrowser,MessageUtility) {
     'use strict';
 
     /**
@@ -95,8 +126,14 @@ define(['jquery',
             var modus = event.detail.modus;
 
             if (modus === 'rte-link') {
-                if (LinkBrowser.thisScriptUrl !== undefined) {
-                    Browser.getMediaPublicUrl(media);
+                if (typeof inline !== 'undefined') {
+                    if (LinkBrowser.thisScriptUrl !== undefined) {
+                        Browser.getMediaPublicUrl(media);
+                    }
+                } else {
+                    if (LinkBrowser.parameters !== undefined) {
+                        Browser.getMediaPublicUrl(media);
+                    }
                 }
             }
 
@@ -154,12 +191,23 @@ define(['jquery',
             },
             success: function (data) {
                 if (typeof data.files === 'object' && data.files.length) {
-                    inline.importElementMultiple(
-                        target,
+                    if (typeof inline !== 'undefined') {
+                        inline.importElementMultiple(
+                            target,
                         'sys_file',
                         data.files,
                         'file'
-                    );
+                        );
+                    } else {
+                        data.files.forEach((fileId) => {
+                            MessageUtility.MessageUtility.send({
+                                objectGroup: target,
+                                table: 'sys_file',
+                                uid: fileId,
+                                actionName: 'typo3:foreignRelation:insert'
+                            });
+                        });
+                    }
                 }
 
                 if (data.message) {
@@ -234,6 +282,7 @@ define(['jquery',
      * @private
      */
     Browser.getMediaPublicUrl = function (media) {
+        console.info(TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url']);
         return $.ajax({
             type: 'POST',
             url: TYPO3.settings.ajaxUrls['admiral_cloud_browser_get_media_public_url'],

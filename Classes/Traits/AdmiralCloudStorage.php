@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralCloudConnector\Traits;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver;
 use CPSIT\AdmiralCloudConnector\Resource\Index\FileIndexRepository;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Resource\Index\Indexer;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
@@ -29,7 +30,15 @@ trait AdmiralCloudStorage
     protected function getAdmiralCloudStorage(int $storageUid = 0): ResourceStorage
     {
         if($storageUid > 0){
-            $this->admiralCloudStorage = ResourceFactory::getInstance()->getStorageObject($storageUid);
+            /** @var StorageRepository $storageRepository */
+            $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
+
+            $allStorages = $storageRepository->findAll();
+            foreach ($allStorages as $storage) {
+                if ($storage->getUid() == $storageUid) {
+                    $this->admiralCloudStorage = $storage;
+                }
+            }
         }
         if ($this->admiralCloudStorage === null) {
             /** @var StorageRepository $storageRepository */
@@ -61,6 +70,10 @@ trait AdmiralCloudStorage
      */
     protected function getFileIndexRepository()
     {
-        return FileIndexRepository::getInstance();
+        if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '10.4.0', '<')){
+            return GeneralUtility::makeInstance(FileIndexRepository::class);
+        } else {
+            return GeneralUtility::makeInstance(FileIndexRepository::class, GeneralUtility::makeInstance(EventDispatcherInterface::class));
+        }
     }
 }

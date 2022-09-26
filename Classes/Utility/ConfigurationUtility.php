@@ -96,7 +96,7 @@ class ConfigurationUtility
         if (!self::isProduction()) {
             return 'https://t3intpoc.admiralcloud.com/';
         }
-        return 'https://t3prod.admiralcloud.com/';
+        return getenv('ADMIRALCLOUD_IFRAMEURL') ?: 'https://t3prod.admiralcloud.com/';
     }
 
     /**
@@ -163,6 +163,38 @@ class ConfigurationUtility
     public static function getFlagPlayerConfigId(): string
     {
         return getenv('ADMIRALCLOUD_FLAG_CONFIG_ID') ?: 0;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaTitleField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_title') ?: 'container_name';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaAlternativeField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_alternative') ?: 'meta_alttag';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaDescriptionField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_description') ?: 'container_description';
+    }
+
+    /**
+     * @return string
+     */
+    public static function getMetaCopyrightField(): string
+    {
+        return getenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_copyright') ?: 'meta_iptc_copyrightNotice';
     }
 
     /**
