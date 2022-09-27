@@ -6,7 +6,7 @@ $EM_CONF[$_EXTKEY] = array (
     'category' => 'plugin',
     'author' => 'CPS-IT GmbH',
     'author_email' => '',
-    'author_company' => 'CPS-IT GmbH',
+    'author_company' => 'coding. powerful. systems. CPS GmbH',
     'state' => 'stable',
     'uploadfolder' => '1',
     'createDirs' => '',
@@ -16,7 +16,7 @@ $EM_CONF[$_EXTKEY] = array (
         array (
             'depends' =>
                 array (
-                    'typo3' => '9.5.0-9.5.99',
+                    'typo3' => '9.5.0-11.5.99',
                 ),
             'conflicts' =>
                 array (
