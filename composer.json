@@ -23,9 +23,6 @@
     "psr-4": {
     }
   },
-  "replace": {
-    "cpsit/admiral-cloud-connector": "self.version"
-  },
   "extra": {
     "typo3/cms": {
       "extension-key": "admiral_cloud_connector"
