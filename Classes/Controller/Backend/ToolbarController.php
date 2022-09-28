@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralCloudConnector\Controller\Backend;
 use CPSIT\AdmiralCloudConnector\Service\MetadataService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
 
@@ -23,27 +24,22 @@ class ToolbarController extends AbstractBackendController
      * @return ResponseInterface
      */
     public function updateChangedMetadataAction(
-        ServerRequestInterface $request = null,
-        ResponseInterface $response = null
+        ServerRequestInterface $request = null
     ): ResponseInterface {
         $metadataService = $this->getMetadataService();
-
+        $jsonArray = [];
+        $statusCode = 200;
         try {
             $metadataService->updateLastChangedMetadatas();
 
-            $response
-                ->withHeader('Content-Type', 'application/json; charset=utf-8')
-                ->getBody()->write(json_encode(['message' => 'ok']));
+            $jsonArray = ['message' => 'ok'];
         } catch (\Throwable $exception) {
-            $response = $response->withStatus(500);
-            $response
-                ->withHeader('Content-Type', 'application/json; charset=utf-8')
-                ->getBody()->write(json_encode(['message' => $exception->getMessage()]));
+            $jsonArray = ['message' => $exception->getMessage()];
+            $statusCode = 500;
         }
 
-        $response->getBody()->rewind();
 
-        return $response;
+        return new JsonResponse($jsonArray,$statusCode);
     }
 
     /**

@@ -20,24 +20,6 @@ if (TYPO3_MODE === 'BE') {
         ]
     );
 
-
-    /**
-     * Register Backend Modules
-     */
-    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'CPSIT.' . $_EXTKEY,
-        'AdmiralCloud',
-        'm1',
-        '',
-        [
-            'Backend\Browser' => 'api',
-        ],
-        [
-            'access' => 'user,group',
-            'icon' => $pathEventIcon,
-            'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_m1.xlf',
-        ]
-    );
     $GLOBALS['TYPO3_USER_SETTINGS']['columns']['first_name'] = [
         'label' => 'LLL:EXT:admiral_cloud_connector/Resources/Private/Language/locallang_be.xlf:usersettings.first_name',
         'type' => 'text',
