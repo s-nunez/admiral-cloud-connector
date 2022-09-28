@@ -1,3 +1,11 @@
+2022-09-28         [RELEASE] Release of admiral_cloud_connector 1.0.19 (smevius)
+2022-09-28 eaafc59 [TEASK] Release 1.0.21 (smevius)
+2022-09-28 b83e82a [TASK] correct infos (smevius)
+2022-09-27 3b9cc29 [TASK] rais version (smevius)
+2022-09-27 92aae2d [TASK] Add Docu settings.cfg (smevius)
+2022-09-27 8a5f807 [TASK] update ext_emconf, fix composer.json (smevius)
+2022-09-27 bd9c5ec [TASK] add correct version string change author company (smevius)
+
 2022-09-28         [RELEASE] Release of admiral_cloud_connector 1.0.18 (smevius)
 2022-09-23 36accc8 [TASK] removing toctree from subpages (Timo Gockel)
 2022-09-23 b1bb8ec [TASK] minor bug fixes in documentation (Timo Gockel)
