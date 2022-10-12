@@ -496,7 +496,7 @@ class AdmiralCloudService implements SingletonInterface
 
         $token = '';
         if($fe_group){
-            $token = $this->getSecuredToken($file,'image','image');
+            $token = $this->getSecuredToken($file,'image','player');
         }
 
         // Get image public url
@@ -686,15 +686,15 @@ class AdmiralCloudService implements SingletonInterface
     public function getDirectPublicUrlForFile(FileInterface $file): string
     {
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if($enableAcReadableLinks && !$file->getContentFeGroup){
+        if($enableAcReadableLinks && !($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup())){
             
             return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
                 $file->getIdentifier() . '/' .
                 $file->getName();
         } else {
-            if($file->getContentFeGroup){
-                if($token = $this->getSecuredToken($file,'video','player')){
+            if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+                if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
                     return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . '&token=' . $token['token'];
                 }
             }
@@ -712,8 +712,8 @@ class AdmiralCloudService implements SingletonInterface
      */
     protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
     {
-        if($file->getContentFeGroup){
-            if($token = $this->getSecuredToken($file,'video','player')){
+        if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+            if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
                 return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . '&token=' . $token['token'];
             }
         }
@@ -732,7 +732,7 @@ class AdmiralCloudService implements SingletonInterface
     protected function getPlayerPublicUrlForFile(FileInterface $file,string $fe_group): string
     {
         if($fe_group){
-            if($token = $this->getSecuredToken($file,'video','player')){
+            if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
                 return ConfigurationUtility::getPlayerFileUrl() . $token['hash'] . '&token=' . $token['token'];
             }
         }

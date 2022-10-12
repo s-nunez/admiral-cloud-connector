@@ -37,8 +37,8 @@ class FileReference extends \TYPO3\CMS\Core\Resource\FileReference
             $fe_group = PermissionUtility::getPageFeGroup();
             if($this->getProperty('tablenames') == 'tt_content' && $this->getProperty('uid_foreign') && !$fe_group){
                 $fe_group = PermissionUtility::getContentFeGroupFromReference($this->getProperty('uid_foreign'));
-                $GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] = $fe_group;
             }
+            $GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] = $fe_group;
         }
         $publicUrl = $file->getPublicUrl($relativeToCurrentScript);
         unset($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()]);
