@@ -81,6 +81,17 @@ class AdmiralCloudService implements SingletonInterface
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
     }
 
+    public function getMediaType(string $type){
+        switch($type){
+            case 1: return 'document';break;
+            case 2: return 'image';break;
+            case 3: return 'audio';break;
+            case 4: return 'video';break;
+            case 5: return 'document';break;
+            default: return $type;
+        }
+    }
+
     /**
      * @param array $settings
      * @return string
@@ -694,7 +705,7 @@ class AdmiralCloudService implements SingletonInterface
                 $file->getName();
         } else {
             if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
-                if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
+                if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
                     return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . '&token=' . $token['token'];
                 }
             }
@@ -713,7 +724,7 @@ class AdmiralCloudService implements SingletonInterface
     protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
     {
         if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
-            if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
+            if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
                 return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . '&token=' . $token['token'];
             }
         }
@@ -732,7 +743,7 @@ class AdmiralCloudService implements SingletonInterface
     protected function getPlayerPublicUrlForFile(FileInterface $file,string $fe_group): string
     {
         if($fe_group){
-            if($token = $this->getSecuredToken($file,$file->getProperty('type'),'player')){
+            if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
                 return ConfigurationUtility::getPlayerFileUrl() . $token['hash'] . '&token=' . $token['token'];
             }
         }
