@@ -97,7 +97,7 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
                 'foreign_table' => 'be_groups',
-                'foreign_table_where' => 'AND 1',
+                'foreign_table_where' => 'AND true',
                 'size' => 10,
                 'autoSizeMax' => 30,
                 'maxitems' => 9999,
