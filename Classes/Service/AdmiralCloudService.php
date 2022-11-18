@@ -519,11 +519,7 @@ class AdmiralCloudService implements SingletonInterface
         }
 
         // Get image public url
-        if($token){
-            $link = ConfigurationUtility::getApiUrl() . 'v5/deliverFile/'
-                    . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
-                    . '?' . $auth ;
-        } else if (!$isSvgMimeType && $file->getTxAdmiralCloudConnectorCrop() && !$token) {
+        if (!$isSvgMimeType && $file->getTxAdmiralCloudConnectorCrop()) {
             // With crop information
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
@@ -533,12 +529,14 @@ class AdmiralCloudService implements SingletonInterface
                 . $dimensions->height
                 . '/'
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
-                . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'');
+                . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'')
+                .  ($token ? '&' . $auth:'') ;
         } else {
-            if ($isSvgMimeType || $token) {
-                $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
+            if ($isSvgMimeType) {
+                $link = ConfigurationUtility::getImageUrl() . ($token ? 'v5/deliverFile/':'v3/deliverEmbed/')
                     . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
-                    . '/image/' ;
+                    . ($token ?'/': '/image/')
+                    .  ($token ? '?' . $auth:'') ;
             } else {
                 // Without crop information
                 $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
@@ -547,7 +545,8 @@ class AdmiralCloudService implements SingletonInterface
                     . $dimensions->width
                     . '/'
                     . $dimensions->height
-                    . '/1?poc=true' ;
+                    . '/1?poc=true'
+                    .  ($token ? '&' . $auth:'') ;
             }
         }
 
