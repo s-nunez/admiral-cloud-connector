@@ -465,9 +465,10 @@ class AdmiralCloudService implements SingletonInterface
         // Get image public url
         if (!$isSvgMimeType && $file->getTxAdmiralCloudConnectorCrop()) {
             // With crop information
+            $cropData = json_decode($file->getTxAdmiralCloudConnectorCrop()) or $cropData = json_decode('{"usePNG": "false"}');
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
-                . '/image/cropperjsfocus/'
+                . '/image'.($cropData->usePNG == "true" ? '_png' : '').'/cropperjsfocus/'
                 . $dimensions->width
                 . '/'
                 . $dimensions->height
@@ -520,10 +521,11 @@ class AdmiralCloudService implements SingletonInterface
 
     /**
      * @param array $mediaContainer
+     * @param bool $usePNG
      * @return string
      * @throws InvalidFileConfigurationException
      */
-    public function getLinkHashFromMediaContainer(array $mediaContainer): string
+    public function getLinkHashFromMediaContainer(array $mediaContainer, $usePNG): string
     {
         $links = $mediaContainer['links'] ?? [];
 
@@ -535,7 +537,10 @@ class AdmiralCloudService implements SingletonInterface
         // Player configuration id for given media container type
         switch ($mediaContainer['type']) {
             case 'image':
-                $playerConfigurationId = ConfigurationUtility::getImagePlayerConfigId();
+                if ($usePNG)
+                    $playerConfigurationId = ConfigurationUtility::getImagePNGPlayerConfigId();
+                else
+                    $playerConfigurationId = ConfigurationUtility::getImagePlayerConfigId();
                 break;
             case 'video':
                 $playerConfigurationId = ConfigurationUtility::getVideoPlayerConfigId();
