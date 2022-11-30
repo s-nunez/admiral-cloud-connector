@@ -15,6 +15,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Resource\ResourceStorageInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class Asset
@@ -203,7 +204,10 @@ class Asset
     {
         $assetType = $this->getAssetType($storageUid);
         $file = $this->getFile($storageUid);
-
+        if(isset($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()])){
+            $file->setContentFeGroup($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()]);
+        }
+            
         switch ($assetType) {
             case self::TYPE_IMAGE:
                 $publicUrl = $this->getAdmiralCloudService()->getImagePublicUrl($file);

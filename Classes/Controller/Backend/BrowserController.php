@@ -289,7 +289,7 @@ class BrowserController extends AbstractBackendController
                 $file->setTxAdmiralCloudConnectorLinkhash($linkHash);
                 $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
                 #$this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
-                #DebuggerUtility::var_dump($storage);die();
+                
                 $this->getFileIndexRepository($storage)->add($file);
                 #$indexer->updateIndexEntry($file);
 
