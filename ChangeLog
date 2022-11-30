@@ -1,3 +1,13 @@
+2022-11-30         [RELEASE] Release of admiral_cloud_connector 1.0.22 (smevius)
+2022-11-18 31cbddb [TASK][33653] reenable smartcropper with token (smevius)
+2022-11-17 99f3659 [TASK] make tca postgrsql compatible (smevius)
+2022-11-10 3f27310 [TASK][33653] use correct url for secured image and document (smevius)
+2022-10-27 49565dc [TASK][33653] add mediatypemap (smevius)
+2022-10-12 8bd951e [TASK][33653] adjust fe_group check (smevius)
+2022-09-22 6c60c13 [TASK][33653] add secured files audio and document (smevius)
+2022-09-22 578f0a1 [TASK][33653] add secured files video and image (smevius)
+2022-09-21 11eeb50 [TASK][33653] add fe_group check, add secured link for video and image (smevius)
+
 2022-09-28         [RELEASE] Release of admiral_cloud_connector 1.0.19 (smevius)
 2022-09-28 eaafc59 [TEASK] Release 1.0.21 (smevius)
 2022-09-28 b83e82a [TASK] correct infos (smevius)
