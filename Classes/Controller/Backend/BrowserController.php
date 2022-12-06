@@ -293,8 +293,8 @@ class BrowserController extends AbstractBackendController
                         'mime_type' => 'admiralCloud' . '/' . $mediaContainer['type'] . '/' . $mediaContainer['fileExtension'],
                         'extension' => $mediaContainer['fileExtension']
                     ];
+                    $file->updateProperties($properties);
                 }
-                $file->updateProperties($properties);
                 $this->getFileIndexRepository($storage)->add($file);
                 #$indexer->updateIndexEntry($file);
                 

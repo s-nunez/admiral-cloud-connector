@@ -208,7 +208,7 @@ class File extends \TYPO3\CMS\Core\Resource\File
     public function getExtension()
     {
         $extension = parent::getExtension();
-        if(!$extension){
+        if(!$extension and $this->getProperty('type') == 2){
             return 'jpg';
         }
         return $extension;
