@@ -199,4 +199,18 @@ class File extends \TYPO3\CMS\Core\Resource\File
 
         return $this;
     }
+
+    /**
+     * Get the extension of this file in a lower-case variant
+     *
+     * @return string The file extension
+     */
+    public function getExtension()
+    {
+        $extension = parent::getExtension();
+        if(!$extension){
+            return 'jpg';
+        }
+        return $extension;
+    }
 }
