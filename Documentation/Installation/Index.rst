@@ -21,7 +21,7 @@ Afterwards run the following SQL statement:
         INSERT INTO `sys_file_storage` (`pid`, `cruser_id`, `deleted`, `description`, `name`, `driver`, `configuration`, `is_default`, `is_browsable`, `is_public`, `is_writable`, `is_online`, `auto_extract_metadata`, `processingfolder`) VALUES
         (0, 0, 0, 'Automatically created during the installation of EXT:admiral_cloud_connector', 'AdmiralCloud', 'AdmiralCloud', '', 0, 1, 1, 0, 1, 1, '1:/_processed_/');
 
-    Alternatively you can use the database analyzer in the Maintanance backend module.
+    Alternatively you can create the storage manually via list plugin on the root page. Choose *AdmiralCloud* from the Driver's list and set "Folder for manipulated and temporary images etc." to *1:/_processed_/*
 
 #. LocalConfiguration.php:
 

@@ -19,7 +19,7 @@ If the Filestorage is setup properly you can use, you can create a Filemount.
 
 .. image:: ../Images/filestorage.png
 
-When Filemound is properly setup, you have to assign the Filemount in the "Mounts & Workspaces" tab in the Usergroup or User properties:
+When Filemount is setup properly, you have to assign the Filemount in the "Mounts & Workspaces" tab in the Usergroup or User properties:
 
 .. image:: ../Images/assign-fm.png
 
