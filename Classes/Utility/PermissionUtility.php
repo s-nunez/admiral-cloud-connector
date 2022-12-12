@@ -5,6 +5,7 @@ namespace CPSIT\AdmiralCloudConnector\Utility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class PermissionUtility
