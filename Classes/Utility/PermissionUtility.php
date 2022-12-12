@@ -5,7 +5,6 @@ namespace CPSIT\AdmiralCloudConnector\Utility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class PermissionUtility
@@ -38,6 +37,9 @@ class PermissionUtility
     public static function getPageFeGroup(){
         $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
         $page = $pageRepository->getPage($GLOBALS['TSFE']->id);
+        if($page['fe_group'] == '-1'){
+            return '';
+        } 
         return $page['fe_group'];
     }
 
@@ -50,6 +52,9 @@ class PermissionUtility
     public static function getContentFeGroupFromReference(int $uid){
         $content = self::getContent($uid);
         if($content){
+            if($content['fe_group'] == '-1'){
+                return '';
+            } 
             return $content['fe_group'];
         }
         return '';
