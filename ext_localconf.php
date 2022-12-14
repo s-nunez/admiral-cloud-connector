@@ -8,7 +8,7 @@ $versionInformation = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
 );
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-    "@import 'EXT:admiral_cloud_connector/Configuration/TSconfig/Page/Linkvalidator.tsconfig'"
+    "@import 'EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.tsconfig'"
 );
 // Only include page.tsconfig if TYPO3 version is below 12 so that it is not imported twice.
 if ($versionInformation->getMajorVersion() < 10) {
