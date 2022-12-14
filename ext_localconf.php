@@ -1,25 +1,22 @@
 <?php
 
-use CPSIT\AdmiralCloudConnector\Backend\InlineControlContainer;
-use TYPO3\CMS\Core\Information\Typo3Version;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-
 defined('TYPO3_MODE') || die('Access denied.');
 
 
-$versionInformation = GeneralUtility::makeInstance(Typo3Version::class);
+$versionInformation = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+    \TYPO3\CMS\Core\Information\Typo3Version::class
+);
 
-    ExtensionManagementUtility::addPageTSConfig(
-        "@import 'EXT:myexample/Configuration/TSconfig/Page/Linkvalidator.tsconfig'"
-    );
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+    "@import 'EXT:admiral_cloud_connector/Configuration/TSconfig/Page/Linkvalidator.tsconfig'"
+);
 // Only include page.tsconfig if TYPO3 version is below 12 so that it is not imported twice.
 if ($versionInformation->getMajorVersion() < 10) {
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
         '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.tsconfig">'
     );
 } else {
-    ExtensionManagementUtility::addPageTSConfig(
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
         "@import 'EXT:admiral_cloud_connector/Configuration/TSconfig/LinkHandler.tsconfig'"
     );
 }
@@ -27,15 +24,15 @@ if ($versionInformation->getMajorVersion() < 10) {
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1433198160] = [
     'nodeName' => 'inline',
     'priority' => 50,
-    'class' => InlineControlContainer::class,
+    'class' => \CPSIT\AdmiralCloudConnector\Backend\InlineControlContainer::class,
 ];
 
 // Register the FAL driver for AdmiralCloud
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver::KEY] = [
-'class' => \CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver::class,
-'label' => 'Admiral Cloud',
+    'class' => \CPSIT\AdmiralCloudConnector\Resource\AdmiralCloudDriver::class,
+    'label' => 'Admiral Cloud',
 // @todo: is currently needed to not break the backend. Needs to be fixed in TYPO3
-'flexFormDS' => 'FILE:EXT:admiral_cloud_connector/Configuration/FlexForms/AdmiralCloudDriverFlexForm.xml'
+    'flexFormDS' => 'FILE:EXT:admiral_cloud_connector/Configuration/FlexForms/AdmiralCloudDriverFlexForm.xml'
 ];
 
 // Register slot to use AdmiralCloud API for processed file
