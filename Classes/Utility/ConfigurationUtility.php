@@ -136,6 +136,14 @@ class ConfigurationUtility
     /**
      * @return string
      */
+    public static function getImagePNGPlayerConfigId(): string
+    {
+        return getenv('ADMIRALCLOUD_IMAGE_PNG_CONFIG_ID') ?: 3;
+    }
+
+    /**
+     * @return string
+     */
     public static function getVideoPlayerConfigId(): string
     {
         return getenv('ADMIRALCLOUD_VIDEO_CONFIG_ID') ?: 2;

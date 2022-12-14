@@ -281,8 +281,10 @@ class BrowserController extends AbstractBackendController
             $storage = $this->getAdmiralCloudStorage();
             $indexer = $this->getIndexer($storage);
             $mediaContainer = $media['mediaContainer'];
+            $cropperData = $media['cropperData'];
+
             // First of all check that the file contain a valid hash in other case an exception would be thrown
-            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
+            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer, $cropperData['usePNG'] == "true");
 
             $file = $storage->getFile((string)$mediaContainer['id']);
             if ($file instanceof File) {
@@ -337,9 +339,10 @@ class BrowserController extends AbstractBackendController
 
         try {
             $mediaContainer = $media['mediaContainer'];
+            $cropperData = $media['cropperData'];
 
             // Get link hash for media container
-            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer);
+            $linkHash = $this->admiralCloudService->getLinkHashFromMediaContainer($mediaContainer, $cropperData['usePNG'] == "true");
 
             /** @var AdmiralCloudService $admiralCloudService */
             $admiralCloudService = GeneralUtility::makeInstance(AdmiralCloudService::class);
