@@ -117,10 +117,10 @@ unset($iconRegistry);
 /**
  * register cache for extension
  */
-if (!is_array($TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'])) {
-    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = array();
-    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['frontend'] = \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class;
-    $TYPO3_CONF_VARS['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
+if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] ?? null)) {
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = array();
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['frontend'] = \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class;
+    $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector']['backend'] = \TYPO3\CMS\Core\Cache\Backend\SimpleFileBackend::class;
 }
 
 if(version_compare(\TYPO3\CMS\Core\Utility\VersionNumberUtility::getCurrentTypo3Version(), '11.5.0', '<')){
