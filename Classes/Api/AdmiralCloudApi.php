@@ -354,7 +354,7 @@ class AdmiralCloudApi
             $sgs[$row['ac_security_group_id']] = $row['be_groups'];
         }
         foreach ($sgs as $sgId=>$be_groups){
-            $containsAllValues = !array_diff(explode(',', $be_groups), explode(',', $groups));
+            $containsAllValues = !array_diff(explode(',', (string)$be_groups), explode(',', (string)$groups));
             if($containsAllValues){
                 return (string)$sgId;
             }
