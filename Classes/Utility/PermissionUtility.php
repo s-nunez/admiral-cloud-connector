@@ -13,7 +13,7 @@ class PermissionUtility
     {
         // If user is admin or has access to file with AdmiralCloud
         if (isset($GLOBALS['BE_USER']) && (static::getBackendUser()->isAdmin()
-            || (bool)static::getBackendUser()->getFilePermissions()['addFileViaAdmiralCloud'])) {
+            || (static::getBackendUser()->getFilePermissions()['addFileViaAdmiralCloud'] ?? false))) {
             return true;
         }
 
