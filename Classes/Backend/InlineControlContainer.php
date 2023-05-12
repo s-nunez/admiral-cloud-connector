@@ -97,7 +97,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $foreign_table = $inlineConfiguration['foreign_table'];
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
-        $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
+        $element = 'admiral_cloud' . md5($currentStructureDomObjectIdPrefix);
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_show', [
@@ -140,7 +140,7 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
         $foreign_table = $inlineConfiguration['foreign_table'];
         $currentStructureDomObjectIdPrefix = $this->inlineStackProcessor->getCurrentStructureDomObjectIdPrefix($this->data['inlineFirstPid']);
 
-        $element = 'admiral_cloud' . $this->inlineData['config'][$currentStructureDomObjectIdPrefix]['md5'];
+        $element = 'admiral_cloud' . md5($currentStructureDomObjectIdPrefix);
 
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $compactViewUrl = $uriBuilder->buildUriFromRoute('admiral_cloud_browser_upload', [
