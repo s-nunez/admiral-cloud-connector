@@ -286,43 +286,43 @@ class Asset
         $information = $this->getInformation();
         switch ($property) {
             case 'size':
-                return $information['size'];
+                return $information['size'] ?? null;
             case 'atime':
-                return $information['atime'];
+                return $information['atime'] ?? null;
             case 'mtime':
-                return $information['mtime'];
+                return $information['mtime'] ?? null;
             case 'ctime':
-                return $information['ctime'];
+                return $information['ctime'] ?? null;
             case 'name':
-                return $information['name'];
+                return $information['name'] ?? null;
             case 'mimetype':
-                return $information['mimetype'];
+                return $information['mimetype'] ?? null;
             case 'identifier':
-                return $information['identifier'];
+                return $information['identifier'] ?? null;
             case 'extension':
-                return $information['extension'];
+                return $information['extension'] ?? null;
             case 'identifier_hash':
-                return $information['identifier_hash'];
+                return $information['identifier_hash'] ?? null;
             case 'storage':
-                return $information['storage'];
+                return $information['storage'] ?? null;
             case 'folder_hash':
-                return $information['folder_hash'];
+                return $information['folder_hash'] ?? null;
 
             // Metadata
             case 'alternative':
-                return $information['alternative'];
+                return $information['alternative'] ?? null;
             case 'title':
-                return $information['title'];
+                return $information['title'] ?? null;
             case 'description':
-                return $information['description'];
+                return $information['description'] ?? null;
             case 'width':
-                return $information['width'];
+                return $information['width'] ?? null;
             case 'height':
-                return $information['height'];
+                return $information['height'] ?? null;
             case 'copyright':
-                return $information['copyright'];
+                return $information['copyright'] ?? null;
             case 'keywords':
-                return $information['keywords'];
+                return $information['keywords'] ?? null;
             default:
                 throw new InvalidPropertyException(sprintf('The information "%s" is not available.', $property), 1519130380);
         }

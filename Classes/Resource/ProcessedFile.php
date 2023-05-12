@@ -18,10 +18,10 @@ class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
     public function getPublicUrl($relativeToCurrentScript = false): ?string
     {
         if (GeneralUtility::isFirstPartOfStr($this->getOriginalFile()->getMimeType(), 'admiralCloud/')) {
-            if($this->getProcessingConfiguration()['width']){
+            if($this->getProcessingConfiguration()['width'] ?? null){
                 $this->properties['width'] = (int) $this->getProcessingConfiguration()['width'];
             }
-            $this->properties['height'] = (int) $this->getProcessingConfiguration()['height'];
+            $this->properties['height'] = (int) ($this->getProcessingConfiguration()['height'] ?? 0);
 
             return $this->getAdmiralCloudService()->getImagePublicUrl(
                 $this->getOriginalFile(),
