@@ -47,11 +47,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['fal']['registeredDrivers'][\CPSIT\AdmiralClo
         'createAdmiralCloudFileStorage'
     );
 
-\TYPO3\CMS\Core\Resource\Rendering\RendererRegistry::getInstance()
+GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Rendering\RendererRegistry::class)
     ->registerRendererClass(\CPSIT\AdmiralCloudConnector\Resource\Rendering\AssetRenderer::class);
 
 // Register the extractor to fetch metadata from AdmiralCloud
-\TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::getInstance()
+GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\Index\ExtractorRegistry::class)
     ->registerExtractionService(\CPSIT\AdmiralCloudConnector\Resource\Index\Extractor::class);
 
 // Override TYPO3 File class
