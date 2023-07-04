@@ -68,7 +68,7 @@ class AdmiralCloudApi
     public function __construct($data)
     {
         $this->baseUrl = getenv('ADMIRALCLOUD_BASE_URL');
-        $this->device = md5($GLOBALS['BE_USER']->user['id']);
+        $this->device = md5($GLOBALS['BE_USER']->user['uid']);
         $this->data = $data;
     }
 
@@ -157,7 +157,7 @@ class AdmiralCloudApi
     public static function auth(array $settings): string
     {
         $credentials = new Credentials();
-        $device = $settings['device'] ?? md5($GLOBALS['BE_USER']->user['id']);
+        $device = $settings['device'] ?? md5($GLOBALS['BE_USER']->user['uid']);
 
         static::validateAuthData($credentials);
 
