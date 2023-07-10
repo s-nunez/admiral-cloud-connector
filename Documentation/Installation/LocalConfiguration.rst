@@ -40,6 +40,12 @@ Then create a file typo3conf/CustomConfiguration.php with following content:
        putenv('ADMIRALCLOUD_FLAG_CONFIG_ID=10');
        putenv('ADMIRALCLOUD_IFRAMEURL=https://t3intpoc.admiralcloud.com/');
 
+        //optional override of enviromental variables
+       putenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_title=container_name');
+       putenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_alternative=meta_alttag');
+       putenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_description=container_description');
+       putenv('ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_copyright=meta_iptc_copyrightNotice');
+
 
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = [
             'frontend' => \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend::class,
@@ -55,3 +61,7 @@ Then create a file typo3conf/CustomConfiguration.php with following content:
 
 You have ro replace the credentials for ADMIRALCLOUD_ACCESS_SECRET, ADMIRALCLOUD_ACCESS_KEY and ADMIRALCLOUD_CLIENT_ID with your own. These will be send to you by AdmiralCloud via Mails and SMS.
 
+ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_title, ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_alternative, ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_description and
+ADMIRALCLOUD_METADATA_FIELD_OVERRIDE_copyright are optional settings. The part after the last underscore corresponds with the respective field name in TYPO3. After the equal sign fill in the name of the name of the Admircal Cloud field from which you like to pull the data.
+
+.. image:: ../Images/default-titles.png
