@@ -56,13 +56,13 @@ class ImageUtility
         $finalDimensions = static::adjustDimensionsForMaxHeight($maxHeight, $finalDimensions);
 
         // Set height if is not defined
-        if ($finalDimensions->height === 0 && $finalDimensions->width > 0) {
+        if ($finalDimensions->height === 0 && $finalDimensions->width > 0 && $originalWidth > 0) {
             $finalDimensions->height = (int)floor($finalDimensions->width / $originalWidth * $originalHeight);
             $finalDimensions = static::adjustDimensionsForMaxHeight($maxHeight, $finalDimensions);
         }
 
         // Set width if is not defined
-        if ($finalDimensions->width === 0 && $finalDimensions->height > 0) {
+        if ($finalDimensions->width === 0 && $finalDimensions->height > 0 && $originalHeight > 0) {
             $finalDimensions->width = (int)floor($finalDimensions->height / $originalHeight * $originalWidth);
             $finalDimensions = static::adjustDimensionsForMaxWidth($maxWidth, $finalDimensions);
         }
