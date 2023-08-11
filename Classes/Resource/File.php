@@ -29,6 +29,12 @@ class File extends \TYPO3\CMS\Core\Resource\File
     protected $txAdmiralCloudConnectorCrop = '';
 
     /**
+     *
+     * @var string
+     */
+    protected $contentFeGroup = '';
+
+    /**
      * @return string
      */
     public function getTxAdmiralCloudConnectorLinkhash(): string
@@ -168,5 +174,43 @@ class File extends \TYPO3\CMS\Core\Resource\File
     protected function getFileIndexRepository()
     {
         return GeneralUtility::makeInstance(Index\FileIndexRepository::class);
+    }
+
+    /**
+     * Get the value of contentFeGroup
+     *
+     * @return  string
+     */ 
+    public function getContentFeGroup()
+    {
+        return $this->contentFeGroup;
+    }
+
+    /**
+     * Set the value of contentFeGroup
+     *
+     * @param  string  $contentFeGroup
+     *
+     * @return  self
+     */ 
+    public function setContentFeGroup(string $contentFeGroup)
+    {
+        $this->contentFeGroup = $contentFeGroup;
+
+        return $this;
+    }
+
+    /**
+     * Get the extension of this file in a lower-case variant
+     *
+     * @return string The file extension
+     */
+    public function getExtension()
+    {
+        $extension = parent::getExtension();
+        if(!$extension and $this->getProperty('type') == 2){
+            return 'jpg';
+        }
+        return $extension;
     }
 }

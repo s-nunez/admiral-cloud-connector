@@ -4,11 +4,13 @@ namespace CPSIT\AdmiralCloudConnector\Service;
 
 use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApi;
 use CPSIT\AdmiralCloudConnector\Api\AdmiralCloudApiFactory;
+use CPSIT\AdmiralCloudConnector\Api\Oauth\Credentials;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidArgumentException;
 use CPSIT\AdmiralCloudConnector\Exception\InvalidFileConfigurationException;
 use CPSIT\AdmiralCloudConnector\Traits\AdmiralCloudStorage;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
+use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Core\Log\LogManager;
@@ -18,7 +20,9 @@ use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Exception;
+use TYPO3\CMS\Core\Utility\RootlineUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /***************************************************************
  *
@@ -76,6 +80,17 @@ class AdmiralCloudService implements SingletonInterface
     public function __construct()
     {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
+    }
+
+    public function getMediaType(string $type){
+        switch($type){
+            case 1: return 'document';break;
+            case 2: return 'image';break;
+            case 3: return 'audio';break;
+            case 4: return 'video';break;
+            case 5: return 'document';break;
+            default: return $type;
+        }
     }
 
     /**
@@ -331,6 +346,28 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * get external auth token for file
+     *
+     * @param string $identifier
+     * @param string $type
+     * @return void
+     */
+    public function getExternalAuthToken(string $identifier,string $type){
+        $payload = [];
+        $payload['identifier'] = $identifier;
+        $payload['type'] = $type;
+
+        $settings = [
+            'route' => 'extAuth',
+            'controller' => 'user',
+            'action' => 'extAuth',
+            'payload' => $payload
+        ];
+        $result = json_decode($this->callAdmiralCloudApi($settings)->getData(), true) ?? [];
+        return $result;
+    }
+
+    /**
      * Make search call to AdmiralCloud to get all metadata for given identifiers
      *
      * @param array $identifiers
@@ -427,11 +464,12 @@ class AdmiralCloudService implements SingletonInterface
      * Get public url for AdmiralCloud player
      *
      * @param FileInterface $file
+     * @param string $fe_group
      * @return string
      */
-    public function getPlayerPublicUrl(FileInterface $file): string
+    public function getPlayerPublicUrl(FileInterface $file,$fe_group = ''): string
     {
-        return $this->getPlayerPublicUrlForFile($file);
+        return $this->getPlayerPublicUrlForFile($file,$fe_group);
     }
 
     /**
@@ -440,10 +478,12 @@ class AdmiralCloudService implements SingletonInterface
      * @param FileInterface $file
      * @param int $width
      * @param int $height
+     * @param string $fe_group
      * @return string
      */
-    public function getImagePublicUrl(FileInterface $file, int $width = 0, int $height = 0): string
+    public function getImagePublicUrl(FileInterface $file, int $width = 0, int $height = 0,string $fe_group = ''): string
     {
+        $credentials = new Credentials();
         if ($file instanceof FileReference) {
             // Save crop information from FileReference and set it in the File object
             $crop = $file->getProperty('tx_admiralcloudconnector_crop');
@@ -462,33 +502,52 @@ class AdmiralCloudService implements SingletonInterface
         // Determine, if current file is of AdmiralCloud svg mime type
         $isSvgMimeType = ConfigurationUtility::isSvgMimeType($file->getMimeType());
 
+        $fe_group = PermissionUtility::getPageFeGroup();
+        if($file->getProperty('tablenames') == 'tt_content' && $file->getProperty('uid_foreign') && !$fe_group){
+            $fe_group = PermissionUtility::getContentFeGroupFromReference($file->getProperty('uid_foreign'));
+        } else if($file->getContentFeGroup()){
+            $fe_group = $file->getContentFeGroup();
+        }
+
+        $token = '';
+        $auth = '';
+        if($fe_group){
+            $token = $this->getSecuredToken($file,'image','embedlink');
+            if($token){
+                $auth = 'auth=' . base64_encode($credentials->getClientId() . ':' . $token['token']);
+            }
+        }
+
         // Get image public url
         if (!$isSvgMimeType && $file->getTxAdmiralCloudConnectorCrop()) {
             // With crop information
             $cropData = json_decode($file->getTxAdmiralCloudConnectorCrop()) or $cropData = json_decode('{"usePNG": "false"}');
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
-                . $file->getTxAdmiralCloudConnectorLinkhash()
+                . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
                 . '/image'.(property_exists($cropData, 'usePNG') && $cropData->usePNG == "true" ? '_png' : '').'/cropperjsfocus/'
                 . $dimensions->width
                 . '/'
                 . $dimensions->height
                 . '/'
                 . $file->getTxAdmiralCloudConnectorCropUrlPath()
-                . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'');
+                . '?poc=true' . (!ConfigurationUtility::isProduction()?'&env=dev':'')
+                .  ($token ? '&' . $auth:'') ;
         } else {
             if ($isSvgMimeType) {
-                $link = ConfigurationUtility::getImageUrl() . 'v3/deliverEmbed/'
-                    . $file->getTxAdmiralCloudConnectorLinkhash()
-                    . '/image/';
+                $link = ConfigurationUtility::getImageUrl() . ($token ? 'v5/deliverFile/':'v3/deliverEmbed/')
+                    . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
+                    . ($token ?'/': '/image/')
+                    .  ($token ? '?' . $auth:'') ;
             } else {
                 // Without crop information
                 $link = ConfigurationUtility::getSmartcropUrl() . 'v3/deliverEmbed/'
-                    . $file->getTxAdmiralCloudConnectorLinkhash()
+                    . ($token ? $token['hash']:$file->getTxAdmiralCloudConnectorLinkhash())
                     . '/image/autocrop/'
                     . $dimensions->width
                     . '/'
                     . $dimensions->height
-                    . '/1?poc=true';
+                    . '/1?poc=true'
+                    .  ($token ? '&' . $auth:'') ;
             }
         }
 
@@ -580,6 +639,56 @@ class AdmiralCloudService implements SingletonInterface
     }
 
     /**
+     * @param array $mediaContainer
+     * @return string
+     * @throws InvalidFileConfigurationException
+     */
+    public function getAuthLinkHashFromMediaContainer(array $mediaContainer): string
+    {
+        $links = $mediaContainer['links'] ?? [];
+
+        $linkHash = '';
+
+        // Flag Id for given media container type
+        $flagId = ConfigurationUtility::getFlagPlayerConfigId();
+
+        // Player configuration id for given media container type
+        switch ($mediaContainer['type']) {
+            case 'image':
+                $playerConfigurationId = ConfigurationUtility::getAuthImagePlayerConfigId();
+                break;
+            case 'video':
+                $playerConfigurationId = ConfigurationUtility::getAuthVideoPlayerConfigId();
+                break;
+            case 'audio':
+                $playerConfigurationId = ConfigurationUtility::getAuthAudioPlayerConfigId();
+                break;
+            case 'document':
+                $playerConfigurationId = ConfigurationUtility::getAuthDocumentPlayerConfigId();
+                break;
+            default:
+                throw new InvalidFileConfigurationException(
+                    'Any valid type was found for file in mediaContainer. Given type: ' . $mediaContainer['type'],
+                    111222444580
+                );
+        }
+        if(!$playerConfigurationId){
+            return '';
+        }
+
+        // Find link with flag id and player configuration id for given media container
+        foreach ($links as $link) {
+            if (isset($link['playerConfigurationId']) && isset($link['flag'])
+                && $link['playerConfigurationId'] == $playerConfigurationId && $link['flag'] == $flagId) {
+                $linkHash = $link['link'];
+                break;
+            }
+        }
+
+        return $linkHash;
+    }
+
+    /**
      * Get direct public url for given hash
      *
      * @param string $hash
@@ -600,13 +709,21 @@ class AdmiralCloudService implements SingletonInterface
      */
     public function getDirectPublicUrlForFile(FileInterface $file): string
     {
+        $credentials = new Credentials();
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if($enableAcReadableLinks){
+        if($enableAcReadableLinks && !($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup())){
+            
             return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
                 $file->getIdentifier() . '/' .
                 $file->getName();
         } else {
+            if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+                if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
+                    $auth = '?auth=' . base64_encode($credentials->getClientId() . ':' . $token['token']);
+                    return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . $auth;
+                }
+            }
             return ConfigurationUtility::getDirectFileUrl()
                 . $file->getTxAdmiralCloudConnectorLinkhash();
         }
@@ -621,6 +738,14 @@ class AdmiralCloudService implements SingletonInterface
      */
     protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
     {
+        if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+            if($this->getMediaType($file->getProperty('type')) == 'document'){
+                $auth = '?auth=' . base64_encode($credentials->getClientId() . ':' . $token['token']);
+                return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . $auth;;
+            } else if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
+                return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . '&token=' . $token['token'];
+            }
+        }
         return ConfigurationUtility::getDirectFileUrl()
             . $file->getTxAdmiralCloudConnectorLinkhash()
             . ($download ? '?download=true' : '');
@@ -630,11 +755,59 @@ class AdmiralCloudService implements SingletonInterface
      * Get player public url for given file
      *
      * @param FileInterface $file
+     * @param string $fe_group
      * @return string
      */
-    protected function getPlayerPublicUrlForFile(FileInterface $file): string
+    protected function getPlayerPublicUrlForFile(FileInterface $file,string $fe_group): string
     {
+        if($fe_group){
+            if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
+                return ConfigurationUtility::getPlayerFileUrl() . $token['hash'] . '&token=' . $token['token'];
+            }
+        }
         return ConfigurationUtility::getPlayerFileUrl() . $file->getTxAdmiralCloudConnectorLinkhash();
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @param FileInterface $file
+     * @param string $linkType
+     * @param string $extAuthType
+     * @return void
+     */
+    protected function getSecuredToken(FileInterface $file,string $linkType,string $extAuthType){
+        $searchData = $this->getSearch(
+            [
+                "from" => 0,
+                "size" => 1,
+                "searchTerm" => $file->getTxAdmiralCloudConnectorLinkhash(),
+                "field" => "links",
+                "noAggregation" => true
+
+            ]
+        );
+        $mediacontainer = ['type' => $linkType];
+        if($searchData){
+            foreach ($searchData as $item) {
+                foreach($item->_source->links as $link){
+                    $linkConfig = [];
+                    $linkConfig['playerConfigurationId'] = $link->playerConfigurationId;
+                    $linkConfig['type'] = $link->type;
+                    $linkConfig['link'] = $link->link;
+                    $linkConfig['flag'] = ConfigurationUtility::getFlagPlayerConfigId();
+                    $mediacontainer['links'][] = $linkConfig;
+                }
+            }
+            $hash = $this->getAuthLinkHashFromMediaContainer($mediacontainer);
+            if($hash){
+                $token = $this->getExternalAuthToken($hash,$extAuthType);
+                if($token && isset($token['token'])){
+                    return ['hash' => $hash,'token' => $token['token']];
+                }
+            }
+        }
+        return '';
     }
 
     /**
