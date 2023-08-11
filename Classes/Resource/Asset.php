@@ -238,7 +238,7 @@ class Asset
                 $this->information = $this->getAdmiralCloudService()->getMediaInfo(
                     [$this->identifier],
                     ($storageUid?:$this->getAdmiralCloudStorage()->getUid())
-                )[$this->identifier];
+                )[$this->identifier] ?? [];
             } catch (\Exception $e) {
                 $this->information = [];
             }

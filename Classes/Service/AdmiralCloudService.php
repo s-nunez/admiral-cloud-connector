@@ -525,7 +525,7 @@ class AdmiralCloudService implements SingletonInterface
      * @return string
      * @throws InvalidFileConfigurationException
      */
-    public function getLinkHashFromMediaContainer(array $mediaContainer, $usePNG): string
+    public function getLinkHashFromMediaContainer(array $mediaContainer, bool $usePNG): string
     {
         $links = $mediaContainer['links'] ?? [];
 
