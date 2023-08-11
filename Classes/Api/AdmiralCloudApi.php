@@ -98,7 +98,7 @@ class AdmiralCloudApi
             "payload" => $settings['payload']
         ];
 
-        $signedValues = self::acSignatureSign($params,'v5');
+        $signedValues = self::acSignatureSign($params,'v4');
 
         $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
 
@@ -123,7 +123,7 @@ class AdmiralCloudApi
             unset($curlOptArray[CURLOPT_POSTFIELDS]);
         }
         curl_setopt_array($curl,$curlOptArray );
-
+        
         $response = curl_exec($curl);
         $err = curl_error($curl);
         $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);

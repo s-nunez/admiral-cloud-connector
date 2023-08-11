@@ -57,6 +57,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\File::cla
 ];
 
 // Override TYPO3 File class
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\FileReference::class] = [
+    'className' => \CPSIT\AdmiralCloudConnector\Resource\FileReference::class
+];
+
+// Override TYPO3 File class
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects'][\TYPO3\CMS\Core\Resource\ProcessedFile::class] = [
     'className' => \CPSIT\AdmiralCloudConnector\Resource\ProcessedFile::class
 ];

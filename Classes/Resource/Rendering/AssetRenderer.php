@@ -6,6 +6,7 @@ use CPSIT\AdmiralCloudConnector\Exception\InvalidAssetException;
 use CPSIT\AdmiralCloudConnector\Service\AdmiralCloudService;
 use CPSIT\AdmiralCloudConnector\Service\TagBuilderService;
 use CPSIT\AdmiralCloudConnector\Traits\AssetFactory;
+use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use TYPO3\CMS\Core\Imaging\ImageManipulation\CropVariantCollection;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Resource\File;
@@ -16,6 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Service\ImageService;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\TagBuilder;
 
@@ -179,9 +181,17 @@ class AssetRenderer implements FileRendererInterface
             $originalFile = $file;
         }
 
-        $tag = $this->getTagBuilder('iframe', $options);
+        $fe_group = PermissionUtility::getPageFeGroup();
+        if($file->getProperty('tablenames') == 'tt_content' && $file->getProperty('uid_foreign') && !$fe_group){
+            $fe_group = PermissionUtility::getContentFeGroupFromReference($file->getProperty('uid_foreign'));
+        }
 
-        $tag->addAttribute('src', $this->getAdmiralCloudService()->getPlayerPublicUrl($originalFile));
+        $tag = $this->getTagBuilder('iframe', $options);
+        if($fe_group){
+            $tag->addAttribute('src', $this->getAdmiralCloudService()->getPlayerPublicUrl($originalFile,$fe_group));
+        } else {
+            $tag->addAttribute('src', $this->getAdmiralCloudService()->getPlayerPublicUrl($originalFile));
+        }
         $tag->addAttribute('allowfullscreen', true);
         $tag->forceClosingTag(true);
         if ((int)$width > 0) {

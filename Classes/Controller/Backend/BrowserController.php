@@ -25,7 +25,6 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Http\HtmlResponse;
 use TYPO3\CMS\Core\Http\JsonResponse;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Form\Controller\AbstractBackendController;
 use TYPO3\CMS\Core\Resource\File;
@@ -291,10 +290,16 @@ class BrowserController extends AbstractBackendController
                 $file->setTxAdmiralCloudConnectorLinkhash($linkHash);
                 $file->setTypeFromMimeType($mediaContainer['type'] . '/' . $mediaContainer['fileExtension']);
                 #$this->eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
-                #DebuggerUtility::var_dump($storage);die();
+                if(!$file->getProperty('extension')){
+                    $properties = [
+                        'mime_type' => 'admiralCloud' . '/' . $mediaContainer['type'] . '/' . $mediaContainer['fileExtension'],
+                        'extension' => $mediaContainer['fileExtension']
+                    ];
+                    $file->updateProperties($properties);
+                }
                 $this->getFileIndexRepository($storage)->add($file);
                 #$indexer->updateIndexEntry($file);
-
+                
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
                 $metadataService = GeneralUtility::makeInstance(MetadataService::class);
