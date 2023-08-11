@@ -243,7 +243,7 @@ class BrowseLinksController extends \CPSIT\AdmiralCloudConnector\Controller\Back
                         : '';
                     $title = $this->classesAnchorClassTitle[$class] ?? $this->classesAnchorDefaultTitle[$class] ?? '';
 
-                    $this->classesAnchorJSOptions[$this->displayedLinkHandlerId] = $this->classesAnchorJSOptions[$this->displayedLinkHandlerId] ?? '';
+                    $this->classesAnchorJSOptions[$this->displayedLinkHandlerId] ??= '';
                     $this->classesAnchorJSOptions[$this->displayedLinkHandlerId] .= '<option ' . $selected . ' value="' . htmlspecialchars($class) . '"'
                         . ($classStyle ? ' style="' . htmlspecialchars($classStyle) . '"' : '')
                         . 'data-link-title="' . htmlspecialchars($title) . '"'

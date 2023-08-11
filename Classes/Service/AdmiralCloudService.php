@@ -468,7 +468,7 @@ class AdmiralCloudService implements SingletonInterface
             $cropData = json_decode($file->getTxAdmiralCloudConnectorCrop()) or $cropData = json_decode('{"usePNG": "false"}');
             $link = ConfigurationUtility::getSmartcropUrl() .'v3/deliverEmbed/'
                 . $file->getTxAdmiralCloudConnectorLinkhash()
-                . '/image'.($cropData->usePNG == "true" ? '_png' : '').'/cropperjsfocus/'
+                . '/image'.(property_exists($cropData, 'usePNG') && $cropData->usePNG == "true" ? '_png' : '').'/cropperjsfocus/'
                 . $dimensions->width
                 . '/'
                 . $dimensions->height

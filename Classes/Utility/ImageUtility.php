@@ -160,8 +160,10 @@ class ImageUtility
             $crop = $file->getProperty('tx_admiralcloudconnector_crop');
         }
 
-        $crop = json_decode($crop) ?: null;
+        if (!is_string($crop)) {
+            return null;
+        }
 
-        return $crop;
+        return json_decode($crop) ?: null;
     }
 }

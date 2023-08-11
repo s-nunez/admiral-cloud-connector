@@ -112,7 +112,7 @@ class BrowserController extends AbstractBackendController
      * @var ModuleTemplate
      */
     protected $moduleTemplate;
-    
+
 
     /**
      * CompactViewController constructor.
@@ -181,7 +181,7 @@ class BrowserController extends AbstractBackendController
             'mediaContainerId' => $request->getQueryParams()['mediaContainerId'],
             'embedLink' => $request->getQueryParams()['embedLink'],
             'modus' => 'crop'
-        ]);        
+        ]);
         return $this->prepareIframe($request,ConfigurationUtility::getIframeUrl() . 'overview?clientId=' . $credentials->getClientId() . '&cmsOrigin=');
     }
 
@@ -424,7 +424,7 @@ class BrowserController extends AbstractBackendController
      */
     protected function createJsonResponse( $data, int $statusCode): ResponseInterface
     {
-        
+
         $jsonArray = [];
 
         if (!empty($data)) {

@@ -68,7 +68,7 @@ class AdmiralCloudApi
     public function __construct($data)
     {
         $this->baseUrl = getenv('ADMIRALCLOUD_BASE_URL');
-        $this->device = md5($GLOBALS['BE_USER']->user['id']);
+        $this->device = md5($GLOBALS['BE_USER']->user['uid']);
         $this->data = $data;
     }
 
@@ -157,7 +157,7 @@ class AdmiralCloudApi
     public static function auth(array $settings): string
     {
         $credentials = new Credentials();
-        $device = $settings['device'] ?? md5($GLOBALS['BE_USER']->user['id']);
+        $device = $settings['device'] ?? md5($GLOBALS['BE_USER']->user['uid']);
 
         static::validateAuthData($credentials);
 
@@ -338,7 +338,7 @@ class AdmiralCloudApi
         if(isset($GLOBALS['BE_USER']->user['security_group']) && $GLOBALS['BE_USER']->user['security_group']){
             return $GLOBALS['BE_USER']->user['security_group'];
         }
-        $groups = $GLOBALS['BE_USER']->user['usergroup_cached_list'];
+        $groups = $GLOBALS['BE_USER']->user['usergroup_cached_list'] ?? '';
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_admiralcloudconnector_security_groups');
         $queryBuilder->getRestrictions()->removeAll();
@@ -354,7 +354,7 @@ class AdmiralCloudApi
             $sgs[$row['ac_security_group_id']] = $row['be_groups'];
         }
         foreach ($sgs as $sgId=>$be_groups){
-            $containsAllValues = !array_diff(explode(',', $be_groups), explode(',', $groups));
+            $containsAllValues = !array_diff(explode(',', (string)$be_groups), explode(',', (string)$groups));
             if($containsAllValues){
                 return (string)$sgId;
             }

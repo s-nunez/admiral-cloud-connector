@@ -3,10 +3,8 @@ if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
 
-$emSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$_EXTKEY]);
-
 if (TYPO3_MODE === 'BE') {
-    $pathEventIcon = 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/ac.svg';
+    $pathEventIcon = 'EXT:admiral_cloud_connector/Resources/Public/Icons/ac.svg';
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addModule(
         'AdmiralCloud',
         '',

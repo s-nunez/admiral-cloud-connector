@@ -34,5 +34,5 @@ use TYPO3\CMS\Recordlist\Tree\View\LinkParameterProviderInterface;
  */
 class PageLinkHandler extends \TYPO3\CMS\Recordlist\LinkHandler\PageLinkHandler
 {
-    
+
 }
