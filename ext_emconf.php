@@ -1,8 +1,8 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = array (
-    'title' => 'Admiral cloud connector',
-    'description' => 'Admiral cloud connector',
+    'title' => 'AdmiralCloud Connector',
+    'description' => 'AdmiralCloud Connector',
     'category' => 'plugin',
     'author' => 'coding. powerful. systems. CPS GmbH',
     'author_email' => '',
