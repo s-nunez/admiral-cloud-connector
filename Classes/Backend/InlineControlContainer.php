@@ -16,6 +16,7 @@ use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Page\JavaScriptModuleInstruction;
 use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -39,7 +40,10 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             if (!$this->getBackendUserAuthentication()->isAdmin()
                 && getenv('ADMIRALCLOUD_DISABLE_FILEUPLOAD') == 1) {
                 foreach ($this->requireJsModules as $key => $module) {
-                    if (isset($module['TYPO3/CMS/Backend/DragUploader'])) {
+                    if ($module === 'TYPO3/CMS/Backend/DragUploader'
+                        || is_array($module) && isset($module['TYPO3/CMS/Backend/DragUploader'])
+                        || $module instanceof JavaScriptModuleInstruction && $module->getName() === 'TYPO3/CMS/Backend/DragUploader'
+                    ) {
                         unset($this->requireJsModules[$key]);
                         $regex = '/<a href="#" class="btn btn-default t3js.drag.uploader.*?\/a>/s';
                         if (preg_match($regex, $selector, $matches)) {

@@ -6,6 +6,7 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Domain\Repository\PageRepository;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class PermissionUtility
 {
@@ -36,31 +37,36 @@ class PermissionUtility
      */
     public static function getPageFeGroup(){
         $pageRepository = GeneralUtility::makeInstance(PageRepository::class);
-        $page = $pageRepository->getPage($GLOBALS['TSFE']->id);
-        if($page['fe_group'] == '-1'){
+        $tsfe = self::getTypoScriptFrontendController();
+        if ($tsfe === null) {
             return '';
-        } 
-        return $page['fe_group'];
+        }
+        $page = $pageRepository->getPage($tsfe->id);
+        $feGroup = $page['fe_group'] ?? null;
+        if($feGroup == '-1'){
+            return '';
+        }
+        return $feGroup;
     }
 
     /**
      * get content fe group from reference
      *
      * @param int $uid
-     * @return void
      */
     public static function getContentFeGroupFromReference(int $uid){
         $content = self::getContent($uid);
         if($content){
-            if($content['fe_group'] == '-1'){
+            $feGroup = $content['fe_group'] ?? null;
+            if($feGroup == '-1'){
                 return '';
-            } 
-            return $content['fe_group'];
+            }
+            return $feGroup;
         }
         return '';
     }
 
-    public function getContent(int $uid){
+    public static function getContent(int $uid){
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
         $result = $queryBuilder
         ->select('fe_group')
@@ -68,5 +74,10 @@ class PermissionUtility
         ->where('uid=' . $uid)
         ->execute();
         return $result->fetch();
+    }
+
+    private static function getTypoScriptFrontendController(): ?TypoScriptFrontendController
+    {
+        return $GLOBALS['tsfe'] ?? null;
     }
 }

@@ -194,7 +194,7 @@ class AdmiralCloudImageManipulationElement extends AbstractFormElement
         $config = array_replace_recursive($defaultConfig, $baseConfiguration);
 
         // By default we allow all image extensions that can be handled by the GFX functionality
-        if ($config['allowedExtensions'] === null) {
+        if (($config['allowedExtensions'] ?? null) === null) {
             $config['allowedExtensions'] = implode(
                 ', ',
                 GeneralUtility::trimExplode(',', $GLOBALS['TYPO3_CONF_VARS']['GFX']['imagefile_ext'], true)

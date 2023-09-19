@@ -8,6 +8,7 @@ use CPSIT\AdmiralCloudConnector\Exception\RuntimeException;
 use CPSIT\AdmiralCloudConnector\Utility\ConfigurationUtility;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -67,8 +68,11 @@ class AdmiralCloudApi
      */
     public function __construct($data)
     {
+        $context = GeneralUtility::makeInstance(Context::class);
+        $backendUserId = $context->getPropertyFromAspect('backend.user', 'id');
+
         $this->baseUrl = getenv('ADMIRALCLOUD_BASE_URL');
-        $this->device = md5($GLOBALS['BE_USER']->user['uid']);
+        $this->device = md5($backendUserId);
         $this->data = $data;
     }
 
@@ -98,7 +102,7 @@ class AdmiralCloudApi
             "payload" => $settings['payload']
         ];
 
-        $signedValues = self::acSignatureSign($params,'v4');
+        $signedValues = self::acSignatureSign($params,'v5');
 
         $routeUrl = ConfigurationUtility::getApiUrl() . 'v5/' . $settings['route'];
 
@@ -123,7 +127,7 @@ class AdmiralCloudApi
             unset($curlOptArray[CURLOPT_POSTFIELDS]);
         }
         curl_setopt_array($curl,$curlOptArray );
-        
+
         $response = curl_exec($curl);
         $err = curl_error($curl);
         $httpCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -283,7 +287,7 @@ class AdmiralCloudApi
         return $code->code;
     }
 
-    public static function acSignatureSign($params, $version='v4')
+    public static function acSignatureSign($params, $version='v5')
     {
         $accessSecret = $params['accessSecret'];
         if (!$accessSecret) return 'accessSecretMissing';

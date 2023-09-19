@@ -25,8 +25,8 @@ class ProcessedFile extends \TYPO3\CMS\Core\Resource\ProcessedFile
 
             return $this->getAdmiralCloudService()->getImagePublicUrl(
                 $this->getOriginalFile(),
-                (int)$this->properties['width'],
-                (int)$this->properties['height']
+                (int)($this->properties['width'] ?? 0),
+                $this->properties['height']
             );
         }
 

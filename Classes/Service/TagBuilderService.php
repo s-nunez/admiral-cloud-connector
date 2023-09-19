@@ -29,11 +29,11 @@ class TagBuilderService
      */
     public function initializeAbstractTagBasedAttributes(TagBuilder $tagBuilder, $arguments): TagBuilder
     {
-        if ($arguments['additionalAttributes'] && is_array($arguments['additionalAttributes'])) {
+        if (is_array($arguments['additionalAttributes'] ?? null)) {
             $tagBuilder->addAttributes($arguments['additionalAttributes']);
         }
 
-        if ($arguments['data'] && is_array($arguments['data'])) {
+        if (is_array($arguments['data'] ?? null)) {
             foreach ($arguments['data'] as $dataAttributeKey => $dataAttributeValue) {
                 $tagBuilder->addAttribute('data-' . $dataAttributeKey, $dataAttributeValue);
             }
@@ -54,7 +54,7 @@ class TagBuilderService
         array $universalTagAttributes = ['class', 'dir', 'id', 'lang', 'style', 'title', 'accesskey', 'tabindex', 'onclick']
     ): TagBuilder {
         foreach ($universalTagAttributes as $attributeName) {
-            if ($arguments[$attributeName] && $arguments[$attributeName] !== '') {
+            if (($arguments[$attributeName] ?? '') !== '') {
                 $tagBuilder->addAttribute($attributeName, $arguments[$attributeName]);
             }
         }

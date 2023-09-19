@@ -218,8 +218,8 @@ class BrowserController extends AbstractBackendController
             'ajaxUrl' => (string)$path,
             'iframeUrl' => $callbackUrl . base64_encode($protocol .'://' . $_SERVER['HTTP_HOST']),
             'parameters' => [
-                'element' => $parameters['element'],
-                'irreObject' => $parameters['irreObject'],
+                'element' => $parameters['element'] ?? null,
+                'irreObject' => $parameters['irreObject'] ?? null,
             ]
         ]);
         $this->view->assign('iframeHost',rtrim(ConfigurationUtility::getIframeUrl(),'/'));
@@ -299,7 +299,7 @@ class BrowserController extends AbstractBackendController
                 }
                 $this->getFileIndexRepository($storage)->add($file);
                 #$indexer->updateIndexEntry($file);
-                
+
                 // (Re)Fetch metadata
                 $indexer->extractMetaData($file);
                 $metadataService = GeneralUtility::makeInstance(MetadataService::class);

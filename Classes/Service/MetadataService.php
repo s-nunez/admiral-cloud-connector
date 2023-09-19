@@ -122,7 +122,7 @@ class MetadataService
             ->getCache(ConfigurationUtility::EXTENSION);
 
         if ($cache->has($cacheKey)) {
-            $lastUpdatedMetaDataDate = $cache->get($cacheKey);
+            $lastUpdatedMetaDataDate = \DateTime::createFromFormat('U', (string)$cache->get($cacheKey));
         } else {
             $lastUpdatedMetaDataDate = new \DateTime(static::DEFAULT_LAST_CHANGED_DATE);
         }
@@ -149,7 +149,7 @@ class MetadataService
             }
         }
 
-        $cache->set($cacheKey, $now->format('r'));
+        $cache->set($cacheKey, $now->getTimestamp());
 
         if ($iteration === static::MAXIMUM_ITERATION) {
             throw new RuntimeException(

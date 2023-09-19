@@ -711,8 +711,8 @@ class AdmiralCloudService implements SingletonInterface
     {
         $credentials = new Credentials();
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if($enableAcReadableLinks && !($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup())){
-            
+        if ($enableAcReadableLinks && !(($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ?? null) || PermissionUtility::getPageFeGroup())) {
+
             return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .
                 $file->getIdentifier() . '/' .
@@ -738,7 +738,7 @@ class AdmiralCloudService implements SingletonInterface
      */
     protected function getDirectPublicUrlForMedia(FileInterface $file, bool $download = false): string
     {
-        if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+        if (($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ?? null) || PermissionUtility::getPageFeGroup()){
             if($this->getMediaType($file->getProperty('type')) == 'document'){
                 $auth = '?auth=' . base64_encode($credentials->getClientId() . ':' . $token['token']);
                 return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . ($download ? '?download=true' : '') . $auth;;

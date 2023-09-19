@@ -58,14 +58,14 @@ abstract class AbstractLinkBrowserController extends \TYPO3\CMS\Recordlist\Contr
         $view->setLayoutRootPaths(['EXT:backend/Resources/Private/Layouts/', 'EXT:recordlist/Resources/Private/Layouts/']);
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_misc.xlf');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:core/Resources/Private/Language/locallang_core.xlf');
-        if($request->getQueryParams()['act'] == 'admiralCloud'){
+        if(($request->getQueryParams()['act'] ?? null) == 'admiralCloud'){
             $this->moduleTemplate->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/AdmiralCloudConnector/Browser');
             $view->setTemplate('AdmiralCloud');
             $view = $this->moduleTemplate->getView();
             $view->getRequest()->setControllerExtensionName('AdmiralCloudConnector');
             $view->setLayoutRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Layouts')]);
             $view->setTemplateRootPaths([GeneralUtility::getFileAbsFileName('EXT:admiral_cloud_connector/Resources/Private/Templates/LinkBrowser')]);
-        } 
+        }
 
         $this->determineScriptUrl($request);
         $this->initVariables($request);
@@ -78,13 +78,13 @@ abstract class AbstractLinkBrowserController extends \TYPO3\CMS\Recordlist\Contr
             $this->displayedLinkHandler->setView($view);
         }
         $browserContent = $this->displayedLinkHandler->render($request);
-        if($request->getQueryParams()['act'] == 'admiralCloud'){
+        if(($request->getQueryParams()['act'] ?? null) == 'admiralCloud'){
             $this->moduleTemplate->setContent($browserContent);
             $view->assign('html', $browserContent);
         }
 
         $this->initDocumentTemplate();
-        
+
         $this->moduleTemplate->setTitle('Link Browser');
         if (!empty($this->currentLinkParts)) {
             $this->renderCurrentUrl();
