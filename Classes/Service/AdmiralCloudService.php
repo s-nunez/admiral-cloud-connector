@@ -13,6 +13,7 @@ use CPSIT\AdmiralCloudConnector\Utility\ImageUtility;
 use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -502,7 +503,12 @@ class AdmiralCloudService implements SingletonInterface
         // Determine, if current file is of AdmiralCloud svg mime type
         $isSvgMimeType = ConfigurationUtility::isSvgMimeType($file->getMimeType());
 
-        $fe_group = PermissionUtility::getPageFeGroup();
+        if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()) {
+            $fe_group = PermissionUtility::getPageFeGroup();
+        } else {
+            $fe_group = null;
+        }
+
         if($file->getProperty('tablenames') == 'tt_content' && $file->getProperty('uid_foreign') && !$fe_group){
             $fe_group = PermissionUtility::getContentFeGroupFromReference($file->getProperty('uid_foreign'));
         } else if($file->getContentFeGroup()){
@@ -711,7 +717,7 @@ class AdmiralCloudService implements SingletonInterface
     {
         $credentials = new Credentials();
         $enableAcReadableLinks = isset($GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"])?$GLOBALS["TSFE"]->tmpl->setup["config."]["enableAcReadableLinks"]:false;
-        if ($enableAcReadableLinks && !(($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ?? null) || PermissionUtility::getPageFeGroup())) {
+        if($enableAcReadableLinks && !($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup())){
 
             return ConfigurationUtility::getLocalFileUrl() .
                 $file->getTxAdmiralCloudConnectorLinkhash() . '/' .

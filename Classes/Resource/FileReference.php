@@ -3,6 +3,7 @@
 namespace CPSIT\AdmiralCloudConnector\Resource;
 
 use CPSIT\AdmiralCloudConnector\Utility\PermissionUtility;
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -33,18 +34,22 @@ class FileReference extends \TYPO3\CMS\Core\Resource\FileReference
     public function getPublicUrl($relativeToCurrentScript = false)
     {
         $file = $this->originalFile;
-        if(GeneralUtility::isFirstPartOfStr($file->getMimeType(), 'admiralCloud/')){
-            $fe_group = PermissionUtility::getPageFeGroup();
-            if($this->getProperty('tablenames') == 'tt_content' && $this->getProperty('uid_foreign') && !$fe_group){
-                $fe_group = PermissionUtility::getContentFeGroupFromReference($this->getProperty('uid_foreign'));
+        if(str_starts_with($file->getMimeType(), 'admiralCloud/')){
+            if (ApplicationType::fromRequest($GLOBALS['TYPO3_REQUEST'])->isFrontend()) {
+                $fe_group = PermissionUtility::getPageFeGroup();
+
+                if($this->getProperty('tablenames') == 'tt_content' && $this->getProperty('uid_foreign') && !$fe_group){
+                    $fe_group = PermissionUtility::getContentFeGroupFromReference($this->getProperty('uid_foreign'));
+                }
+                $GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] = $fe_group;
+
             }
-            $GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] = $fe_group;
         }
         $publicUrl = $file->getPublicUrl($relativeToCurrentScript);
         unset($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()]);
         return $publicUrl;
     }
 
-    
+
 
 }
