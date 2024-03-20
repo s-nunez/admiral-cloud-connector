@@ -724,7 +724,7 @@ class AdmiralCloudService implements SingletonInterface
                 $file->getIdentifier() . '/' .
                 $file->getName();
         } else {
-            if($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()] ||PermissionUtility::getPageFeGroup()){
+            if(!empty($GLOBALS['admiralcloud']['fe_group'][$file->getIdentifier()]) ||PermissionUtility::getPageFeGroup()){
                 if($token = $this->getSecuredToken($file,$this->getMediaType($file->getProperty('type')),'player')){
                     $auth = '?auth=' . base64_encode($credentials->getClientId() . ':' . $token['token']);
                     return ConfigurationUtility::getDirectFileUrl() . $token['hash'] . $auth;
