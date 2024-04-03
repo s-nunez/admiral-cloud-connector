@@ -64,16 +64,19 @@ class InlineControlContainer extends \TYPO3\CMS\Backend\Form\Container\InlineCon
             } else {
                 $selector .= $button;
             }
-            $button = $this->renderAdmiralCloudUploadButton($inlineConfiguration);
 
-            // Inject button before help-block
-            if (strpos($selector, '</div><div class="help-block">') > 0) {
-                $selector = str_replace('</div><div class="help-block">', $button . '</div><div class="help-block">', $selector);
-            // Try to inject it into the form-control container
-            } elseif (preg_match('/<\/div><\/div>$/i', $selector)) {
-                $selector = preg_replace('/<\/div><\/div>$/i', $button . '</div></div>', $selector);
-            } else {
-                $selector .= $button;
+            if (getenv('ADMIRALCLOUD_DISABLE_ADMIRALCLOUD_UPLOAD_BUTTON') != 1) {
+                $button = $this->renderAdmiralCloudUploadButton($inlineConfiguration);
+    
+                // Inject button before help-block
+                if (strpos($selector, '</div><div class="help-block">') > 0) {
+                    $selector = str_replace('</div><div class="help-block">', $button . '</div><div class="help-block">', $selector);
+                // Try to inject it into the form-control container
+                } elseif (preg_match('/<\/div><\/div>$/i', $selector)) {
+                    $selector = preg_replace('/<\/div><\/div>$/i', $button . '</div></div>', $selector);
+                } else {
+                    $selector .= $button;
+                }
             }
         }
 
