@@ -77,7 +77,7 @@ class ExportSysFileWithMetadataTaskAdditionalFieldProvider extends AbstractAddit
         // Initialize selected fields
         if (empty($taskInfo['scheduler_exportSysFileWithMetadata_exportFilePath'])
             && $schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
-            $taskInfo['scheduler_exportSysFileWithMetadata_exportFilePath'] = $task->exportFilePath;
+            $taskInfo['scheduler_exportSysFileWithMetadata_exportFilePath'] = $task?->exportFilePath;
         }
 
         $fieldName = 'tx_scheduler[scheduler_exportSysFileWithMetadata_exportFilePath]';
@@ -87,7 +87,7 @@ class ExportSysFileWithMetadataTaskAdditionalFieldProvider extends AbstractAddit
             '<input type="text" class="form-control" name="%s" id="%s" value="%s" />',
             $fieldName,
             $fieldId,
-            $task->exportFilePath
+            $task?->exportFilePath
         );
 
         return [
@@ -114,7 +114,7 @@ class ExportSysFileWithMetadataTaskAdditionalFieldProvider extends AbstractAddit
         // Initialize selected fields
         if (empty($taskInfo['scheduler_exportSysFileWithMetadata_securityGroupMapping'])
             && $schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
-            $taskInfo['scheduler_exportSysFileWithMetadata_securityGroupMapping'] = $task->securityGroupMapping;
+            $taskInfo['scheduler_exportSysFileWithMetadata_securityGroupMapping'] = $task?->securityGroupMapping;
         }
 
         $fieldName = 'tx_scheduler[scheduler_exportSysFileWithMetadata_securityGroupMapping]';
@@ -124,7 +124,7 @@ class ExportSysFileWithMetadataTaskAdditionalFieldProvider extends AbstractAddit
             '<textarea style="min-height: 200px;" class="form-control" name="%s" id="%s">%s</textarea>',
             $fieldName,
             $fieldId,
-            $task->securityGroupMapping
+            $task?->securityGroupMapping
         );
 
         return [

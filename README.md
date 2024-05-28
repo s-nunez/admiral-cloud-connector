@@ -44,7 +44,7 @@ putenv('ADMIRALCLOUD_IFRAMEURL=https://t3intpoc.admiralcloud.com/');
 
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['admiral_cloud_connector'] = [
-    'frontend' => \TYPO3\CMS\Core\Cache\Frontend\PhpFrontend::class,
+    'frontend' => \TYPO3\CMS\Core\Cache\Frontend\VariableFrontend::class,
     'backend' => \TYPO3\CMS\Core\Cache\Backend\FileBackend::class,
     'groups' => [
         'all',

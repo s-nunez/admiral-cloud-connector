@@ -27,7 +27,7 @@ class UpdateAdmiralCloudMetadataAdditionalFieldProvider extends AbstractAddition
             if ($currentSchedulerModuleAction->equals(Action::ADD)) {
                 $taskInfo['scheduler_updateAdmiralCloudMetadata_actionType'][0] = UpdateAdmiralCloudMetadataTask::ACTION_TYPE_UPDATE_LAST_CHANGED;
             } elseif ($currentSchedulerModuleAction->equals(Action::EDIT)) {
-                $taskInfo['scheduler_updateAdmiralCloudMetadata_actionType'][0] = $task->actionType;
+                $taskInfo['scheduler_updateAdmiralCloudMetadata_actionType'][0] = $task?->actionType;
             }
         }
         $fieldName = 'tx_scheduler[scheduler_updateAdmiralCloudMetadata_actionType][]';
@@ -45,7 +45,7 @@ class UpdateAdmiralCloudMetadataAdditionalFieldProvider extends AbstractAddition
         $fieldHtml = '<select class="form-control" name="' . $fieldName . '" id="' . $fieldId . '">';
 
         foreach ($fieldOptions as $fieldOption) {
-            $selected = ($fieldOption[0] === $task->actionType) ? ' selected' : '';
+            $selected = ($fieldOption[0] === $task?->actionType) ? ' selected' : '';
 
             $fieldHtml .= sprintf(
                 '<option value="%s" %s>%s</option>',

@@ -149,7 +149,7 @@ class MetadataService
             }
         }
 
-        $cache->set($cacheKey, $now->getTimestamp());
+        $cache->set($cacheKey, (string) $now->getTimestamp());
 
         if ($iteration === static::MAXIMUM_ITERATION) {
             throw new RuntimeException(
